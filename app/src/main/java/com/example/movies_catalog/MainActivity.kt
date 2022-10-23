@@ -39,7 +39,7 @@ import com.example.movies_catalog.ui.theme.MoviesCatalogTheme
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        //installSplashScreen()
+        installSplashScreen()
         setContent{
             Main();
             /*MoviesCatalogTheme {

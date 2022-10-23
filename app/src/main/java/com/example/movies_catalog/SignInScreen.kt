@@ -35,12 +35,11 @@ fun SignInScreen(navController: NavController) {
             Image(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(0.dp, 56.dp, 0.dp, 48.dp)
-                    .size(250.dp, 170.dp),
+                    .padding(55.dp, 56.dp, 55.dp, 48.dp),
                 painter = painterResource(R.drawable.logo),
                 contentDescription = "Logo picture")
             SignInLogin()
-            Spacer(modifier = Modifier.height(14.41.dp)) //должен занимать все свободное место
+            Spacer(modifier = Modifier.height(14.41.dp))
             SignInPassword()
         }
         Spacer(modifier = Modifier.fillMaxHeight())

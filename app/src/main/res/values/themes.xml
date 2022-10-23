@@ -2,13 +2,13 @@
 <resources>
 
     <style name="Theme.MoviesCatalog" parent="android:Theme.Material.Light.NoActionBar">
-        <item name="android:statusBarColor">@color/black</item>
+        <item name="android:statusBarColor">@color/total_black</item>
         <item name="android:background">@color/black</item>
     </style>
 
-    <style name="Theme.AppSplash" parent="Theme.SplashScreen">
+    <style name="Theme.MoviesCatalog.Starting" parent="Theme.SplashScreen">
         <item name="windowSplashScreenBackground">@color/black</item>
-        <item name="windowSplashScreenAnimatedIcon">@drawable/logo</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/splash_screen_icon</item>
         <item name="postSplashScreenTheme">@style/Theme.MoviesCatalog</item>
     </style>
 </resources>
