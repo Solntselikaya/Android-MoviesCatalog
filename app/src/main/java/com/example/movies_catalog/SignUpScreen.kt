@@ -2,8 +2,14 @@ package com.example.movies_catalog
 
 import android.widget.CalendarView
 import androidx.annotation.ColorRes
-import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.Image
+import android.app.DatePickerDialog
+import android.graphics.drawable.Icon
+import android.icu.util.Calendar
+import android.widget.DatePicker
+import androidx.compose.foundation.*
+import androidx.compose.foundation.gestures.scrollable
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.PressInteraction
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
@@ -11,6 +17,7 @@ import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -19,6 +26,7 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import java.util.*
 
 @Preview(showBackground = true)
 @Composable
@@ -32,7 +40,9 @@ fun DefaultPreview(){
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .align(Alignment.TopCenter),
+                .height(IntrinsicSize.Min)
+                .align(Alignment.TopCenter)
+                .verticalScroll(rememberScrollState()),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             // нужно сделать анимацию уменьшения при переходе на этот экран!!!
@@ -55,6 +65,8 @@ fun DefaultPreview(){
             SignUpName()
             SignUpPassword()
             SignUpRepeatPassword()
+            SignUpBirthdate()
+            GenderSelect()
             //SignUpBirthdate() <- доработать открытие календаря
             /* А как сделать кнопочку с выбором пола...
             Row(modifier = Modifier
@@ -74,12 +86,7 @@ fun DefaultPreview(){
                     Text("Мужчина", fontSize = 16.sp)
                 }
             } */
-        }
-        //Spacer(modifier = Modifier.fillMaxHeight())
-        Column(
-            modifier = Modifier.fillMaxWidth().align(Alignment.BottomCenter),
-            //verticalArrangement = Arrangement.Bottom,
-            horizontalAlignment = Alignment.CenterHorizontally){
+
             Button(
                 onClick = {/* TODO */},
                 colors = ButtonDefaults.buttonColors(
@@ -87,7 +94,10 @@ fun DefaultPreview(){
                     contentColor = colorResource(R.color.dark_red)
                 ),
                 border = BorderStroke(1.dp, colorResource(R.color.gray)),
-                modifier = Modifier.height(44.dp).padding(16.dp,0.dp,16.dp,4.dp).fillMaxWidth(),
+                modifier = Modifier
+                    //.height(44.dp)
+                    .padding(16.dp, 24.dp, 16.dp, 4.dp)
+                    .fillMaxWidth(),
                 shape = RoundedCornerShape(8.dp)
             )
             {
@@ -99,7 +109,10 @@ fun DefaultPreview(){
                     backgroundColor = colorResource(R.color.black),
                     contentColor = colorResource(R.color.dark_red)
                 ),
-                modifier = Modifier.padding(16.dp,8.dp,16.dp,16.dp).height(44.dp).fillMaxWidth())
+                modifier = Modifier
+                    .padding(16.dp, 8.dp, 16.dp, 16.dp)
+                    .height(44.dp)
+                    .fillMaxWidth())
             {
                 Text("У меня уже есть аккаунт", fontSize = 16.sp)
             }
@@ -250,17 +263,43 @@ fun SignUpRepeatPassword(){
     )
 }
 
-/*@Composable
+@Composable
 fun SignUpBirthdate(){
-    var textValue by remember { mutableStateOf(TextFieldValue("")) }
+    val mContext = LocalContext.current
+    val mCalendar = Calendar.getInstance()
+
+    val mYear = mCalendar.get(Calendar.YEAR)
+    val mMonth = mCalendar.get(Calendar.MONTH)
+    val mDay = mCalendar.get(Calendar.DAY_OF_MONTH)
+
+    var textValue by remember { mutableStateOf("") }
+    val mDatePickerDialog = DatePickerDialog(
+        mContext,
+        R.style.MyDatePickerDialogTheme,
+        { _: DatePicker, mYear: Int, mMonth: Int, mDayOfMonth: Int ->
+            textValue = "$mDayOfMonth.${mMonth+1}.$mYear"
+        }, mYear, mMonth, mDay
+    )
+
     OutlinedTextField(
         value = textValue,
-        onValueChange = {
-            textValue = it
-        },
+        onValueChange = { },
         modifier = Modifier
-            .padding(16.dp, 8.dp)
+            .padding(16.dp, 8.dp, 16.dp, 16.dp)
             .fillMaxWidth(),
+        //а ниже страшная штука, найденная вот тут: https://stackoverflow.com/a/70335041
+        //без неё не работает .clickable() :(((
+        interactionSource = remember { MutableInteractionSource() }
+            .also { interactionSource ->
+                LaunchedEffect(interactionSource) {
+                    interactionSource.interactions.collect {
+                        if (it is PressInteraction.Release) {
+                            mDatePickerDialog.show()
+                        }
+                    }
+                }
+            },
+        readOnly = true,
         colors = TextFieldDefaults.outlinedTextFieldColors(
             cursorColor = colorResource(R.color.dark_red),
             focusedBorderColor = colorResource(R.color.dark_red),
@@ -275,17 +314,55 @@ fun SignUpBirthdate(){
                 fontWeight = FontWeight.W400,
                 lineHeight = 18.sp)},
         shape = RoundedCornerShape(8.dp),
-        trailingIcon = @Composable {
-            IconButton(
-                onClick = {
-                    CalendarView()
-                }
-            ) {
-                Icon(
-                    modifier = Modifier.padding(13.dp,13.dp,13.dp,13.dp),
-                    painter = painterResource(R.drawable.calendar_month_white),
-                    contentDescription = "Calendar picture")
-            }
+        trailingIcon = {
+            Icon(
+                modifier = Modifier.padding(13.dp,13.dp,13.dp,13.dp),
+                tint = colorResource(R.color.gray),
+                painter = painterResource(R.drawable.calendar_month_white),
+                contentDescription = "Calendar picture")
         }
     )
-} */
+}
+
+@Composable
+fun GenderSelect(){
+    Row (
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(IntrinsicSize.Min)
+            .padding(16.dp, 0.dp)
+            .border(BorderStroke(1.dp, colorResource(R.color.gray)), shape = RoundedCornerShape(8.dp)),
+        horizontalArrangement = Arrangement.Center
+    ) {
+        Button(
+            onClick = {/* TODO */},
+            colors = ButtonDefaults.buttonColors(
+                backgroundColor = colorResource(R.color.black),
+                contentColor = colorResource(R.color.gray)
+            ),
+            modifier = Modifier
+                .weight(1f)
+        )
+        {
+            Text("Мужчина", fontSize = 14.sp)
+        }
+        Divider(
+            color = colorResource(R.color.gray),
+            modifier = Modifier
+                .fillMaxHeight()
+                .width(1.dp)
+        )
+        Button(
+            onClick = {/* TODO */},
+            colors = ButtonDefaults.buttonColors(
+                backgroundColor = colorResource(R.color.black),
+                contentColor = colorResource(R.color.gray)
+            ),
+            modifier = Modifier
+                .weight(1f)
+        )
+        {
+            Text("Женщина", fontSize = 14.sp)
+        }
+    }
+}
