@@ -6,10 +6,12 @@ import android.app.DatePickerDialog
 import android.graphics.drawable.Icon
 import android.icu.util.Calendar
 import android.widget.DatePicker
+import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.*
 import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.PressInteraction
+import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
@@ -17,7 +19,9 @@ import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.isDebugInspectorInfoEnabled
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -67,26 +71,6 @@ fun DefaultPreview(){
             SignUpRepeatPassword()
             SignUpBirthdate()
             GenderSelect()
-            //SignUpBirthdate() <- доработать открытие календаря
-            /* А как сделать кнопочку с выбором пола...
-            Row(modifier = Modifier
-                .fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
-            ){
-                Button(
-                    onClick = {},
-                    colors = ButtonDefaults.buttonColors(
-                        backgroundColor = colorResource(R.color.black),
-                        contentColor = colorResource(R.color.dark_red)
-                    ),
-                    border = BorderStroke(1.dp, colorResource(R.color.gray)),
-                    modifier = Modifier.width(164.dp).padding(16.dp,8.dp,0.dp,8.dp),
-                    shape = RoundedCornerShape(8.dp)
-                ) {
-                    Text("Мужчина", fontSize = 16.sp)
-                }
-            } */
-
             Button(
                 onClick = {/* TODO */},
                 colors = ButtonDefaults.buttonColors(
@@ -129,8 +113,8 @@ fun SignUpLogin() {
             textValue = it
         },
         modifier = Modifier
-            .padding(16.dp, 8.dp)
-            .fillMaxWidth(),
+            .fillMaxWidth()
+            .padding(16.dp, 8.dp),
         colors = TextFieldDefaults.outlinedTextFieldColors(
             cursorColor = colorResource(R.color.dark_red),
             focusedBorderColor = colorResource(R.color.dark_red),
@@ -326,25 +310,64 @@ fun SignUpBirthdate(){
 
 @Composable
 fun GenderSelect(){
+
+    //val change = mutableStateOf(false)
+    //var MButtonColor = colorResource(R.color.gray)
+    //var WButtonColor = colorResource(R.color.gray)
+
+    //if
+    //val interactionSource = remember { MutableInteractionSource() }
+    //val isPressed by interactionSource.collectIsPressedAsState()
+
+    //val buttonSelect : Int
+    //val buttonColor by animateColorAsState(if (buttonSelect == TabPage.Home) Purple100 else Green300)
+
+    var isPressed by remember { mutableStateOf(false) }
+    val MSelectedState = if (isPressed) colorResource(R.color.dark_red) else colorResource(R.color.black)
+    val WSelectedState = if (!isPressed) colorResource(R.color.dark_red) else colorResource(R.color.black)
+    //var selectedState: Int = 0
+    //val menColor = if (selectedState == 1) colorResource(R.color.dark_red) else colorResource(R.color.black)
+    //val womenColor = if (selectedState == 2) colorResource(R.color.dark_red) else colorResource(R.color.black)
+
+    //val interactionSource = remember{MutableInteractionSource()}
+    //val isPressed
+
+    //var isPressed = false
+    //val color = if (isPressed)
+
     Row (
         modifier = Modifier
             .fillMaxWidth()
             .height(IntrinsicSize.Min)
             .padding(16.dp, 0.dp)
-            .border(BorderStroke(1.dp, colorResource(R.color.gray)), shape = RoundedCornerShape(8.dp)),
+            .border(
+                BorderStroke(1.dp, colorResource(R.color.gray)),
+                shape = RoundedCornerShape(8.dp)
+            ),
         horizontalArrangement = Arrangement.Center
     ) {
+        //val interactionSource = remember { MutableInteractionSource() }
+        //val isPressed by interactionSource.collectIsPressedAsState()
+        //val currColor = if (isPressed) colorResource(R.color.dark_red) else colorResource(R.color.black)
         Button(
-            onClick = {/* TODO */},
+            //enabled = false,
+            onClick = {
+                isPressed = !isPressed
+                },
             colors = ButtonDefaults.buttonColors(
-                backgroundColor = colorResource(R.color.black),
+                backgroundColor = MSelectedState,
                 contentColor = colorResource(R.color.gray)
             ),
             modifier = Modifier
-                .weight(1f)
+                .weight(1f),
+            shape = RoundedCornerShape(8.dp)
         )
         {
-            Text("Мужчина", fontSize = 14.sp)
+            Text(
+                "Мужчина",
+                fontSize = 14.sp,
+                fontWeight = FontWeight.W400,
+                lineHeight = 18.sp)
         }
         Divider(
             color = colorResource(R.color.gray),
@@ -353,16 +376,19 @@ fun GenderSelect(){
                 .width(1.dp)
         )
         Button(
-            onClick = {/* TODO */},
+            onClick = {isPressed = !isPressed},
             colors = ButtonDefaults.buttonColors(
-                backgroundColor = colorResource(R.color.black),
+                backgroundColor = WSelectedState,
                 contentColor = colorResource(R.color.gray)
             ),
             modifier = Modifier
                 .weight(1f)
         )
         {
-            Text("Женщина", fontSize = 14.sp)
+            Text("Женщина",
+                fontSize = 14.sp,
+                fontWeight = FontWeight.W400,
+                lineHeight = 18.sp)
         }
     }
 }
