@@ -7,6 +7,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
@@ -17,36 +18,40 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import androidx.navigation.NavHostController
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
-import androidx.navigation.compose.rememberNavController
+import com.example.movies_catalog.SignInScreen.SignInViewModel
 
 //@Preview(showBackground = true)
 @Composable
 fun SignInScreen(navController: NavController) {
+    val signInViewModel: SignInViewModel = viewModel()
+
+    val signInLogin : String by signInViewModel.login.observeAsState("")
+    val signInPassword : String by signInViewModel.password.observeAsState("")
+
     Box(modifier = Modifier.fillMaxSize()){
         Column(
             modifier = Modifier.fillMaxWidth().align(Alignment.TopCenter),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            //verticalArrangement = Arrangement.Top
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Image(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(55.dp, 56.dp, 55.dp, 48.dp),
                 painter = painterResource(R.drawable.logo),
-                contentDescription = "Logo picture")
-            SignInLogin()
+                contentDescription = "Logo picture"
+            )
+            SignInLoginField(login = signInLogin) { signInViewModel.onLoginChange(it) }
             Spacer(modifier = Modifier.height(14.41.dp))
-            SignInPassword()
+            SignInPassword(password= signInPassword) { signInViewModel.onPasswordChange(it) }
         }
         Spacer(modifier = Modifier.fillMaxHeight())
         Column(
             modifier = Modifier.fillMaxWidth().align(Alignment.BottomCenter),
             //verticalArrangement = Arrangement.Bottom,
-            horizontalAlignment = Alignment.CenterHorizontally){
+            horizontalAlignment = Alignment.CenterHorizontally
+        ){
             Button(
                 onClick = {/* TODO */},
                 colors = ButtonDefaults.buttonColors(
@@ -74,18 +79,14 @@ fun SignInScreen(navController: NavController) {
     }
 }
 
-//@Preview(showBackground = true)
 @Composable
-fun SignInLogin() {
-    var textValue by remember { mutableStateOf(TextFieldValue("")) }
+fun SignInLoginField(login: String, onLoginChange: (String) -> Unit) {
     OutlinedTextField(
-        value = textValue,
+        value = login,
+        onValueChange = onLoginChange,
         modifier = Modifier
             .padding(16.dp, 0.dp)
             .fillMaxWidth(),
-        onValueChange = {
-            textValue = it
-        },
         colors = TextFieldDefaults.outlinedTextFieldColors(
             cursorColor = colorResource(R.color.dark_red),
             focusedBorderColor = colorResource(R.color.dark_red),
@@ -103,16 +104,13 @@ fun SignInLogin() {
 
 //@Preview(showBackground = true)
 @Composable
-fun SignInPassword() {
-    var textValue by remember { mutableStateOf(TextFieldValue("")) }
+fun SignInPassword(password: String, onPasswordChange: (String) -> Unit) {
     OutlinedTextField(
-        value = textValue,
+        value = password,
+        onValueChange = onPasswordChange,
         modifier = Modifier
             .padding(16.dp, 0.dp)
             .fillMaxWidth(),
-        onValueChange = {
-            textValue = it
-        },
         colors = TextFieldDefaults.outlinedTextFieldColors(
             cursorColor = colorResource(R.color.dark_red),
             focusedBorderColor = colorResource(R.color.dark_red),
@@ -128,7 +126,6 @@ fun SignInPassword() {
 
         visualTransformation = PasswordVisualTransformation(),
         keyboardOptions = KeyboardOptions(
-            //imeAction = ImeAction.Done,
             keyboardType = KeyboardType.Password
         )
     )
