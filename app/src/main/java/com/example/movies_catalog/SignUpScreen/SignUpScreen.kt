@@ -1,6 +1,7 @@
 package com.example.movies_catalog
 
 import android.app.DatePickerDialog
+import android.content.Context
 import android.icu.util.Calendar
 import android.widget.DatePicker
 import androidx.compose.foundation.*
@@ -11,6 +12,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -22,9 +24,21 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.movies_catalog.SignUpScreen.SignUpViewModel
 
 @Composable
 fun SignUpScreen(){
+    val signUpViewModel: SignUpViewModel = viewModel()
+
+    val signUpLogin : String by signUpViewModel.login.observeAsState("")
+    val signUpEmail : String by signUpViewModel.email.observeAsState("")
+    val signUpName : String by signUpViewModel.name.observeAsState("")
+    val signUpPassword : String by signUpViewModel.password.observeAsState("")
+    val signUpRepeatedPassword : String by signUpViewModel.repeatedPassword.observeAsState("")
+    val signUpBirthdate : String by signUpViewModel.birthdate.observeAsState("")
+    val signUpGender : Int by signUpViewModel.gender.observeAsState(-1)
+
     Box(modifier = Modifier.fillMaxSize()){
         Column(
             modifier = Modifier
@@ -48,14 +62,15 @@ fun SignUpScreen(){
                 fontWeight = FontWeight.W700,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(16.dp, 8.dp))
-            SignUpLogin()
-            SignUpEmail()
-            SignUpName()
-            SignUpPassword()
-            SignUpRepeatPassword()
-            SignUpBirthdate()
-            GenderSelect()
+                    .padding(16.dp, 8.dp)
+            )
+            SignUpLoginField(login = signUpLogin) { signUpViewModel.onLoginChange(it) }
+            SignUpEmailField(email = signUpEmail) { signUpViewModel.onEmailChange(it) }
+            SignUpNameField(name = signUpName) { signUpViewModel.onNameChange(it) }
+            SignUpPasswordField(password = signUpPassword) { signUpViewModel.onPasswordChange(it) }
+            SignUpRepeatedPasswordField(repeatedPassword = signUpRepeatedPassword) { signUpViewModel.onRepeatedPasswordChange(it) }
+            SignUpBirthdateField(birthdate = signUpBirthdate) { signUpViewModel.onBirthdateChange(it) }
+            GenderSelect(gender = signUpGender) { signUpViewModel.onGenderChange(it) }
             Button(
                 onClick = {/* TODO */},
                 colors = ButtonDefaults.buttonColors(
@@ -90,13 +105,10 @@ fun SignUpScreen(){
 }
 
 @Composable
-fun SignUpLogin() {
-    var textValue by remember { mutableStateOf(TextFieldValue("")) }
+fun SignUpLoginField(login : String, onLoginChange : (String) -> Unit) {
     OutlinedTextField(
-        value = textValue,
-        onValueChange = {
-            textValue = it
-        },
+        value = login,
+        onValueChange = onLoginChange,
         modifier = Modifier
             .fillMaxWidth()
             .padding(16.dp, 8.dp),
@@ -118,13 +130,10 @@ fun SignUpLogin() {
 }
 
 @Composable
-fun SignUpEmail(){
-    var textValue by remember { mutableStateOf(TextFieldValue("")) }
+fun SignUpEmailField(email : String, onEmailChange : (String) -> Unit){
     OutlinedTextField(
-        value = textValue,
-        onValueChange = {
-            textValue = it
-        },
+        value = email,
+        onValueChange = onEmailChange,
         modifier = Modifier
             .padding(16.dp, 8.dp)
             .fillMaxWidth(),
@@ -147,13 +156,10 @@ fun SignUpEmail(){
 }
 
 @Composable
-fun SignUpName(){
-    var textValue by remember { mutableStateOf(TextFieldValue("")) }
+fun SignUpNameField(name : String, onNameChange : (String) -> Unit){
     OutlinedTextField(
-        value = textValue,
-        onValueChange = {
-            textValue = it
-        },
+        value = name,
+        onValueChange = onNameChange,
         modifier = Modifier
             .padding(16.dp, 8.dp)
             .fillMaxWidth(),
@@ -175,13 +181,10 @@ fun SignUpName(){
 }
 
 @Composable
-fun SignUpPassword(){
-    var textValue by remember { mutableStateOf(TextFieldValue("")) }
+fun SignUpPasswordField(password : String, onPasswordChange : (String) -> Unit){
     OutlinedTextField(
-        value = textValue,
-        onValueChange = {
-            textValue = it
-        },
+        value = password,
+        onValueChange = onPasswordChange,
         modifier = Modifier
             .padding(16.dp, 8.dp)
             .fillMaxWidth(),
@@ -204,13 +207,10 @@ fun SignUpPassword(){
 }
 
 @Composable
-fun SignUpRepeatPassword(){
-    var textValue by remember { mutableStateOf(TextFieldValue("")) }
+fun SignUpRepeatedPasswordField(repeatedPassword : String, onRepeatedPasswordChange : (String) -> Unit){
     OutlinedTextField(
-        value = textValue,
-        onValueChange = {
-            textValue = it
-        },
+        value = repeatedPassword,
+        onValueChange = onRepeatedPasswordChange,
         modifier = Modifier
             .padding(16.dp, 8.dp)
             .fillMaxWidth(),
@@ -233,26 +233,12 @@ fun SignUpRepeatPassword(){
 }
 
 @Composable
-fun SignUpBirthdate(){
+fun SignUpBirthdateField(birthdate : String, onBirthdateChange : (Context) -> Unit){
     val mContext = LocalContext.current
-    val mCalendar = Calendar.getInstance()
-
-    val mYear = mCalendar.get(Calendar.YEAR)
-    val mMonth = mCalendar.get(Calendar.MONTH)
-    val mDay = mCalendar.get(Calendar.DAY_OF_MONTH)
-
-    var textValue by remember { mutableStateOf("") }
-    val mDatePickerDialog = DatePickerDialog(
-        mContext,
-        R.style.MyDatePickerDialogTheme,
-        { _: DatePicker, mYear: Int, mMonth: Int, mDayOfMonth: Int ->
-            textValue = "$mDayOfMonth.${mMonth+1}.$mYear"
-        }, mYear, mMonth, mDay
-    )
 
     OutlinedTextField(
-        value = textValue,
-        onValueChange = { },
+        value = birthdate,
+        onValueChange = {},
         modifier = Modifier
             .padding(16.dp, 8.dp, 16.dp, 16.dp)
             .fillMaxWidth(),
@@ -263,7 +249,7 @@ fun SignUpBirthdate(){
                 LaunchedEffect(interactionSource) {
                     interactionSource.interactions.collect {
                         if (it is PressInteraction.Release) {
-                            mDatePickerDialog.show()
+                            onBirthdateChange(mContext)
                         }
                     }
                 }
@@ -294,31 +280,9 @@ fun SignUpBirthdate(){
 }
 
 @Composable
-fun GenderSelect(){
-
-    //val change = mutableStateOf(false)
-    //var MButtonColor = colorResource(R.color.gray)
-    //var WButtonColor = colorResource(R.color.gray)
-
-    //if
-    //val interactionSource = remember { MutableInteractionSource() }
-    //val isPressed by interactionSource.collectIsPressedAsState()
-
-    //val buttonSelect : Int
-    //val buttonColor by animateColorAsState(if (buttonSelect == TabPage.Home) Purple100 else Green300)
-
-    var isPressed by remember { mutableStateOf(false) }
-    val MSelectedState = if (isPressed) colorResource(R.color.dark_red) else colorResource(R.color.black)
-    val WSelectedState = if (!isPressed) colorResource(R.color.dark_red) else colorResource(R.color.black)
-    //var selectedState: Int = 0
-    //val menColor = if (selectedState == 1) colorResource(R.color.dark_red) else colorResource(R.color.black)
-    //val womenColor = if (selectedState == 2) colorResource(R.color.dark_red) else colorResource(R.color.black)
-
-    //val interactionSource = remember{MutableInteractionSource()}
-    //val isPressed
-
-    //var isPressed = false
-    //val color = if (isPressed)
+fun GenderSelect(gender : Int, onGenderChange : (Int) -> Unit){
+    val maleColor = if (gender == 0) colorResource(R.color.dark_red) else colorResource(R.color.black)
+    val femaleColor = if (gender == 1) colorResource(R.color.dark_red) else colorResource(R.color.black)
 
     Row (
         modifier = Modifier
@@ -331,23 +295,17 @@ fun GenderSelect(){
             ),
         horizontalArrangement = Arrangement.Center
     ) {
-        //val interactionSource = remember { MutableInteractionSource() }
-        //val isPressed by interactionSource.collectIsPressedAsState()
-        //val currColor = if (isPressed) colorResource(R.color.dark_red) else colorResource(R.color.black)
         Button(
-            //enabled = false,
-            onClick = {
-                isPressed = !isPressed
-                },
-            colors = ButtonDefaults.buttonColors(
-                backgroundColor = MSelectedState,
-                contentColor = colorResource(R.color.gray)
-            ),
+            onClick = { onGenderChange(0) },
             modifier = Modifier
-                .weight(1f),
-            shape = RoundedCornerShape(8.dp)
-        )
-        {
+                .weight(1f)
+                .fillMaxSize(),
+            colors = ButtonDefaults.buttonColors(
+                backgroundColor = maleColor,
+                contentColor = colorResource(R.color.white)
+            ),
+            shape = RoundedCornerShape(8.dp, 0.dp, 0.dp, 8.dp)
+        ) {
             Text(
                 "Мужчина",
                 fontSize = 14.sp,
@@ -361,15 +319,16 @@ fun GenderSelect(){
                 .width(1.dp)
         )
         Button(
-            onClick = {isPressed = !isPressed},
-            colors = ButtonDefaults.buttonColors(
-                backgroundColor = WSelectedState,
-                contentColor = colorResource(R.color.gray)
-            ),
+            onClick = { onGenderChange(1) },
             modifier = Modifier
                 .weight(1f)
-        )
-        {
+                .fillMaxSize(),
+            colors = ButtonDefaults.buttonColors(
+                backgroundColor = femaleColor,
+                contentColor = colorResource(R.color.white)
+            ),
+            shape = RoundedCornerShape(0.dp, 8.dp, 8.dp, 0.dp)
+        ) {
             Text("Женщина",
                 fontSize = 14.sp,
                 fontWeight = FontWeight.W400,

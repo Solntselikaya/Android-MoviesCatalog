@@ -8,16 +8,16 @@ class SignInViewModel: ViewModel() {
     private val _login = MutableLiveData("")
     var login : LiveData<String> = _login
 
-    fun onLoginChange(newLogin : String) {
-        _login.value = newLogin
+    fun onLoginChange(updatedLogin : String) {
+        _login.value = updatedLogin
         isEmpty()
     }
 
     private val _password = MutableLiveData("")
     var password : LiveData<String> = _password
 
-    fun onPasswordChange(newPassword : String) {
-        _password.value = newPassword
+    fun onPasswordChange(updatedPassword : String) {
+        _password.value = updatedPassword
         isEmpty()
     }
 
