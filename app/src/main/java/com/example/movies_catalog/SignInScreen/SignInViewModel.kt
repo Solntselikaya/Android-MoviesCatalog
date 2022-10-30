@@ -10,6 +10,7 @@ class SignInViewModel: ViewModel() {
 
     fun onLoginChange(newLogin : String) {
         _login.value = newLogin
+        isEmpty()
     }
 
     private val _password = MutableLiveData("")
@@ -17,5 +18,15 @@ class SignInViewModel: ViewModel() {
 
     fun onPasswordChange(newPassword : String) {
         _password.value = newPassword
+        isEmpty()
+    }
+
+    private val _isFieldsFilled = MutableLiveData(false)
+    var isFieldsFilled : LiveData<Boolean> = _isFieldsFilled
+
+    private fun isEmpty() {
+        val login = _login.value
+        val password = _password.value
+        _isFieldsFilled.value = !login.isNullOrEmpty() && !password.isNullOrEmpty()
     }
 }

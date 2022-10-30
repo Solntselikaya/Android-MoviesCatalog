@@ -23,14 +23,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
-@Preview(showBackground = true)
 @Composable
-fun SignUpScreen() {
-    DefaultPreview();
-}
-
-@Composable
-fun DefaultPreview(){
+fun SignUpScreen(){
     Box(modifier = Modifier.fillMaxSize()){
         Column(
             modifier = Modifier

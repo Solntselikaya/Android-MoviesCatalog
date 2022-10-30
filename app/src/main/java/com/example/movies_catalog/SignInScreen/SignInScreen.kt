@@ -22,17 +22,19 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.movies_catalog.SignInScreen.SignInViewModel
 
-//@Preview(showBackground = true)
 @Composable
 fun SignInScreen(navController: NavController) {
     val signInViewModel: SignInViewModel = viewModel()
 
     val signInLogin : String by signInViewModel.login.observeAsState("")
     val signInPassword : String by signInViewModel.password.observeAsState("")
+    val isFieldsFilled : Boolean by signInViewModel.isFieldsFilled.observeAsState(false)
 
     Box(modifier = Modifier.fillMaxSize()){
         Column(
-            modifier = Modifier.fillMaxWidth().align(Alignment.TopCenter),
+            modifier = Modifier
+                .fillMaxWidth()
+                .align(Alignment.TopCenter),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Image(
@@ -44,34 +46,26 @@ fun SignInScreen(navController: NavController) {
             )
             SignInLoginField(login = signInLogin) { signInViewModel.onLoginChange(it) }
             Spacer(modifier = Modifier.height(14.41.dp))
-            SignInPassword(password= signInPassword) { signInViewModel.onPasswordChange(it) }
+            SignInPasswordField(password= signInPassword) { signInViewModel.onPasswordChange(it) }
         }
         Spacer(modifier = Modifier.fillMaxHeight())
         Column(
-            modifier = Modifier.fillMaxWidth().align(Alignment.BottomCenter),
-            //verticalArrangement = Arrangement.Bottom,
+            modifier = Modifier
+                .fillMaxWidth()
+                .align(Alignment.BottomCenter),
             horizontalAlignment = Alignment.CenterHorizontally
         ){
-            Button(
-                onClick = {/* TODO */},
-                colors = ButtonDefaults.buttonColors(
-                    backgroundColor = colorResource(R.color.black),
-                    contentColor = colorResource(R.color.dark_red)
-                ),
-                border = BorderStroke(1.dp, colorResource(R.color.gray)),
-                modifier = Modifier.height(44.dp).padding(16.dp,0.dp,16.dp,4.dp).fillMaxWidth(),
-                shape = RoundedCornerShape(8.dp)
-            )
-            {
-                Text("Войти", fontSize = 16.sp)
-            }
+            EntryButton(isFieldsFilled)
             Button(
                 onClick = {navController.navigate("signUp")},
                 colors = ButtonDefaults.buttonColors(
                     backgroundColor = colorResource(R.color.black),
                     contentColor = colorResource(R.color.dark_red)
                 ),
-                modifier = Modifier.padding(16.dp,8.dp,16.dp,16.dp).height(44.dp).fillMaxWidth())
+                modifier = Modifier
+                    .padding(16.dp, 8.dp, 16.dp, 16.dp)
+                    .height(44.dp)
+                    .fillMaxWidth())
             {
                 Text("Регистрация", fontSize = 16.sp)
             }
@@ -102,9 +96,8 @@ fun SignInLoginField(login: String, onLoginChange: (String) -> Unit) {
     )
 }
 
-//@Preview(showBackground = true)
 @Composable
-fun SignInPassword(password: String, onPasswordChange: (String) -> Unit) {
+fun SignInPasswordField(password: String, onPasswordChange: (String) -> Unit) {
     OutlinedTextField(
         value = password,
         onValueChange = onPasswordChange,
@@ -129,4 +122,28 @@ fun SignInPassword(password: String, onPasswordChange: (String) -> Unit) {
             keyboardType = KeyboardType.Password
         )
     )
+}
+
+@Composable
+fun EntryButton(isFieldsFilled: Boolean) {
+    val borderColor = if (isFieldsFilled) colorResource(R.color.dark_red) else colorResource(R.color.gray)
+    Button(
+        onClick = {/* TODO */ },
+        enabled = isFieldsFilled,
+        colors = ButtonDefaults.buttonColors(
+            backgroundColor = colorResource(R.color.dark_red),
+            contentColor = colorResource(R.color.white),
+            disabledBackgroundColor = colorResource(R.color.black),
+            disabledContentColor = colorResource(R.color.dark_red)
+        ),
+        border = BorderStroke(1.dp, borderColor),
+        modifier = Modifier
+            .height(44.dp)
+            .padding(16.dp, 0.dp, 16.dp, 4.dp)
+            .fillMaxWidth(),
+        shape = RoundedCornerShape(8.dp)
+    )
+    {
+        Text("Войти", fontSize = 16.sp)
+    }
 }

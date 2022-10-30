@@ -1,4 +1,7 @@
 package com.example.movies_catalog.SignUpScreen
 
-class SignUpViewModel {
+import androidx.lifecycle.ViewModel
+
+class SignUpViewModel : ViewModel() {
+
 }
