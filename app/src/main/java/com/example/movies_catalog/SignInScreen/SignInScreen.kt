@@ -40,7 +40,9 @@ fun SignInScreen(navController: NavController) {
             Image(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(55.dp, 56.dp, 55.dp, 48.dp),
+                    .padding(0.dp, 56.dp, 0.dp, 48.dp)
+                    .height(170.dp)
+                    .width(250.dp),
                 painter = painterResource(R.drawable.logo),
                 contentDescription = "Logo picture"
             )

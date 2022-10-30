@@ -4,6 +4,10 @@ import android.app.DatePickerDialog
 import android.content.Context
 import android.icu.util.Calendar
 import android.widget.DatePicker
+import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.core.animateSizeAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.*
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.PressInteraction
@@ -13,8 +17,10 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
@@ -22,6 +28,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -49,13 +56,7 @@ fun SignUpScreen(){
                 .verticalScroll(rememberScrollState()),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            // нужно сделать анимацию уменьшения при переходе на этот экран!!!
-            Image(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(106.dp, 56.dp, 106.dp, 8.dp),
-                painter = painterResource(R.drawable.logo),
-                contentDescription = "Logo picture")
+            LogoImage()
             Text(
                 text = "Регистрация",
                 color = colorResource(R.color.dark_red),
@@ -88,6 +89,30 @@ fun SignUpScreen(){
             }
         }
     }
+}
+
+@Composable
+fun LogoImage(){
+    var isNeedAnimation by remember {mutableStateOf(false)}
+
+    LaunchedEffect(isNeedAnimation){
+        isNeedAnimation = true
+    }
+    val animatedHeightDp: Dp by animateDpAsState(
+        targetValue = if (isNeedAnimation) 100.dp else 170.dp,
+        animationSpec = tween (durationMillis = 1500))
+    val animatedWidthDp: Dp by animateDpAsState(
+        targetValue = if (isNeedAnimation) 147.dp else 250.dp,
+        animationSpec = tween (durationMillis = 1500))
+
+    Image(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(0.dp, 56.dp, 0.dp, 8.dp)
+            .height(animatedHeightDp)
+            .width((animatedWidthDp)),
+        painter = painterResource(R.drawable.logo),
+        contentDescription = "Logo picture")
 }
 
 @Composable
