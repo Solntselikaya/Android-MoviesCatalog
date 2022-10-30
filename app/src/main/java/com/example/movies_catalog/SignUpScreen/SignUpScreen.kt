@@ -26,6 +26,7 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
@@ -39,10 +40,16 @@ fun SignUpScreen(){
     val signUpViewModel: SignUpViewModel = viewModel()
 
     val signUpLogin : String by signUpViewModel.login.observeAsState("")
+
     val signUpEmail : String by signUpViewModel.email.observeAsState("")
+    val isEmailValid : Boolean by signUpViewModel.isEmailValid.observeAsState(true)
+
     val signUpName : String by signUpViewModel.name.observeAsState("")
+
     val signUpPassword : String by signUpViewModel.password.observeAsState("")
     val signUpRepeatedPassword : String by signUpViewModel.repeatedPassword.observeAsState("")
+    val isPasswordsEqual : Boolean by signUpViewModel.isPasswordsEqual.observeAsState(true)
+
     val signUpBirthdate : String by signUpViewModel.birthdate.observeAsState("")
     val signUpGender : Int by signUpViewModel.gender.observeAsState(-1)
     val isFieldsFilled : Boolean by signUpViewModel.isFieldsFilled.observeAsState(false)
@@ -67,10 +74,10 @@ fun SignUpScreen(){
                     .padding(16.dp, 8.dp)
             )
             SignUpLoginField(login = signUpLogin) { signUpViewModel.onLoginChange(it) }
-            SignUpEmailField(email = signUpEmail) { signUpViewModel.onEmailChange(it) }
+            SignUpEmailField(email = signUpEmail, isValid = isEmailValid) { signUpViewModel.onEmailChange(it) }
             SignUpNameField(name = signUpName) { signUpViewModel.onNameChange(it) }
             SignUpPasswordField(password = signUpPassword) { signUpViewModel.onPasswordChange(it) }
-            SignUpRepeatedPasswordField(repeatedPassword = signUpRepeatedPassword) { signUpViewModel.onRepeatedPasswordChange(it) }
+            SignUpRepeatedPasswordField(repeatedPassword = signUpRepeatedPassword, isValid = isPasswordsEqual) { signUpViewModel.onRepeatedPasswordChange(it) }
             SignUpBirthdateField(birthdate = signUpBirthdate) { signUpViewModel.onBirthdateChange(it) }
             GenderSelect(gender = signUpGender) { signUpViewModel.onGenderChange(it) }
             RegistrationButton(isFieldsFilled)
@@ -141,7 +148,7 @@ fun SignUpLoginField(login : String, onLoginChange : (String) -> Unit) {
 }
 
 @Composable
-fun SignUpEmailField(email : String, onEmailChange : (String) -> Unit){
+fun SignUpEmailField(email : String, isValid : Boolean, onEmailChange : (String) -> Unit){
     OutlinedTextField(
         value = email,
         onValueChange = onEmailChange,
@@ -162,7 +169,8 @@ fun SignUpEmailField(email : String, onEmailChange : (String) -> Unit){
                 fontWeight = FontWeight.W400,
                 lineHeight = 18.sp) },
         shape = RoundedCornerShape(8.dp),
-        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email)
+        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
+        isError = !isValid
     )
 }
 
@@ -213,12 +221,13 @@ fun SignUpPasswordField(password : String, onPasswordChange : (String) -> Unit){
                 fontWeight = FontWeight.W400,
                 lineHeight = 18.sp)},
         shape = RoundedCornerShape(8.dp),
+        visualTransformation = PasswordVisualTransformation(),
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password)
     )
 }
 
 @Composable
-fun SignUpRepeatedPasswordField(repeatedPassword : String, onRepeatedPasswordChange : (String) -> Unit){
+fun SignUpRepeatedPasswordField(repeatedPassword : String, isValid : Boolean, onRepeatedPasswordChange : (String) -> Unit){
     OutlinedTextField(
         value = repeatedPassword,
         onValueChange = onRepeatedPasswordChange,
@@ -238,7 +247,9 @@ fun SignUpRepeatedPasswordField(repeatedPassword : String, onRepeatedPasswordCha
                 fontSize = 14.sp,
                 fontWeight = FontWeight.W400,
                 lineHeight = 18.sp)},
+        isError = !isValid,
         shape = RoundedCornerShape(8.dp),
+        visualTransformation = PasswordVisualTransformation(),
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password)
     )
 }

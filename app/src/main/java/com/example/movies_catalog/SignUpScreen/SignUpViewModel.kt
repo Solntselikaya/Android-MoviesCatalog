@@ -3,6 +3,7 @@ package com.example.movies_catalog.SignUpScreen
 import android.app.DatePickerDialog
 import android.content.Context
 import android.icu.util.Calendar
+import android.util.Patterns
 import android.widget.DatePicker
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -23,7 +24,15 @@ class SignUpViewModel : ViewModel() {
 
     fun onEmailChange(updatedEmail : String) {
         _email.value = updatedEmail
+        isEmailValid()
         isEmpty()
+    }
+
+    private val _isEmailValid = MutableLiveData(true)
+    var isEmailValid : LiveData<Boolean> = _isEmailValid
+
+    private fun isEmailValid(){
+        _isEmailValid.value = Patterns.EMAIL_ADDRESS.matcher(_email.value).matches()
     }
 
     private val _name = MutableLiveData("")
@@ -47,7 +56,15 @@ class SignUpViewModel : ViewModel() {
 
     fun onRepeatedPasswordChange(updatedPassword : String) {
         _repeatedPassword.value = updatedPassword
+        IsPasswordsEqual()
         isEmpty()
+    }
+
+    private val _isPasswordsEqual = MutableLiveData(true)
+    var isPasswordsEqual : LiveData<Boolean> = _isPasswordsEqual
+
+    private fun IsPasswordsEqual(){
+        _isPasswordsEqual.value = _password.value == _repeatedPassword.value
     }
 
     private val _birthdate = MutableLiveData("")
@@ -86,16 +103,20 @@ class SignUpViewModel : ViewModel() {
     private fun isEmpty() {
         val login = _login.value
         val email = _email.value
+        val isEmailValid = _isEmailValid.value
         val name = _name.value
         val password = _password.value
         val repeatedPassword = _repeatedPassword.value
+        val isPasswordsEqual = _isPasswordsEqual.value
         val birthdate = _birthdate.value
         val gender = _gender.value
         _isFieldsFilled.value = !login.isNullOrEmpty() &&
                                 !email.isNullOrEmpty() &&
+                                (isEmailValid == true) &&
                                 !name.isNullOrEmpty() &&
                                 !password.isNullOrEmpty() &&
                                 !repeatedPassword.isNullOrEmpty() &&
+                                (isPasswordsEqual == true) &&
                                 !birthdate.isNullOrEmpty() &&
                                 (gender != -1)
     }

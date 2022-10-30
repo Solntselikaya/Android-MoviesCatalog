@@ -48,7 +48,7 @@ fun SignInScreen(navController: NavController) {
             )
             SignInLoginField(login = signInLogin) { signInViewModel.onLoginChange(it) }
             Spacer(modifier = Modifier.height(14.41.dp))
-            SignInPasswordField(password= signInPassword) { signInViewModel.onPasswordChange(it) }
+            SignInPasswordField(password = signInPassword) { signInViewModel.onPasswordChange(it) }
         }
         Spacer(modifier = Modifier.fillMaxHeight())
         Column(
@@ -118,7 +118,6 @@ fun SignInPasswordField(password: String, onPasswordChange: (String) -> Unit) {
                 color = colorResource(R.color.gray),
                 fontSize = 14.sp) },
         shape = RoundedCornerShape(8.dp),
-
         visualTransformation = PasswordVisualTransformation(),
         keyboardOptions = KeyboardOptions(
             keyboardType = KeyboardType.Password
