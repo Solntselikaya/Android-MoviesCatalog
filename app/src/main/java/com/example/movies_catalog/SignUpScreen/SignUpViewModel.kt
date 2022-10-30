@@ -15,6 +15,7 @@ class SignUpViewModel : ViewModel() {
 
     fun onLoginChange(updatedLogin : String) {
         _login.value = updatedLogin
+        isEmpty()
     }
 
     private val _email = MutableLiveData("")
@@ -22,6 +23,7 @@ class SignUpViewModel : ViewModel() {
 
     fun onEmailChange(updatedEmail : String) {
         _email.value = updatedEmail
+        isEmpty()
     }
 
     private val _name = MutableLiveData("")
@@ -29,6 +31,7 @@ class SignUpViewModel : ViewModel() {
 
     fun onNameChange(updatedName : String) {
         _name.value = updatedName
+        isEmpty()
     }
 
     private val _password = MutableLiveData("")
@@ -36,6 +39,7 @@ class SignUpViewModel : ViewModel() {
 
     fun onPasswordChange(updatedPassword : String) {
         _password.value = updatedPassword
+        isEmpty()
     }
 
     private val _repeatedPassword = MutableLiveData("")
@@ -43,6 +47,7 @@ class SignUpViewModel : ViewModel() {
 
     fun onRepeatedPasswordChange(updatedPassword : String) {
         _repeatedPassword.value = updatedPassword
+        isEmpty()
     }
 
     private val _birthdate = MutableLiveData("")
@@ -64,6 +69,7 @@ class SignUpViewModel : ViewModel() {
         )
 
         mDatePickerDialog.show()
+        isEmpty()
     }
 
     private val _gender = MutableLiveData(-1)
@@ -71,5 +77,26 @@ class SignUpViewModel : ViewModel() {
 
     fun onGenderChange(updatedGender : Int){
         _gender.value = updatedGender
+        isEmpty()
+    }
+
+    private val _isFieldsFilled = MutableLiveData(false)
+    var isFieldsFilled : LiveData<Boolean> = _isFieldsFilled
+
+    private fun isEmpty() {
+        val login = _login.value
+        val email = _email.value
+        val name = _name.value
+        val password = _password.value
+        val repeatedPassword = _repeatedPassword.value
+        val birthdate = _birthdate.value
+        val gender = _gender.value
+        _isFieldsFilled.value = !login.isNullOrEmpty() &&
+                                !email.isNullOrEmpty() &&
+                                !name.isNullOrEmpty() &&
+                                !password.isNullOrEmpty() &&
+                                !repeatedPassword.isNullOrEmpty() &&
+                                !birthdate.isNullOrEmpty() &&
+                                (gender != -1)
     }
 }

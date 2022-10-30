@@ -38,6 +38,7 @@ fun SignUpScreen(){
     val signUpRepeatedPassword : String by signUpViewModel.repeatedPassword.observeAsState("")
     val signUpBirthdate : String by signUpViewModel.birthdate.observeAsState("")
     val signUpGender : Int by signUpViewModel.gender.observeAsState(-1)
+    val isFieldsFilled : Boolean by signUpViewModel.isFieldsFilled.observeAsState(false)
 
     Box(modifier = Modifier.fillMaxSize()){
         Column(
@@ -71,22 +72,7 @@ fun SignUpScreen(){
             SignUpRepeatedPasswordField(repeatedPassword = signUpRepeatedPassword) { signUpViewModel.onRepeatedPasswordChange(it) }
             SignUpBirthdateField(birthdate = signUpBirthdate) { signUpViewModel.onBirthdateChange(it) }
             GenderSelect(gender = signUpGender) { signUpViewModel.onGenderChange(it) }
-            Button(
-                onClick = {/* TODO */},
-                colors = ButtonDefaults.buttonColors(
-                    backgroundColor = colorResource(R.color.black),
-                    contentColor = colorResource(R.color.dark_red)
-                ),
-                border = BorderStroke(1.dp, colorResource(R.color.gray)),
-                modifier = Modifier
-                    //.height(44.dp)
-                    .padding(16.dp, 24.dp, 16.dp, 4.dp)
-                    .fillMaxWidth(),
-                shape = RoundedCornerShape(8.dp)
-            )
-            {
-                Text("Зарегестрироваться", fontSize = 16.sp)
-            }
+            RegistrationButton(isFieldsFilled)
             Button(
                 onClick = {},
                 colors = ButtonDefaults.buttonColors(
@@ -334,5 +320,28 @@ fun GenderSelect(gender : Int, onGenderChange : (Int) -> Unit){
                 fontWeight = FontWeight.W400,
                 lineHeight = 18.sp)
         }
+    }
+}
+
+@Composable
+fun RegistrationButton(isFieldsFilled : Boolean){
+    val borderColor = if (isFieldsFilled) colorResource(R.color.dark_red) else colorResource(R.color.gray)
+    Button(
+        onClick = {/* TODO */},
+        enabled = isFieldsFilled,
+        colors = ButtonDefaults.buttonColors(
+            backgroundColor = colorResource(R.color.dark_red),
+            contentColor = colorResource(R.color.white),
+            disabledBackgroundColor = colorResource(R.color.black),
+            disabledContentColor = colorResource(R.color.dark_red)
+        ),
+        border = BorderStroke(1.dp, borderColor),
+        modifier = Modifier
+            .padding(16.dp, 24.dp, 16.dp, 4.dp)
+            .fillMaxWidth(),
+        shape = RoundedCornerShape(8.dp)
+    )
+    {
+        Text("Зарегистрироваться", fontSize = 16.sp)
     }
 }
