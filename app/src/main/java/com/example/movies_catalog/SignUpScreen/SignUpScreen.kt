@@ -39,20 +39,20 @@ import com.example.movies_catalog.SignUpScreen.SignUpViewModel
 fun SignUpScreen(){
     val signUpViewModel: SignUpViewModel = viewModel()
 
-    val signUpLogin : String by signUpViewModel.login.observeAsState("")
+    val signUpLogin: String by remember { signUpViewModel.login }
 
-    val signUpEmail : String by signUpViewModel.email.observeAsState("")
-    val isEmailValid : Boolean by signUpViewModel.isEmailValid.observeAsState(true)
+    val signUpEmail : String by remember { signUpViewModel.email }
+    val isEmailValid : Boolean by remember { signUpViewModel.isEmailValid }
 
-    val signUpName : String by signUpViewModel.name.observeAsState("")
+    val signUpName : String by remember { signUpViewModel.name }
 
-    val signUpPassword : String by signUpViewModel.password.observeAsState("")
-    val signUpRepeatedPassword : String by signUpViewModel.repeatedPassword.observeAsState("")
-    val isPasswordsEqual : Boolean by signUpViewModel.isPasswordsEqual.observeAsState(true)
+    val signUpPassword : String by remember { signUpViewModel.password }
+    val signUpRepeatedPassword : String by remember { signUpViewModel.repeatedPassword }
+    val isPasswordsEqual : Boolean by remember { signUpViewModel.isPasswordsEqual }
 
-    val signUpBirthdate : String by signUpViewModel.birthdate.observeAsState("")
-    val signUpGender : Int by signUpViewModel.gender.observeAsState(-1)
-    val isFieldsFilled : Boolean by signUpViewModel.isFieldsFilled.observeAsState(false)
+    val signUpBirthdate : String by remember { signUpViewModel.birthdate }
+    val signUpGender : Int by remember { signUpViewModel.gender }
+    val isFieldsFilled : Boolean by remember { signUpViewModel.isFieldsFilled }
 
     Box(modifier = Modifier.fillMaxSize()){
         Column(

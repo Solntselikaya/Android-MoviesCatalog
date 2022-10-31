@@ -26,9 +26,9 @@ import com.example.movies_catalog.SignInScreen.SignInViewModel
 fun SignInScreen(navController: NavController) {
     val signInViewModel: SignInViewModel = viewModel()
 
-    val signInLogin : String by signInViewModel.login.observeAsState("")
-    val signInPassword : String by signInViewModel.password.observeAsState("")
-    val isFieldsFilled : Boolean by signInViewModel.isFieldsFilled.observeAsState(false)
+    val signInLogin : String by remember { signInViewModel.login }
+    val signInPassword : String by remember { signInViewModel.password }
+    val isFieldsFilled : Boolean by remember { signInViewModel.isFieldsFilled }
 
     Box(modifier = Modifier.fillMaxSize()){
         Column(

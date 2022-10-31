@@ -5,22 +5,25 @@ import android.content.Context
 import android.icu.util.Calendar
 import android.util.Patterns
 import android.widget.DatePicker
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.State
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.movies_catalog.R
 
 class SignUpViewModel : ViewModel() {
-    private val _login = MutableLiveData("")
-    var login : LiveData<String> = _login
+    private val _login = mutableStateOf("")
+    var login : State<String> = _login
 
     fun onLoginChange(updatedLogin : String) {
         _login.value = updatedLogin
         isEmpty()
     }
 
-    private val _email = MutableLiveData("")
-    var email : LiveData<String> = _email
+    private val _email = mutableStateOf("")
+    var email : State<String> = _email
 
     fun onEmailChange(updatedEmail : String) {
         _email.value = updatedEmail
@@ -28,31 +31,31 @@ class SignUpViewModel : ViewModel() {
         isEmpty()
     }
 
-    private val _isEmailValid = MutableLiveData(true)
-    var isEmailValid : LiveData<Boolean> = _isEmailValid
+    private val _isEmailValid = mutableStateOf(true)
+    var isEmailValid : State<Boolean> = _isEmailValid
 
     private fun isEmailValid(){
         _isEmailValid.value = Patterns.EMAIL_ADDRESS.matcher(_email.value).matches()
     }
 
-    private val _name = MutableLiveData("")
-    var name : LiveData<String> = _name
+    private val _name = mutableStateOf("")
+    var name : State<String> = _name
 
     fun onNameChange(updatedName : String) {
         _name.value = updatedName
         isEmpty()
     }
 
-    private val _password = MutableLiveData("")
-    var password : LiveData<String> = _password
+    private val _password = mutableStateOf("")
+    var password : State<String> = _password
 
     fun onPasswordChange(updatedPassword : String) {
         _password.value = updatedPassword
         isEmpty()
     }
 
-    private val _repeatedPassword = MutableLiveData("")
-    var repeatedPassword : LiveData<String> = _repeatedPassword
+    private val _repeatedPassword = mutableStateOf("")
+    var repeatedPassword : State<String> = _repeatedPassword
 
     fun onRepeatedPasswordChange(updatedPassword : String) {
         _repeatedPassword.value = updatedPassword
@@ -60,15 +63,15 @@ class SignUpViewModel : ViewModel() {
         isEmpty()
     }
 
-    private val _isPasswordsEqual = MutableLiveData(true)
-    var isPasswordsEqual : LiveData<Boolean> = _isPasswordsEqual
+    private val _isPasswordsEqual = mutableStateOf(true)
+    var isPasswordsEqual : State<Boolean> = _isPasswordsEqual
 
     private fun IsPasswordsEqual(){
         _isPasswordsEqual.value = _password.value == _repeatedPassword.value
     }
 
-    private val _birthdate = MutableLiveData("")
-    var birthdate : LiveData<String> = _birthdate
+    private val _birthdate = mutableStateOf("")
+    var birthdate : State<String> = _birthdate
 
     fun onBirthdateChange(context : Context) {
         val mCalendar = Calendar.getInstance()
@@ -89,16 +92,16 @@ class SignUpViewModel : ViewModel() {
         isEmpty()
     }
 
-    private val _gender = MutableLiveData(-1)
-    var gender : LiveData<Int> = _gender
+    private val _gender = mutableStateOf(-1)
+    var gender : State<Int> = _gender
 
     fun onGenderChange(updatedGender : Int){
         _gender.value = updatedGender
         isEmpty()
     }
 
-    private val _isFieldsFilled = MutableLiveData(false)
-    var isFieldsFilled : LiveData<Boolean> = _isFieldsFilled
+    private val _isFieldsFilled = mutableStateOf(false)
+    var isFieldsFilled : State<Boolean> = _isFieldsFilled
 
     private fun isEmpty() {
         val login = _login.value
