@@ -23,7 +23,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.movies_catalog.SignUpScreen.SignUpViewModel
+import com.example.movies_catalog.signUpScreen.SignUpViewModel
 
 @Composable
 fun SignUpScreen(){

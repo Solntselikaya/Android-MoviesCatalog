@@ -1,4 +1,4 @@
-package com.example.movies_catalog.Network.Auth
+package com.example.movies_catalog.network.auth
 
 @kotlinx.serialization.Serializable
 data class RegisterRequestBody(

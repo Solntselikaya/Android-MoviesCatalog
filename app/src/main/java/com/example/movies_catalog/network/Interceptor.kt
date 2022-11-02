@@ -1,4 +1,4 @@
-package com.example.movies_catalog.Network
+package com.example.movies_catalog.network
 
 import okhttp3.Interceptor
 import okhttp3.Request

@@ -1,4 +1,4 @@
-package com.example.movies_catalog.SignUpScreen
+package com.example.movies_catalog.signUpScreen
 
 import android.app.DatePickerDialog
 import android.content.Context
@@ -9,8 +9,8 @@ import android.widget.DatePicker
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
-import com.example.movies_catalog.Network.Auth.AuthRepository
-import com.example.movies_catalog.Network.Auth.RegisterRequestBody
+import com.example.movies_catalog.network.auth.AuthRepository
+import com.example.movies_catalog.network.auth.RegisterRequestBody
 import com.example.movies_catalog.R
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
