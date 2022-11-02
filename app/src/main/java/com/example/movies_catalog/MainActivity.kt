@@ -19,6 +19,7 @@ class MainActivity : ComponentActivity() {
     }
 }
 
+// пересмотреть лекцию, навигацию нужно поменять кажется..
 @Composable
 fun Main(){
     val navController = rememberNavController()
