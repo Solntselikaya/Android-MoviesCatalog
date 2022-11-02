@@ -2,16 +2,19 @@ package com.example.movies_catalog.SignUpScreen
 
 import android.app.DatePickerDialog
 import android.content.Context
+import android.icu.text.SimpleDateFormat
 import android.icu.util.Calendar
 import android.util.Patterns
 import android.widget.DatePicker
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.example.movies_catalog.Network.Auth.AuthRepository
+import com.example.movies_catalog.Network.Auth.RegisterRequestBody
 import com.example.movies_catalog.R
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 class SignUpViewModel : ViewModel() {
     private val _login = mutableStateOf("")
@@ -75,6 +78,7 @@ class SignUpViewModel : ViewModel() {
 
     fun onBirthdateChange(context : Context) {
         val mCalendar = Calendar.getInstance()
+        val month_date = SimpleDateFormat("MM")
         val mYear = mCalendar.get(Calendar.YEAR)
         val mMonth = mCalendar.get(Calendar.MONTH)
         val mDay = mCalendar.get(Calendar.DAY_OF_MONTH)
@@ -122,5 +126,31 @@ class SignUpViewModel : ViewModel() {
                                 (isPasswordsEqual == true) &&
                                 !birthdate.isNullOrEmpty() &&
                                 (gender != -1)
+    }
+
+    /*
+    private fun refactorData(): String {
+        var list = _birthdate.value.split(".")
+
+        return "${list[2]}-${list[1]}-${list[0]}"
+    }
+     */
+
+    fun register() {
+        val repository = AuthRepository()
+
+        CoroutineScope(Dispatchers.IO).launch {
+            repository.register(
+                RegisterRequestBody(
+                userName = _login.value,
+                name = _name.value,
+                password = _password.value,
+                email = _email.value,
+                birthDate = "2022-11-02T12:03:28.291Z",
+                gender = _gender.value)
+            ).collect { token ->
+                    val a = token
+                }
+        }
     }
 }
