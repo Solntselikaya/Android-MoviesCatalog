@@ -71,7 +71,7 @@ fun SignUpScreen(navController: NavController){
             SignUpRepeatedPasswordField(repeatedPassword = signUpRepeatedPassword, isValid = isPasswordsEqual) { signUpViewModel.onRepeatedPasswordChange(it) }
             SignUpBirthdateField(birthdate = signUpBirthdate) { signUpViewModel.onBirthdateChange(it) }
             GenderSelect(gender = signUpGender) { signUpViewModel.onGenderChange(it) }
-            RegistrationButton(isFieldsFilled, navController)
+            RegistrationButton(isFieldsFilled, navController) {signUpViewModel.register()}
             Button(
                 onClick = { navController.navigate("sign_in_screen") },
                 colors = ButtonDefaults.buttonColors(
@@ -190,6 +190,7 @@ fun SignUpNameField(name : String, onNameChange : (String) -> Unit){
     )
 }
 
+//добавить проверку, что пароль не менее 8 символов
 @Composable
 fun SignUpPasswordField(password : String, onPasswordChange : (String) -> Unit){
     OutlinedTextField(
@@ -351,10 +352,10 @@ fun GenderSelect(gender : Int, onGenderChange : (Int) -> Unit){
 }
 
 @Composable
-fun RegistrationButton(isFieldsFilled : Boolean, navController: NavController){
+fun RegistrationButton(isFieldsFilled : Boolean, register: () -> Unit){
     val borderColor = if (isFieldsFilled) colorResource(R.color.dark_red) else colorResource(R.color.gray)
     Button(
-        onClick = { navController.navigate("main_screen") },
+        onClick = { register() },
         enabled = isFieldsFilled,
         colors = ButtonDefaults.buttonColors(
             backgroundColor = colorResource(R.color.dark_red),
