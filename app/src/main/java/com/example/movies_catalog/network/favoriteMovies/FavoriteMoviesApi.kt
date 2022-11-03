@@ -12,7 +12,7 @@ interface FavoriteMoviesApi {
     suspend fun getFavorites(): MoviesList
 
     @POST("api/favorites/{id}/add")
-    suspend fun postFavorites(@Path("id") id: String): TokenResponse
+    suspend fun addFavorites(@Path("id") id: String): TokenResponse
 
     @DELETE("api/favorites/{id}/delete")
     suspend fun deleteFavorites(@Path("id") id: String): TokenResponse

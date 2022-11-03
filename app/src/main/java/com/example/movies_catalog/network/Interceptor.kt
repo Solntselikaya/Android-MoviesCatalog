@@ -8,10 +8,10 @@ class Interceptor: Interceptor {
     override fun intercept(chain: Interceptor.Chain): Response {
 
         val request: Request = chain.request().newBuilder().apply {
+            addHeader("Accept", "application/json")
+            addHeader("Content-Type", "application/json")
             Network.token?.let {
-                addHeader("accept", "application/json")
-                addHeader("content-Type", "application/x-www-form-urlencoded")
-                addHeader("Access-Token", "Bearer: ${it.token}")
+                addHeader("Access-Token", "Bearer ${it.token}")
             }
         }.build()
 

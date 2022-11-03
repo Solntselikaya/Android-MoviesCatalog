@@ -9,6 +9,7 @@ import android.widget.DatePicker
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.example.movies_catalog.network.auth.AuthRepository
 import com.example.movies_catalog.network.auth.RegisterRequestBody
 import com.example.movies_catalog.R
@@ -139,7 +140,8 @@ class SignUpViewModel : ViewModel() {
     fun register() {
         val repository = AuthRepository()
 
-        CoroutineScope(Dispatchers.IO).launch {
+        //ретрофит умный и сам из нужного диспатчера исполняет
+        viewModelScope.launch {
             repository.register(
                 RegisterRequestBody(
                 userName = _login.value,

@@ -1,6 +1,7 @@
 package com.example.movies_catalog.network.favoriteMovies
 
 import com.example.movies_catalog.network.Network
+import com.example.movies_catalog.network.TokenResponse
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
