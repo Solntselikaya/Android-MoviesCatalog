@@ -7,15 +7,12 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.runtime.*
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
-import androidx.compose.ui.text.input.TextFieldValue
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -57,9 +54,9 @@ fun SignInScreen(navController: NavController) {
                 .align(Alignment.BottomCenter),
             horizontalAlignment = Alignment.CenterHorizontally
         ){
-            EntryButton(isFieldsFilled)
+            EntryButton(isFieldsFilled, navController)
             Button(
-                onClick = {navController.navigate("signUp")},
+                onClick = { navController.navigate("sign_up_screen") },
                 colors = ButtonDefaults.buttonColors(
                     backgroundColor = colorResource(R.color.black),
                     contentColor = colorResource(R.color.dark_red)
@@ -126,10 +123,10 @@ fun SignInPasswordField(password: String, onPasswordChange: (String) -> Unit) {
 }
 
 @Composable
-fun EntryButton(isFieldsFilled: Boolean) {
+fun EntryButton(isFieldsFilled: Boolean, navController: NavController) {
     val borderColor = if (isFieldsFilled) colorResource(R.color.dark_red) else colorResource(R.color.gray)
     Button(
-        onClick = {/* TODO */ },
+        onClick = { navController.navigate("main_screen") },
         enabled = isFieldsFilled,
         colors = ButtonDefaults.buttonColors(
             backgroundColor = colorResource(R.color.dark_red),

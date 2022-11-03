@@ -8,19 +8,19 @@ import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.movies_catalog.mainScreen.MainScreen
+import com.example.movies_catalog.nav.Navigation
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         installSplashScreen()
         super.onCreate(savedInstanceState)
         setContent{
-            //Main()
-            MainScreen()
+            Navigation()
         }
     }
 }
 
+/*
 // пересмотреть лекцию, навигацию нужно поменять кажется..
 @Composable
 fun Main(){
@@ -29,4 +29,4 @@ fun Main(){
         composable("signIn") { SignInScreen(navController) }
         composable("signUp") { SignUpScreen() }
     }
-}
+} */
