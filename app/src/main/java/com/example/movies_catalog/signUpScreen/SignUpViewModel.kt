@@ -1,8 +1,9 @@
 package com.example.movies_catalog.signUpScreen
 
+import android.annotation.SuppressLint
 import android.app.DatePickerDialog
 import android.content.Context
-import android.icu.text.SimpleDateFormat
+import android.icu.text.DecimalFormat
 import android.icu.util.Calendar
 import android.util.Patterns
 import android.widget.DatePicker
@@ -10,12 +11,11 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.movies_catalog.network.auth.AuthRepository
-import com.example.movies_catalog.network.auth.RegisterRequestBody
 import com.example.movies_catalog.R
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
+import com.example.movies_catalog.network.auth.AuthRepository
+import com.example.movies_catalog.network.auth.UserRegister
 import kotlinx.coroutines.launch
+import okhttp3.internal.format
 
 class SignUpViewModel : ViewModel() {
     private val _login = mutableStateOf("")
@@ -77,12 +77,17 @@ class SignUpViewModel : ViewModel() {
     private val _birthdate = mutableStateOf("")
     var birthdate : State<String> = _birthdate
 
+
+    private var requestData = ""
+    @SuppressLint("SimpleDateFormat")
     fun onBirthdateChange(context : Context) {
         val mCalendar = Calendar.getInstance()
-        val month_date = SimpleDateFormat("MM")
+
         val mYear = mCalendar.get(Calendar.YEAR)
         val mMonth = mCalendar.get(Calendar.MONTH)
         val mDay = mCalendar.get(Calendar.DAY_OF_MONTH)
+
+        val mFormat = DecimalFormat("00")
 
         // TODO : попробовать сделать так, чтобы изначальные дд.мм.гггг были на календарике относительно прошлого выбора пользователя
         val mDatePickerDialog = DatePickerDialog(
@@ -90,6 +95,10 @@ class SignUpViewModel : ViewModel() {
             R.style.MyDatePickerDialogTheme,
             { _: DatePicker, mYear: Int, mMonth: Int, mDayOfMonth: Int ->
                 _birthdate.value = "$mDayOfMonth.${mMonth+1}.$mYear"
+
+                val month = mFormat.format(mMonth+1)
+                val day = mFormat.format(mDayOfMonth)
+                requestData = "${mYear}-$month-$day"
             }, mYear, mMonth, mDay
         )
 
@@ -129,26 +138,18 @@ class SignUpViewModel : ViewModel() {
                                 (gender != -1)
     }
 
-    /*
-    private fun refactorData(): String {
-        var list = _birthdate.value.split(".")
-
-        return "${list[2]}-${list[1]}-${list[0]}"
-    }
-     */
-
     fun register() {
         val repository = AuthRepository()
 
         //ретрофит умный и сам из нужного диспатчера исполняет
         viewModelScope.launch {
             repository.register(
-                RegisterRequestBody(
+                UserRegister(
                 userName = _login.value,
                 name = _name.value,
                 password = _password.value,
                 email = _email.value,
-                birthDate = "2022-11-02T12:03:28.291Z",
+                birthDate = requestData,
                 gender = _gender.value)
             ).collect { token ->
                     val a = token

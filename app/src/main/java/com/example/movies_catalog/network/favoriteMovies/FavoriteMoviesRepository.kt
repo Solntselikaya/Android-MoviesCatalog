@@ -15,4 +15,16 @@ class FavoriteMoviesRepository {
         Network.favoriteMovies = moviesData
         emit(moviesData)
     }.flowOn(Dispatchers.IO)
+
+    fun addFavorites(body: String): Flow<TokenResponse> = flow{
+        val tokenData = api.addFavorites(body)
+        Network.token = tokenData
+        emit(tokenData)
+    }.flowOn(Dispatchers.IO)
+
+    fun deleteFavorites(body: String): Flow<TokenResponse> = flow{
+        val tokenData = api.deleteFavorites(body)
+        Network.token = tokenData
+        emit(tokenData)
+    }.flowOn(Dispatchers.IO)
 }

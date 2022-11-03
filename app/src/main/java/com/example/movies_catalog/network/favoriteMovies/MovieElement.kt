@@ -7,6 +7,6 @@ data class MovieElement (
     val poster: String,
     val year: Int,
     val country: String,
-    val genres: Array<Genre>,
-    val reviews: Array<ReviewShort>
+    val genres: List<Genre>,
+    val reviews: List<ReviewShort>
 )

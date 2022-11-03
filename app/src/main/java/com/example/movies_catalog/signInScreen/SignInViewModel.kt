@@ -3,10 +3,9 @@ package com.example.movies_catalog.signInScreen
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.example.movies_catalog.network.auth.AuthRepository
-import com.example.movies_catalog.network.auth.LoginRequestBody
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
+import com.example.movies_catalog.network.auth.LoginCredentials
 import kotlinx.coroutines.launch
 
 class SignInViewModel: ViewModel() {
@@ -38,9 +37,9 @@ class SignInViewModel: ViewModel() {
     fun login() {
         val repository = AuthRepository()
 
-        CoroutineScope(Dispatchers.IO).launch {
+        viewModelScope.launch {
             repository.login(
-                LoginRequestBody(
+                LoginCredentials(
                     username = _login.value,
                     password = _password.value
                 )
