@@ -3,7 +3,7 @@ package com.example.movies_catalog.network
 import com.example.movies_catalog.network.auth.AuthApi
 import com.example.movies_catalog.network.favoriteMovies.FavoriteMoviesApi
 import com.example.movies_catalog.network.models.MoviesList
-import com.example.movies_catalog.network.movie.MoviesApi
+import com.example.movies_catalog.network.movies.MoviesApi
 import com.example.movies_catalog.network.models.MoviesPagedList
 import com.example.movies_catalog.network.models.TokenResponse
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory

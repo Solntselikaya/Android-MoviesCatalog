@@ -1,4 +1,4 @@
-package com.example.movies_catalog.network.movie
+package com.example.movies_catalog.network.movies
 
 import com.example.movies_catalog.network.models.MoviesDetails
 import com.example.movies_catalog.network.models.MoviesPagedList

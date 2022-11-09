@@ -17,6 +17,8 @@ import com.example.movies_catalog.nav.Screens
 import com.example.movies_catalog.network.auth.AuthRepository
 import com.example.movies_catalog.network.auth.LoginCredentials
 import com.example.movies_catalog.network.auth.UserRegister
+import com.example.movies_catalog.network.favoriteMovies.FavoriteMoviesRepository
+import com.example.movies_catalog.network.movies.MoviesRepository
 import kotlinx.coroutines.launch
 
 class SignUpViewModel : ViewModel() {
@@ -142,6 +144,8 @@ class SignUpViewModel : ViewModel() {
 
     fun register(navController: NavController) {
         val repository = AuthRepository()
+        val favoriteMoviesRepository = FavoriteMoviesRepository()
+        val moviesRepository = MoviesRepository()
 
         //ретрофит умный и сам из нужного диспатчера исполняет
         viewModelScope.launch {
@@ -161,6 +165,9 @@ class SignUpViewModel : ViewModel() {
                     password = _password.value
                 )
             ).collect {}
+
+            favoriteMoviesRepository.getFavorites().collect {}
+            moviesRepository.getMovies(1).collect {}
         }
         navController.navigate(Screens.NavBarScreen.route)
     }
