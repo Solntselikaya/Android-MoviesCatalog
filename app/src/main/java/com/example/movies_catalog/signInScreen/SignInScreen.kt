@@ -54,7 +54,7 @@ fun SignInScreen(navController: NavController) {
                 .align(Alignment.BottomCenter),
             horizontalAlignment = Alignment.CenterHorizontally
         ){
-            EntryButton(isFieldsFilled) { signInViewModel.login() }
+            EntryButton(isFieldsFilled) { signInViewModel.login(navController) }
             Button(
                 onClick = { navController.navigate("sign_up_screen") },
                 colors = ButtonDefaults.buttonColors(

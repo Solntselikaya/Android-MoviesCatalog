@@ -4,6 +4,8 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.navigation.NavController
+import com.example.movies_catalog.nav.Screens
 import com.example.movies_catalog.network.auth.AuthRepository
 import com.example.movies_catalog.network.auth.LoginCredentials
 import kotlinx.coroutines.launch
@@ -34,7 +36,7 @@ class SignInViewModel: ViewModel() {
         _isFieldsFilled.value = !login.isNullOrEmpty() && !password.isNullOrEmpty()
     }
 
-    fun login() {
+    fun login(navController: NavController) {
         val repository = AuthRepository()
 
         viewModelScope.launch {
@@ -47,5 +49,7 @@ class SignInViewModel: ViewModel() {
                 val a = token
             }
         }
+
+        navController.navigate(Screens.NavBarScreen.route)
     }
 }

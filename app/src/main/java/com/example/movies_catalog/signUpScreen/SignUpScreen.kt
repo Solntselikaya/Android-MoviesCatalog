@@ -24,7 +24,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import com.example.movies_catalog.SignUpScreen.SignUpViewModel
+import androidx.navigation.compose.rememberNavController
+import com.example.movies_catalog.nav.navBar.BottomNavBarNavigation
+import com.example.movies_catalog.signUpScreen.SignUpViewModel
 
 @Composable
 fun SignUpScreen(navController: NavController){
@@ -71,7 +73,7 @@ fun SignUpScreen(navController: NavController){
             SignUpRepeatedPasswordField(repeatedPassword = signUpRepeatedPassword, isValid = isPasswordsEqual) { signUpViewModel.onRepeatedPasswordChange(it) }
             SignUpBirthdateField(birthdate = signUpBirthdate) { signUpViewModel.onBirthdateChange(it) }
             GenderSelect(gender = signUpGender) { signUpViewModel.onGenderChange(it) }
-            RegistrationButton(isFieldsFilled, navController) {signUpViewModel.register()}
+            RegistrationButton(isFieldsFilled) {signUpViewModel.register(navController)}
             Button(
                 onClick = { navController.navigate("sign_in_screen") },
                 colors = ButtonDefaults.buttonColors(
@@ -353,6 +355,7 @@ fun GenderSelect(gender : Int, onGenderChange : (Int) -> Unit){
 
 @Composable
 fun RegistrationButton(isFieldsFilled : Boolean, register: () -> Unit){
+
     val borderColor = if (isFieldsFilled) colorResource(R.color.dark_red) else colorResource(R.color.gray)
     Button(
         onClick = { register() },

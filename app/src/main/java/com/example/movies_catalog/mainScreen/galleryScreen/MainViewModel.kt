@@ -1,4 +1,4 @@
-package com.example.movies_catalog.mainScreen
+package com.example.movies_catalog.mainScreen.galleryScreen
 
 import androidx.lifecycle.ViewModel
 

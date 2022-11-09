@@ -1,43 +1,48 @@
 package com.example.movies_catalog.mainScreen
 
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.material.BottomNavigation
-import androidx.compose.material.BottomNavigationItem
-import androidx.compose.material.Icon
-import androidx.compose.material.Text
+import androidx.compose.foundation.layout.*
+import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color.Companion.Black
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
-import com.example.movies_catalog.ui.theme.*
+import androidx.navigation.compose.rememberNavController
+import com.example.movies_catalog.nav.navBar.BottomNavBarNavigation
+import com.example.movies_catalog.nav.BottomNavItem
+import com.example.movies_catalog.ui.theme.DarkRed
+import com.example.movies_catalog.ui.theme.Gray
+import com.example.movies_catalog.ui.theme.MostlyBlack
 
+@Preview(showBackground = true)
 @Composable
-fun MainScreen(navController: NavController) {
-    Box(modifier = Modifier.fillMaxSize()){
-        Column(modifier = Modifier
-            .fillMaxWidth()
-            .align(Alignment.TopCenter),
-            horizontalAlignment = Alignment.CenterHorizontally){
+fun NavBarScreen() {
 
-        }
-        Box(modifier = Modifier.align(Alignment.BottomCenter)){
-            BottomNavigationBar(navController)
-        }
-    }
+    val navController = rememberNavController()
+
+    Scaffold(
+        topBar = {},
+        bottomBar = { BottomNavBar(navController) },
+        content = { padding ->
+            Box(modifier = Modifier.padding(padding)) {
+                BottomNavBarNavigation(navController = navController)
+            }
+        },
+        backgroundColor = Black
+    )
 }
 
 @Composable
-fun BottomNavigationBar(navController: NavController) {
+fun BottomNavBar(navController: NavController) {
+
     val items = listOf(
-        NavigationItem.Main,
-        NavigationItem.Profile
+        BottomNavItem.Main,
+        BottomNavItem.Profile
     )
+
     BottomNavigation(
         backgroundColor = MostlyBlack,
         contentColor = Gray
@@ -54,18 +59,12 @@ fun BottomNavigationBar(navController: NavController) {
                 selected = currentRoute == item.route,
                 onClick = {
                     navController.navigate(item.route) {
-                        // Pop up to the start destination of the graph to
-                        // avoid building up a large stack of destinations
-                        // on the back stack as users select items
                         navController.graph.startDestinationRoute?.let { route ->
                             popUpTo(route) {
                                 saveState = true
                             }
                         }
-                        // Avoid multiple copies of the same destination when
-                        // reselecting the same item
                         launchSingleTop = true
-                        // Restore state when reselecting a previously selected item
                         restoreState = true
                     }
                 }

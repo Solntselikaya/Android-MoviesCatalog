@@ -11,11 +11,13 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.navigation.NavController
 import com.example.movies_catalog.R
+import com.example.movies_catalog.nav.Screens
 import com.example.movies_catalog.network.auth.AuthRepository
+import com.example.movies_catalog.network.auth.LoginCredentials
 import com.example.movies_catalog.network.auth.UserRegister
 import kotlinx.coroutines.launch
-import okhttp3.internal.format
 
 class SignUpViewModel : ViewModel() {
     private val _login = mutableStateOf("")
@@ -138,7 +140,7 @@ class SignUpViewModel : ViewModel() {
                                 (gender != -1)
     }
 
-    fun register() {
+    fun register(navController: NavController) {
         val repository = AuthRepository()
 
         //ретрофит умный и сам из нужного диспатчера исполняет
@@ -151,9 +153,15 @@ class SignUpViewModel : ViewModel() {
                 email = _email.value,
                 birthDate = requestData,
                 gender = _gender.value)
-            ).collect { token ->
-                    val a = token
-                }
+            ).collect {}
+
+            repository.login(
+                LoginCredentials(
+                    username = _login.value,
+                    password = _password.value
+                )
+            ).collect {}
         }
+        navController.navigate(Screens.NavBarScreen.route)
     }
 }
