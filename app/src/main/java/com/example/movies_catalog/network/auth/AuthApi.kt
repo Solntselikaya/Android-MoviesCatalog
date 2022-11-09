@@ -1,6 +1,6 @@
 package com.example.movies_catalog.network.auth
 
-import com.example.movies_catalog.network.TokenResponse
+import com.example.movies_catalog.network.models.TokenResponse
 import retrofit2.http.Body
 import retrofit2.http.POST
 

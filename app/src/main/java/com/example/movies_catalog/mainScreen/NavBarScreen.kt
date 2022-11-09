@@ -17,7 +17,6 @@ import com.example.movies_catalog.ui.theme.DarkRed
 import com.example.movies_catalog.ui.theme.Gray
 import com.example.movies_catalog.ui.theme.MostlyBlack
 
-@Preview(showBackground = true)
 @Composable
 fun NavBarScreen() {
 

@@ -2,7 +2,10 @@ package com.example.movies_catalog.network
 
 import com.example.movies_catalog.network.auth.AuthApi
 import com.example.movies_catalog.network.favoriteMovies.FavoriteMoviesApi
-import com.example.movies_catalog.network.favoriteMovies.MoviesList
+import com.example.movies_catalog.network.models.MoviesList
+import com.example.movies_catalog.network.movie.MoviesApi
+import com.example.movies_catalog.network.models.MoviesPagedList
+import com.example.movies_catalog.network.models.TokenResponse
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.json.Json
@@ -54,7 +57,9 @@ object Network {
 
     var token: TokenResponse? = null
     var favoriteMovies: MoviesList? = null
+    var movies: MoviesPagedList? = null
 
     fun getAuthApi(): AuthApi = retrofit.create(AuthApi::class.java)
     fun getFavoriteMoviesApi(): FavoriteMoviesApi = retrofit.create(FavoriteMoviesApi::class.java)
+    fun getMoviesApi(): MoviesApi = retrofit.create(MoviesApi::class.java)
 }
