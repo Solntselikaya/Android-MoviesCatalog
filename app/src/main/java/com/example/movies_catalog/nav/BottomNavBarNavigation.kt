@@ -4,7 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import com.example.movies_catalog.mainScreen.MainScreen
+import com.example.movies_catalog.mainScreen.galleryScreen.MainScreen
 import com.example.movies_catalog.mainScreen.ProfileScreen
 import com.example.movies_catalog.nav.BottomNavItem
 

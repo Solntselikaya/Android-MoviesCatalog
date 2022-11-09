@@ -5,7 +5,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
-import com.example.movies_catalog.mainScreen.FavoriteMovieCard
 import com.example.movies_catalog.nav.Screens
 import com.example.movies_catalog.network.auth.AuthRepository
 import com.example.movies_catalog.network.auth.LoginCredentials
@@ -41,7 +40,7 @@ class SignInViewModel: ViewModel() {
 
     fun login(navController: NavController) {
         val authRepository = AuthRepository()
-        val favoriteMoviesRepository = FavoriteMoviesRepository()
+        //val favoriteMoviesRepository = FavoriteMoviesRepository()
         val moviesRepository = MoviesRepository()
 
         viewModelScope.launch {
@@ -54,10 +53,12 @@ class SignInViewModel: ViewModel() {
                 val a = token
             }
 
-            favoriteMoviesRepository.getFavorites().collect {}
+            //favoriteMoviesRepository.getFavorites().collect {}
             moviesRepository.getMovies(1).collect {}
+
+            navController.navigate(Screens.NavBarScreen.route)
         }
 
-        navController.navigate(Screens.NavBarScreen.route)
+
     }
 }

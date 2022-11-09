@@ -144,7 +144,7 @@ class SignUpViewModel : ViewModel() {
 
     fun register(navController: NavController) {
         val repository = AuthRepository()
-        val favoriteMoviesRepository = FavoriteMoviesRepository()
+        //val favoriteMoviesRepository = FavoriteMoviesRepository()
         val moviesRepository = MoviesRepository()
 
         //ретрофит умный и сам из нужного диспатчера исполняет
@@ -166,7 +166,7 @@ class SignUpViewModel : ViewModel() {
                 )
             ).collect {}
 
-            favoriteMoviesRepository.getFavorites().collect {}
+            //favoriteMoviesRepository.getFavorites().collect {}
             moviesRepository.getMovies(1).collect {}
         }
         navController.navigate(Screens.NavBarScreen.route)

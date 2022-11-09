@@ -1,4 +1,4 @@
-package com.example.movies_catalog.mainScreen
+package com.example.movies_catalog.mainScreen.galleryScreen
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -9,26 +9,32 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.material.Card
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.rememberAsyncImagePainter
-import com.example.movies_catalog.R
-import com.example.movies_catalog.mainScreen.galleryScreen.MainViewModel
+import com.example.movies_catalog.ui.theme.Black
 import com.example.movies_catalog.ui.theme.DarkRed
+import com.example.movies_catalog.ui.theme.Gray
+import com.example.movies_catalog.ui.theme.White
 
 @Preview(showBackground = true)
 @Composable
 fun MainScreen() {
     val mainViewModel: MainViewModel = viewModel()
 
+    mainViewModel.resizeMoviesList()
+
+    val moviesListSize : Int by remember { mainViewModel.moviesListSize }
+    val favListSize : Int by remember { mainViewModel.favListSize }
 
     Column(modifier = Modifier.fillMaxSize()){
         Box(modifier = Modifier.wrapContentSize()){}
@@ -67,7 +73,17 @@ fun MainScreen() {
                         .padding(0.dp, 0.dp, 0.dp, 8.dp)
                 )
             }
-            //add items later
+            items(moviesListSize) { index ->
+                mainViewModel.getGenresString(index)
+                val genres = mainViewModel.genres
+                MovieCard(
+                    title = mainViewModel.movies!!.movies[index].name,
+                    year = mainViewModel.movies.movies[index].year,
+                    country = mainViewModel.movies.movies[index].country,
+                    image = mainViewModel.movies.movies[index].poster,
+                    genres = genres
+                )
+            }
         }
     }
 }
@@ -86,34 +102,57 @@ fun FavoriteMovieCard(image: String){
     }
 }
 
+//тут есть странный отступ между началом карточки и картинкой
 @Composable
-fun MovieCards(title: String, year: Int, country: String, image: String) {
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(160.dp),
-        contentAlignment = Alignment.Center
+fun MovieCard(title: String, year: Int, country: String, image: String, genres: String) {
+    Card(
+        Modifier
+            .wrapContentSize()
+            .padding(0.dp, 8.dp)
+            .clickable { },
+        backgroundColor = Black
     ) {
-        Card(
+        Row(
             Modifier
                 .fillMaxWidth()
-                .height(144.dp)
-                .clickable { },
-            backgroundColor = colorResource(R.color.white),
         ) {
-            Row(
+            Image(
+                painter = rememberAsyncImagePainter(image),
+                contentDescription = "Movie's Poster",
                 modifier = Modifier
-                    .matchParentSize()
-                    .background(color = colorResource(R.color.black))
+                    .height(144.dp)
+                    .weight(0.3f)
             )
-            {
-                Image(
-                    painter = rememberAsyncImagePainter(image),
-                    contentDescription = "Movie's Poster",
-                    contentScale = ContentScale.FillHeight,
-                    modifier = Modifier
-                        .fillMaxHeight()
-                        .weight(0.3f)
+            Column(
+                modifier = Modifier
+                    .wrapContentSize()
+                    .padding(16.dp, 0.dp, 0.dp, 0.dp)
+                    .weight(0.7f),
+                horizontalAlignment = Alignment.Start
+            ) {
+                Text(
+                    text = title,
+                    color = White,
+                    fontWeight = FontWeight.W700,
+                    fontSize = 20.sp,
+                    lineHeight = 24.sp
+                )
+                Spacer(modifier = Modifier.height(4.dp))
+                Text(
+                    text = "$year • $country",
+                    color = White,
+                    fontWeight = FontWeight.W700,
+                    fontSize = 14.sp,
+                    lineHeight = 18.sp
+                )
+                Spacer(modifier = Modifier.height(4.dp))
+                Text(
+                    text = genres,
+                    color = White,
+                    fontWeight = FontWeight.W700,
+                    fontSize = 14.sp,
+                    lineHeight = 18.sp,
+                    overflow = TextOverflow.Visible
                 )
             }
         }
