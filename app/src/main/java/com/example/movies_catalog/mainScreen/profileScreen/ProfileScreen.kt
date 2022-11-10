@@ -120,6 +120,15 @@ fun Avatar(image: String, nick: String){
 
 @Composable
 fun ProfileEmailField(email : String, isValid : Boolean, onEmailChange : (String) -> Unit){
+    Text(
+        "E-mail",
+        color = Gray,
+        fontSize = 16.sp,
+        modifier = Modifier.padding(16.dp, 0.dp),
+        fontWeight = FontWeight.W500,
+        lineHeight = 20.sp,
+        textAlign = TextAlign.Left
+    )
     OutlinedTextField(
         value = email,
         onValueChange = onEmailChange,

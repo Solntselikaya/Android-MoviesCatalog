@@ -22,20 +22,6 @@ import java.util.*
 
 class ProfileViewModel: ViewModel() {
 
-    /*
-    init {
-        val userRepository = UserRepository()
-
-        viewModelScope.launch {
-            userRepository.getUserData().collect {
-                currEmail = it.email
-                currName = it.name
-
-            }
-        }
-    }
-    */
-
     val profile = Network.profile
 
     private val currEmail = profile!!.email
@@ -72,7 +58,7 @@ class ProfileViewModel: ViewModel() {
     private val _birthdate = mutableStateOf(currBirthdate)
     var birthdate : State<String> = _birthdate
 
-    private var requestDate = ""
+    private var requestDate = profile!!.birthDate.substringBefore("T")
     @SuppressLint("SimpleDateFormat")
     fun onBirthdateChange(context : Context) {
         val mCalendar = Calendar.getInstance()
@@ -109,6 +95,7 @@ class ProfileViewModel: ViewModel() {
 
     fun onUrlChange(newUrl : String) {
         _url.value = newUrl
+        isEmpty()
     }
 
     private var currGender: Int = profile!!.gender
@@ -118,12 +105,28 @@ class ProfileViewModel: ViewModel() {
 
     fun onGenderChange(updatedGender : Int){
         _gender.value = updatedGender
+        isEmpty()
     }
 
     private val _isFieldsFilled = mutableStateOf(false)
     var isFieldsFilled : State<Boolean> = _isFieldsFilled
 
+    var changed: Boolean = false
+    private fun isChanged() {
+
+        val emailNotChanged = (_email.value == currEmail)
+        val urlNotChanged = (_url.value == currUrl)
+        val nameNotChanged = (_name.value == currName)
+        val dateNotChanged = (_birthdate.value == currBirthdate)
+        val genderNotChanged = (_gender.value == currGender)
+
+        changed = !(emailNotChanged && urlNotChanged && nameNotChanged && dateNotChanged && genderNotChanged)
+
+    }
+
     private fun isEmpty() {
+        isChanged()
+
         val email = _email.value
         val isEmailValid = _isEmailValid.value
         val name = _name.value
@@ -132,7 +135,7 @@ class ProfileViewModel: ViewModel() {
                 email.isNotEmpty() &&
                 (isEmailValid) &&
                 name.isNotEmpty() &&
-                birthdate.isNotEmpty()
+                birthdate.isNotEmpty() && changed
     }
 
     fun save() {
