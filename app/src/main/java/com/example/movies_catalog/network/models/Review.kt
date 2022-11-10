@@ -4,7 +4,7 @@ package com.example.movies_catalog.network.models
 data class Review (
     val id: String,
     val rating: Int,
-    val reviewText: String,
+    val reviewText: String = "",
     val isAnonymous: Boolean,
     val createDateTime: String,
     val author: UserShort

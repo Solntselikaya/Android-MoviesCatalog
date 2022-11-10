@@ -7,18 +7,17 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color.Companion.Black
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.example.movies_catalog.nav.navBar.BottomNavBarNavigation
+import com.example.movies_catalog.nav.BottomNavBarNavigation
 import com.example.movies_catalog.nav.BottomNavItem
 import com.example.movies_catalog.ui.theme.DarkRed
 import com.example.movies_catalog.ui.theme.Gray
 import com.example.movies_catalog.ui.theme.MostlyBlack
 
 @Composable
-fun NavBarScreen() {
+fun NavBarScreen(logout: () -> Unit, movieDescription: () -> Unit) {
 
     val navController = rememberNavController()
 
@@ -27,7 +26,7 @@ fun NavBarScreen() {
         bottomBar = { BottomNavBar(navController) },
         content = { padding ->
             Box(modifier = Modifier.padding(padding)) {
-                BottomNavBarNavigation(navController = navController)
+                BottomNavBarNavigation(navController = navController, { logout() }, {movieDescription})
             }
         },
         backgroundColor = Black
@@ -59,7 +58,8 @@ fun BottomNavBar(navController: NavController) {
                 onClick = {
                     navController.navigate(item.route) {
                         navController.graph.startDestinationRoute?.let { route ->
-                            popUpTo(route) {
+                            popUpTo("main") {
+                                inclusive = true
                                 saveState = true
                             }
                         }

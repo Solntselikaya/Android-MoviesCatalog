@@ -18,6 +18,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
@@ -32,7 +33,7 @@ import com.example.movies_catalog.ui.theme.Gray
 import com.example.movies_catalog.ui.theme.White
 
 @Composable
-fun ProfileScreen() {
+fun ProfileScreen(logout: () -> Unit) {
     val profileViewModel: ProfileViewModel = viewModel()
 
     val email: String by remember { profileViewModel.email }
@@ -62,13 +63,16 @@ fun ProfileScreen() {
         ProfileGenderSelect(gender) { profileViewModel.onGenderChange(it) }
         ProfileSaveButton(isFieldsFilled) { profileViewModel.save() }
         Button(
-            onClick = { /* navController.navigate("sign_in_screen") */ },
+            onClick = {
+                profileViewModel.logout()
+                logout()
+            },
             colors = ButtonDefaults.buttonColors(
                 backgroundColor = Black,
                 contentColor = DarkRed
             ),
             modifier = Modifier
-                .padding(16.dp, 8.dp, 16.dp, 16.dp)
+                .padding(16.dp, 4.dp, 16.dp, 16.dp)
                 .height(44.dp)
                 .fillMaxWidth())
         {
@@ -81,7 +85,7 @@ fun ProfileScreen() {
 fun Avatar(image: String, nick: String){
 
     val avatar: String =
-        if (image == "") { "https://s3-alpha-sig.figma.com/img/a92b/ba97/a13937d71ea4ab29b068a92fd325aa74?Expires=1668988800&Signature=PMOWOcFshz~iLSRZLvi6WE~CKCngLi7WpMoR44oMZEIROtNCJjaX3UxugCdLhzxYOX~iFsQ2YEt9GAe0yCLP0l8F4W7V-Ndc-3NFxenpkVmji5IweylmDYJ7ratNHIZ6NroftMSLiaPlglIssrOl0tg0NR~xPjrWKQLqOXLp9wFuoSvIm7IAcB4vNapJnOhMRF1Q9u1Da1h5H3Cl79Btg4WaB09aF7Yrf0IonCKszUYr189k6N7nDuQ5UgL7H9VeVtzkTNu1Y0SnjWYHONqOWHe8Q~3m3jo8eoAkX2OGYpm-QWKbJFGnqCbZkZoA~w3L8WVmSI4a6OHj8k-i16OStA__&Key-Pair-Id=APKAINTVSUGEWH5XD5UA" }
+        if (image == "") { stringResource(R.string.default_avatar) }
         else { image }
 
     Row(
@@ -355,8 +359,8 @@ fun ProfileSaveButton(isFieldsFilled : Boolean, save: () -> Unit){
         ),
         border = BorderStroke(1.dp, borderColor),
         modifier = Modifier
-            .padding(16.dp, 24.dp, 16.dp, 4.dp)
-            .fillMaxWidth(),
+            .fillMaxWidth()
+            .padding(16.dp, 32.dp, 16.dp, 4.dp),
         shape = RoundedCornerShape(8.dp)
     )
     {

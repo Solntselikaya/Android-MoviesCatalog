@@ -5,6 +5,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.movies_catalog.network.Network
+import com.example.movies_catalog.network.favoriteMovies.FavoriteMoviesRepository
 import com.example.movies_catalog.network.movies.MoviesRepository
 import kotlinx.coroutines.launch
 
@@ -25,11 +26,11 @@ class MainViewModel: ViewModel() {
     var favListSize : State<Int> = _favListSize
 
     suspend fun getMovies() {
-        //val favoriteMoviesRepository = FavoriteMoviesRepository()
+        val favoriteMoviesRepository = FavoriteMoviesRepository()
         val moviesRepository = MoviesRepository()
 
         viewModelScope.launch {
-            //favoriteMoviesRepository.getFavorites().collect {}
+            favoriteMoviesRepository.getFavorites().collect {}
             moviesRepository.getMovies(1).collect {}
         }
     }

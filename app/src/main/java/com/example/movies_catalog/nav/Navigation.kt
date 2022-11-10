@@ -1,12 +1,15 @@
 package com.example.movies_catalog.nav
 
 import androidx.compose.runtime.Composable
+import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.movies_catalog.SignInScreen
 import com.example.movies_catalog.SignUpScreen
 import com.example.movies_catalog.mainScreen.NavBarScreen
+import com.example.movies_catalog.mainScreen.galleryScreen.MainScreen
+import com.example.movies_catalog.mainScreen.profileScreen.ProfileScreen
 
 @Composable
 fun Navigation() {
@@ -24,7 +27,25 @@ fun Navigation() {
         }
 
         composable(route = Screens.NavBarScreen.route) {
-            NavBarScreen()
+            NavBarScreen ({ navController.navigate(Screens.SignInScreen.route) },
+            { navController.navigate(Screens.MovieScreen.route) })
+        }
+    }
+}
+
+@Composable
+fun BottomNavBarNavigation(navController: NavHostController, logout: () -> Unit, movieDescription: () -> Unit) {
+    NavHost(
+        navController = navController,
+        startDestination = BottomNavItem.Main.route
+    ){
+
+        composable(BottomNavItem.Main.route) {
+            MainScreen() { movieDescription() }
+        }
+
+        composable(BottomNavItem.Profile.route) {
+            ProfileScreen() { logout() }
         }
     }
 }

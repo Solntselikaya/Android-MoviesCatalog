@@ -30,9 +30,8 @@ import com.example.movies_catalog.ui.theme.Black
 import com.example.movies_catalog.ui.theme.DarkRed
 import com.example.movies_catalog.ui.theme.White
 
-@Preview(showBackground = true)
 @Composable
-fun MainScreen() {
+fun MainScreen(movieDescription: () -> Unit) {
 
     val mainViewModel: MainViewModel = viewModel()
 
@@ -47,7 +46,7 @@ fun MainScreen() {
             .background(Black)
     ){
         item {
-            FirstMovieCard(mainViewModel.movies!!.movies[0].poster, mainViewModel.movies!!.movies[0].name)
+            FirstMovieCard(mainViewModel.movies!!.movies[0].poster, mainViewModel.movies.movies[0].name)
         }
         item {
             if (favListSize != 0){

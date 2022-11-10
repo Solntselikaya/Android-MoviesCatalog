@@ -117,7 +117,7 @@ class ProfileViewModel: ViewModel() {
         val emailNotChanged = (_email.value == currEmail)
         val urlNotChanged = (_url.value == currUrl)
         val nameNotChanged = (_name.value == currName)
-        val dateNotChanged = (_birthdate.value == currBirthdate)
+        val dateNotChanged = (requestDate == currBirthdate)
         val genderNotChanged = (_gender.value == currGender)
 
         changed = !(emailNotChanged && urlNotChanged && nameNotChanged && dateNotChanged && genderNotChanged)
@@ -157,13 +157,12 @@ class ProfileViewModel: ViewModel() {
         }
     }
 
-    fun logout(navController: NavController) {
+    fun logout() {
+
         val authRepository = AuthRepository()
 
         viewModelScope.launch {
             authRepository.logout().collect {}
-
-            //navController.navigate(Screens.SignInScreen.route)
         }
     }
 }

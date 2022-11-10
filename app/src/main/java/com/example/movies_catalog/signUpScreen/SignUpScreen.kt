@@ -24,8 +24,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
-import com.example.movies_catalog.nav.navBar.BottomNavBarNavigation
 import com.example.movies_catalog.signUpScreen.SignUpViewModel
 
 @Composable
