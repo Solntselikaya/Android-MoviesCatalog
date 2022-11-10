@@ -11,7 +11,7 @@ class Interceptor: Interceptor {
             addHeader("Accept", "application/json")
             addHeader("Content-Type", "application/json")
             Network.token?.let {
-                addHeader("Access-Token", "Bearer ${it.token}")
+                addHeader("Authorization", "Bearer ${it.token}")
             }
         }.build()
 

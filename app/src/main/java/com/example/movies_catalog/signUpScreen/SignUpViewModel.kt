@@ -15,9 +15,11 @@ import androidx.navigation.NavController
 import com.example.movies_catalog.R
 import com.example.movies_catalog.nav.Screens
 import com.example.movies_catalog.network.auth.AuthRepository
+import com.example.movies_catalog.network.favoriteMovies.FavoriteMoviesRepository
 import com.example.movies_catalog.network.models.LoginCredentials
 import com.example.movies_catalog.network.models.UserRegister
 import com.example.movies_catalog.network.movies.MoviesRepository
+import com.example.movies_catalog.network.user.UserRepository
 import kotlinx.coroutines.launch
 
 class SignUpViewModel : ViewModel() {
@@ -143,8 +145,9 @@ class SignUpViewModel : ViewModel() {
 
     fun register(navController: NavController) {
         val repository = AuthRepository()
-        //val favoriteMoviesRepository = FavoriteMoviesRepository()
+        val favoriteMoviesRepository = FavoriteMoviesRepository()
         val moviesRepository = MoviesRepository()
+        val userRepository = UserRepository()
 
         //ретрофит умный и сам из нужного диспатчера исполняет
         viewModelScope.launch {
@@ -165,9 +168,11 @@ class SignUpViewModel : ViewModel() {
                 )
             ).collect {}
 
-            //favoriteMoviesRepository.getFavorites().collect {}
+            favoriteMoviesRepository.getFavorites().collect {}
             moviesRepository.getMovies(1).collect {}
+            userRepository.getUserData().collect {}
+
+            navController.navigate(Screens.NavBarScreen.route)
         }
-        navController.navigate(Screens.NavBarScreen.route)
     }
 }

@@ -7,8 +7,10 @@ import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
 import com.example.movies_catalog.nav.Screens
 import com.example.movies_catalog.network.auth.AuthRepository
+import com.example.movies_catalog.network.favoriteMovies.FavoriteMoviesRepository
 import com.example.movies_catalog.network.models.LoginCredentials
 import com.example.movies_catalog.network.movies.MoviesRepository
+import com.example.movies_catalog.network.user.UserRepository
 import kotlinx.coroutines.launch
 
 class SignInViewModel: ViewModel() {
@@ -39,8 +41,9 @@ class SignInViewModel: ViewModel() {
 
     fun login(navController: NavController) {
         val authRepository = AuthRepository()
-        //val favoriteMoviesRepository = FavoriteMoviesRepository()
+        val favoriteMoviesRepository = FavoriteMoviesRepository()
         val moviesRepository = MoviesRepository()
+        val userRepository = UserRepository()
 
         viewModelScope.launch {
             authRepository.login(
@@ -48,16 +51,13 @@ class SignInViewModel: ViewModel() {
                     username = _login.value,
                     password = _password.value
                 )
-            ).collect { token ->
-                val a = token
-            }
+            ).collect {}
 
-            //favoriteMoviesRepository.getFavorites().collect {}
+            favoriteMoviesRepository.getFavorites().collect {}
             moviesRepository.getMovies(1).collect {}
+            userRepository.getUserData().collect {}
 
             navController.navigate(Screens.NavBarScreen.route)
         }
-
-
     }
 }

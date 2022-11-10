@@ -22,7 +22,21 @@ import java.util.*
 
 class ProfileViewModel: ViewModel() {
 
-    private val profile = Network.profile
+    /*
+    init {
+        val userRepository = UserRepository()
+
+        viewModelScope.launch {
+            userRepository.getUserData().collect {
+                currEmail = it.email
+                currName = it.name
+
+            }
+        }
+    }
+    */
+
+    val profile = Network.profile
 
     private val currEmail = profile!!.email
 
