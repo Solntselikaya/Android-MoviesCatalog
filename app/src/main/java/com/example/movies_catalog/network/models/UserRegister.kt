@@ -1,4 +1,4 @@
-package com.example.movies_catalog.network.auth
+package com.example.movies_catalog.network.models
 
 @kotlinx.serialization.Serializable
 data class UserRegister(

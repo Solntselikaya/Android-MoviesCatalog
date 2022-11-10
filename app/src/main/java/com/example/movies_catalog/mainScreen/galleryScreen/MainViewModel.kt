@@ -4,11 +4,7 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.navigation.NavController
-import com.example.movies_catalog.nav.Screens
 import com.example.movies_catalog.network.Network
-import com.example.movies_catalog.network.auth.AuthRepository
-import com.example.movies_catalog.network.auth.LoginCredentials
 import com.example.movies_catalog.network.movies.MoviesRepository
 import kotlinx.coroutines.launch
 

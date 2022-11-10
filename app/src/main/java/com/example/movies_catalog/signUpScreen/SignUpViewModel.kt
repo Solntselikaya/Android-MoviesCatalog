@@ -15,9 +15,8 @@ import androidx.navigation.NavController
 import com.example.movies_catalog.R
 import com.example.movies_catalog.nav.Screens
 import com.example.movies_catalog.network.auth.AuthRepository
-import com.example.movies_catalog.network.auth.LoginCredentials
-import com.example.movies_catalog.network.auth.UserRegister
-import com.example.movies_catalog.network.favoriteMovies.FavoriteMoviesRepository
+import com.example.movies_catalog.network.models.LoginCredentials
+import com.example.movies_catalog.network.models.UserRegister
 import com.example.movies_catalog.network.movies.MoviesRepository
 import kotlinx.coroutines.launch
 

@@ -1,7 +1,9 @@
 package com.example.movies_catalog.network.auth
 
 import com.example.movies_catalog.network.Network
+import com.example.movies_catalog.network.models.LoginCredentials
 import com.example.movies_catalog.network.models.TokenResponse
+import com.example.movies_catalog.network.models.UserRegister
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
