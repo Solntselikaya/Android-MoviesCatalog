@@ -11,6 +11,7 @@ import com.example.movies_catalog.network.favoriteMovies.FavoriteMoviesRepositor
 import com.example.movies_catalog.network.models.LoginCredentials
 import com.example.movies_catalog.network.movies.MoviesRepository
 import com.example.movies_catalog.network.user.UserRepository
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.launch
 
 class SignInViewModel: ViewModel() {
@@ -27,7 +28,15 @@ class SignInViewModel: ViewModel() {
 
     fun onPasswordChange(updatedPassword : String) {
         _password.value = updatedPassword
+        isPasswordValid()
         isEmpty()
+    }
+
+    private val _isPasswordValid = mutableStateOf(true)
+    var isPasswordValid : State<Boolean> = _isPasswordValid
+
+    private fun isPasswordValid(){
+        _isPasswordValid.value = _password.value.length >= 8
     }
 
     private val _isFieldsFilled = mutableStateOf(false)
@@ -36,7 +45,15 @@ class SignInViewModel: ViewModel() {
     private fun isEmpty() {
         val login = _login.value
         val password = _password.value
-        _isFieldsFilled.value = !login.isNullOrEmpty() && !password.isNullOrEmpty()
+        val isPasswordValid = _isPasswordValid.value
+        _isFieldsFilled.value = !login.isNullOrEmpty() && !password.isNullOrEmpty() && (isPasswordValid)
+    }
+
+    private val _hasErrors = mutableStateOf(false)
+    var hasErrors : State<Boolean> = _hasErrors
+
+    fun hasErrors() {
+        _hasErrors.value = false
     }
 
     fun login(navController: NavController) {
@@ -51,13 +68,17 @@ class SignInViewModel: ViewModel() {
                     username = _login.value,
                     password = _password.value
                 )
-            ).collect {}
+            ).catch {
+                _hasErrors.value = true
+            }.collect {}
 
-            favoriteMoviesRepository.getFavorites().collect {}
-            moviesRepository.getMovies(1).collect {}
-            userRepository.getUserData().collect {}
+            if (!_hasErrors.value) {
+                favoriteMoviesRepository.getFavorites().collect {}
+                moviesRepository.getMovies(1).collect {}
+                userRepository.getUserData().collect {}
 
-            navController.navigate(Screens.NavBarScreen.route)
+                navController.navigate(Screens.NavBarScreen.route)
+            }
         }
     }
 }

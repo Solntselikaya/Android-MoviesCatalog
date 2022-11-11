@@ -22,7 +22,9 @@ import com.example.movies_catalog.network.models.LoginCredentials
 import com.example.movies_catalog.network.models.UserRegister
 import com.example.movies_catalog.network.movies.MoviesRepository
 import com.example.movies_catalog.network.user.UserRepository
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.launch
+import okhttp3.OkHttpClient
 import java.time.LocalDateTime
 
 class SignUpViewModel : ViewModel() {
@@ -124,12 +126,11 @@ class SignUpViewModel : ViewModel() {
                 val day = mFormat.format(mDayOfMonth)
                 requestData = "${mYear}-$month-$day"
                 isDateValid()
+                isEmpty()
             }, mYear, mMonth, mDay
         )
 
         mDatePickerDialog.show()
-        isEmpty()
-        //isDateValid()
     }
 
     private val _isDateValid = mutableStateOf(true)
@@ -185,6 +186,13 @@ class SignUpViewModel : ViewModel() {
                                 (gender != -1)
     }
 
+    private val _hasErrors = mutableStateOf(false)
+    var hasErrors : State<Boolean> = _hasErrors
+
+    fun hasErrors() {
+        _hasErrors.value = false
+    }
+
     fun register(navController: NavController) {
         val repository = AuthRepository()
         val favoriteMoviesRepository = FavoriteMoviesRepository()
@@ -201,20 +209,24 @@ class SignUpViewModel : ViewModel() {
                 email = _email.value,
                 birthDate = requestData,
                 gender = _gender.value)
-            ).collect {}
+            ).catch {
+                _hasErrors.value = true
+            }.collect {}
 
-            repository.login(
-                LoginCredentials(
-                    username = _login.value,
-                    password = _password.value
-                )
-            ).collect {}
+            if (!_hasErrors.value) {
+                repository.login(
+                    LoginCredentials(
+                        username = _login.value,
+                        password = _password.value
+                    )
+                ).collect {}
 
-            favoriteMoviesRepository.getFavorites().collect {}
-            moviesRepository.getMovies(1).collect {}
-            userRepository.getUserData().collect {}
+                favoriteMoviesRepository.getFavorites().collect {}
+                moviesRepository.getMovies(1).collect {}
+                userRepository.getUserData().collect {}
 
-            navController.navigate(Screens.NavBarScreen.route)
+                navController.navigate(Screens.NavBarScreen.route)
+            }
         }
     }
 }

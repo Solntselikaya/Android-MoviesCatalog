@@ -19,6 +19,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -27,6 +28,8 @@ import androidx.navigation.NavController
 import com.example.movies_catalog.signUpScreen.SignUpViewModel
 import com.example.movies_catalog.ui.theme.DarkRed
 import com.example.movies_catalog.ui.theme.Gray
+import com.example.movies_catalog.ui.theme.MostlyBlack
+import com.example.movies_catalog.ui.theme.White
 
 @Composable
 fun SignUpScreen(navController: NavController){
@@ -92,6 +95,36 @@ fun SignUpScreen(navController: NavController){
                 Text("У меня уже есть аккаунт", fontSize = 16.sp)
             }
         }
+    }
+
+    val hasErrors : Boolean by remember { signUpViewModel.hasErrors }
+
+    if (hasErrors) {
+
+        AlertDialog(
+            modifier = Modifier.wrapContentSize().background(MostlyBlack),
+            onDismissRequest = {
+                signUpViewModel.hasErrors()
+            },
+            title = {
+                Text(
+                    text = "Ошибка",
+                    color = White,
+                    textAlign = TextAlign.Center
+                )
+            },
+            text = {
+                Text(
+                    "Логин или почта уже заняты",
+                    color = White,
+                    textAlign = TextAlign.Center)
+            },
+            buttons = {
+
+            },
+            shape = RoundedCornerShape(16.dp),
+            backgroundColor = MostlyBlack
+        )
     }
 }
 
@@ -213,7 +246,6 @@ fun SignUpNameField(name : String, onNameChange : (String) -> Unit){
     )
 }
 
-//добавить проверку, что пароль не менее 8 символов
 @Composable
 fun SignUpPasswordField(password : String, isValid: Boolean, onPasswordChange : (String) -> Unit){
     Column(Modifier.padding(16.dp, 8.dp)) {

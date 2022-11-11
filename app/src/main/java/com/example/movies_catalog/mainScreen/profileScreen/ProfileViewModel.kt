@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.app.DatePickerDialog
 import android.content.Context
 import android.icu.text.DecimalFormat
+import android.icu.text.SimpleDateFormat
 import android.icu.util.Calendar
 import android.util.Patterns
 import android.widget.DatePicker
@@ -22,9 +23,9 @@ import java.util.*
 
 class ProfileViewModel: ViewModel() {
 
-    val profile = Network.profile
+    var profile = Network.profile
 
-    private val currEmail = profile!!.email
+    private var currEmail = profile!!.email
 
     private val _email = mutableStateOf(currEmail)
     var email : State<String> = _email
@@ -42,7 +43,14 @@ class ProfileViewModel: ViewModel() {
         _isEmailValid.value = Patterns.EMAIL_ADDRESS.matcher(_email.value).matches()
     }
 
-    private val currName = profile!!.name
+    private val _isEmailLengthValid = mutableStateOf(true)
+    var isEmailLengthValid : State<Boolean> = _isEmailLengthValid
+
+    private fun isEmailLengthValid(){
+        _isEmailLengthValid.value = _email.value.substringBefore("@").length >= 3
+    }
+
+    private var currName = profile!!.name
 
     private val _name = mutableStateOf(currName)
     var name : State<String> = _name
@@ -52,10 +60,11 @@ class ProfileViewModel: ViewModel() {
         isEmpty()
     }
 
-    private val birthDate = profile!!.birthDate.substringBefore("T").split('-')
-    private val currBirthdate = birthDate[2] + "." + birthDate[1] + "." + birthDate[0]
+    private var currBirthdate = profile!!.birthDate.substringBefore("T")
+    private val parsedCurrBirthdate = currBirthdate.split('-')
+    private val showBirthdate = parsedCurrBirthdate[2] + "." + parsedCurrBirthdate[1] + "." + parsedCurrBirthdate[0]
 
-    private val _birthdate = mutableStateOf(currBirthdate)
+        private val _birthdate = mutableStateOf(showBirthdate)
     var birthdate : State<String> = _birthdate
 
     private var requestDate = profile!!.birthDate.substringBefore("T")
@@ -79,16 +88,34 @@ class ProfileViewModel: ViewModel() {
                 val month = mFormat.format(mMonth+1)
                 val day = mFormat.format(mDayOfMonth)
                 requestDate = "${mYear}-$month-$day"
+
+                isDateValid()
+                isEmpty()
             }, mYear, mMonth, mDay
         )
 
         mDatePickerDialog.show()
-        isEmpty()
+
     }
 
-    private val currUrl =
+    private val _isDateValid = mutableStateOf(true)
+    var isDateValid : State<Boolean> = _isDateValid
+
+    private fun isDateValid(){
+        val time = Calendar.getInstance().time
+        val formatter = SimpleDateFormat("yyyy-MM-dd")
+        val current = formatter.format(time)
+
+        val currParsed = current.split('-')
+        val resParsed = requestDate.split('-')
+
+        _isDateValid.value =
+            !(currParsed[0] < resParsed[0] || currParsed[1] < resParsed[1] || currParsed[2] < resParsed[2])
+    }
+
+    private var currUrl =
         if (profile!!.avatarLink == null) ""
-        else profile.avatarLink.toString()
+        else profile!!.avatarLink.toString()
 
     private val _url = mutableStateOf(currUrl)
     var url : State<String> = _url
@@ -121,7 +148,6 @@ class ProfileViewModel: ViewModel() {
         val genderNotChanged = (_gender.value == currGender)
 
         changed = !(emailNotChanged && urlNotChanged && nameNotChanged && dateNotChanged && genderNotChanged)
-
     }
 
     private fun isEmpty() {
@@ -129,11 +155,15 @@ class ProfileViewModel: ViewModel() {
 
         val email = _email.value
         val isEmailValid = _isEmailValid.value
+        val isEmailLengthValid = _isEmailLengthValid.value
+        val isDateValid = _isDateValid.value
         val name = _name.value
         val birthdate = _birthdate.value
         _isFieldsFilled.value =
                 email.isNotEmpty() &&
                 (isEmailValid) &&
+                (isEmailLengthValid) &&
+                (isDateValid) &&
                 name.isNotEmpty() &&
                 birthdate.isNotEmpty() && changed
     }
@@ -145,7 +175,7 @@ class ProfileViewModel: ViewModel() {
             userRepository.putUserData(
                 UserProfile(
                     id = profile!!.id,
-                    nickName = profile.nickName,
+                    nickName = profile!!.nickName,
                     email = _email.value,
                     avatarLink = _url.value,
                     name = _name.value,
@@ -154,6 +184,15 @@ class ProfileViewModel: ViewModel() {
                 )
             )
             _isFieldsFilled.value = false
+
+            userRepository.getUserData().collect {
+                profile = it
+                currEmail = it.email
+                currName = it.name
+                currBirthdate = it.birthDate.substringBefore("T")
+                currUrl = it.avatarLink
+                currGender = it.gender
+            }
         }
     }
 

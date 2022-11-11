@@ -2,6 +2,7 @@ package com.example.movies_catalog
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
@@ -13,11 +14,14 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.movies_catalog.signInScreen.SignInViewModel
+import com.example.movies_catalog.ui.theme.MostlyBlack
+import com.example.movies_catalog.ui.theme.White
 
 @Composable
 fun SignInScreen(navController: NavController) {
@@ -25,6 +29,7 @@ fun SignInScreen(navController: NavController) {
 
     val signInLogin : String by remember { signInViewModel.login }
     val signInPassword : String by remember { signInViewModel.password }
+    val isPasswordValid : Boolean by remember { signInViewModel.isPasswordValid }
     val isFieldsFilled : Boolean by remember { signInViewModel.isFieldsFilled }
 
     Box(modifier = Modifier.fillMaxSize()){
@@ -45,7 +50,7 @@ fun SignInScreen(navController: NavController) {
             )
             SignInLoginField(login = signInLogin) { signInViewModel.onLoginChange(it) }
             Spacer(modifier = Modifier.height(14.41.dp))
-            SignInPasswordField(password = signInPassword) { signInViewModel.onPasswordChange(it) }
+            SignInPasswordField(password = signInPassword, isValid = isPasswordValid,) { signInViewModel.onPasswordChange(it) }
         }
         Spacer(modifier = Modifier.fillMaxHeight())
         Column(
@@ -69,6 +74,36 @@ fun SignInScreen(navController: NavController) {
                 Text("Регистрация", fontSize = 16.sp)
             }
         }
+    }
+
+    val hasErrors : Boolean by remember { signInViewModel.hasErrors }
+
+    if (hasErrors) {
+
+        AlertDialog(
+            modifier = Modifier.wrapContentSize().background(MostlyBlack),
+            onDismissRequest = {
+                signInViewModel.hasErrors()
+            },
+            title = {
+                Text(
+                    text = "Ошибка",
+                    color = White,
+                    textAlign = TextAlign.Center
+                )
+            },
+            text = {
+                Text(
+                    "Неверные логин или пароль",
+                    color = White,
+                    textAlign = TextAlign.Center)
+            },
+            buttons = {
+
+            },
+            shape = RoundedCornerShape(16.dp),
+            backgroundColor = MostlyBlack
+        )
     }
 }
 
@@ -96,30 +131,41 @@ fun SignInLoginField(login: String, onLoginChange: (String) -> Unit) {
 }
 
 @Composable
-fun SignInPasswordField(password: String, onPasswordChange: (String) -> Unit) {
-    OutlinedTextField(
-        value = password,
-        onValueChange = onPasswordChange,
-        modifier = Modifier
-            .padding(16.dp, 0.dp)
-            .fillMaxWidth(),
-        colors = TextFieldDefaults.outlinedTextFieldColors(
-            cursorColor = colorResource(R.color.dark_red),
-            focusedBorderColor = colorResource(R.color.dark_red),
-            unfocusedBorderColor = colorResource(R.color.gray),
-            textColor = colorResource(R.color.dark_red)
-        ),
-        placeholder = {
-            Text(
-                "Пароль",
-                color = colorResource(R.color.gray),
-                fontSize = 14.sp) },
-        shape = RoundedCornerShape(8.dp),
-        visualTransformation = PasswordVisualTransformation(),
-        keyboardOptions = KeyboardOptions(
-            keyboardType = KeyboardType.Password
+fun SignInPasswordField(password: String, isValid: Boolean, onPasswordChange: (String) -> Unit) {
+    Column(Modifier.padding(16.dp, 0.dp)) {
+        OutlinedTextField(
+            value = password,
+            onValueChange = onPasswordChange,
+            modifier = Modifier
+                .fillMaxWidth(),
+            colors = TextFieldDefaults.outlinedTextFieldColors(
+                cursorColor = colorResource(R.color.dark_red),
+                focusedBorderColor = colorResource(R.color.dark_red),
+                unfocusedBorderColor = colorResource(R.color.gray),
+                textColor = colorResource(R.color.dark_red)
+            ),
+            placeholder = {
+                Text(
+                    "Пароль",
+                    color = colorResource(R.color.gray),
+                    fontSize = 14.sp) },
+            isError = !isValid,
+            shape = RoundedCornerShape(8.dp),
+            visualTransformation = PasswordVisualTransformation(),
+            keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Password
+            )
         )
-    )
+        if (!isValid) {
+            Text(
+                text = "Длина пароля не менее 8 символов",
+                color = MaterialTheme.colors.error,
+                style = MaterialTheme.typography.caption,
+                modifier = Modifier.padding(start = 16.dp)
+            )
+        }
+    }
+
 }
 
 @Composable

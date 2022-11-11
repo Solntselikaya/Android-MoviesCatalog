@@ -38,10 +38,12 @@ fun ProfileScreen(logout: () -> Unit) {
 
     val email: String by remember { profileViewModel.email }
     val isEmailValid : Boolean by remember { profileViewModel.isEmailValid }
+    val isEmailLengthValid : Boolean by remember { profileViewModel.isEmailLengthValid }
 
     val name: String by remember { profileViewModel.name }
 
     val birthdate: String by remember { profileViewModel.birthdate }
+    val isDateValid : Boolean by remember { profileViewModel.isDateValid }
 
     val url: String by remember { profileViewModel.url }
 
@@ -56,10 +58,10 @@ fun ProfileScreen(logout: () -> Unit) {
             .background(Black)
     ) {
         Avatar(image = url, nick = profileViewModel.profile!!.nickName)
-        ProfileEmailField(email, isEmailValid) { profileViewModel.onEmailChange(it) }
+        ProfileEmailField(email, isEmailValid, isEmailLengthValid) { profileViewModel.onEmailChange(it) }
         ProfileLinkToAvatar(url) { profileViewModel.onUrlChange(it) }
         ProfileName(name) { profileViewModel.onNameChange(it) }
-        ProfileBirthdateField(birthdate) { profileViewModel.onBirthdateChange(it) }
+        ProfileBirthdateField(birthdate, isDateValid) { profileViewModel.onBirthdateChange(it) }
         ProfileGenderSelect(gender) { profileViewModel.onGenderChange(it) }
         ProfileSaveButton(isFieldsFilled) { profileViewModel.save() }
         Button(
@@ -123,7 +125,7 @@ fun Avatar(image: String, nick: String){
 }
 
 @Composable
-fun ProfileEmailField(email : String, isValid : Boolean, onEmailChange : (String) -> Unit){
+fun ProfileEmailField(email : String, isValid : Boolean, isLengthValid: Boolean, onEmailChange : (String) -> Unit){
     Text(
         "E-mail",
         color = Gray,
@@ -133,29 +135,46 @@ fun ProfileEmailField(email : String, isValid : Boolean, onEmailChange : (String
         lineHeight = 20.sp,
         textAlign = TextAlign.Left
     )
-    OutlinedTextField(
-        value = email,
-        onValueChange = onEmailChange,
-        modifier = Modifier
-            .padding(16.dp, 8.dp)
-            .fillMaxWidth(),
-        colors = TextFieldDefaults.outlinedTextFieldColors(
-            cursorColor = colorResource(R.color.dark_red),
-            focusedBorderColor = colorResource(R.color.dark_red),
-            unfocusedBorderColor = colorResource(R.color.gray),
-            textColor = colorResource(R.color.dark_red)
-        ),
-        placeholder = {
+    Column(Modifier.padding(16.dp, 8.dp)) {
+        OutlinedTextField(
+            value = email,
+            onValueChange = onEmailChange,
+            modifier = Modifier
+                .fillMaxWidth(),
+            colors = TextFieldDefaults.outlinedTextFieldColors(
+                cursorColor = colorResource(R.color.dark_red),
+                focusedBorderColor = colorResource(R.color.dark_red),
+                unfocusedBorderColor = colorResource(R.color.gray),
+                textColor = colorResource(R.color.dark_red)
+            ),
+            placeholder = {
+                Text(
+                    "E-mail",
+                    color = colorResource(R.color.gray),
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.W400,
+                    lineHeight = 18.sp) },
+            isError = !isValid,
+            shape = RoundedCornerShape(8.dp),
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email)
+        )
+        if (!isValid) {
             Text(
-                "E-mail",
-                color = colorResource(R.color.gray),
-                fontSize = 14.sp,
-                fontWeight = FontWeight.W400,
-                lineHeight = 18.sp) },
-        shape = RoundedCornerShape(8.dp),
-        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
-        isError = !isValid
-    )
+                text = "Неверный e-mail",
+                color = MaterialTheme.colors.error,
+                style = MaterialTheme.typography.caption,
+                modifier = Modifier.padding(start = 16.dp)
+            )
+        }
+        if (!isLengthValid) {
+            Text(
+                text = "Длина имени почты не менее 3 символов",
+                color = MaterialTheme.colors.error,
+                style = MaterialTheme.typography.caption,
+                modifier = Modifier.padding(start = 16.dp)
+            )
+        }
+    }
 }
 
 @Composable
@@ -219,7 +238,7 @@ fun ProfileName(name: String, onNameChange: (String) -> Unit) {
 }
 
 @Composable
-fun ProfileBirthdateField(birthdate : String, onBirthdateChange : (Context) -> Unit){
+fun ProfileBirthdateField(birthdate : String, isValid: Boolean, onBirthdateChange : (Context) -> Unit){
     val mContext = LocalContext.current
 
     Text(
@@ -231,47 +250,57 @@ fun ProfileBirthdateField(birthdate : String, onBirthdateChange : (Context) -> U
         lineHeight = 20.sp,
         textAlign = TextAlign.Left
     )
-    OutlinedTextField(
-        value = birthdate,
-        onValueChange = {},
-        modifier = Modifier
-            .padding(16.dp, 8.dp, 16.dp, 12.dp)
-            .fillMaxWidth(),
-        //а ниже страшная штука, найденная вот тут: https://stackoverflow.com/a/70335041
-        //без неё не работает .clickable() :(((
-        interactionSource = remember { MutableInteractionSource() }
-            .also { interactionSource ->
-                LaunchedEffect(interactionSource) {
-                    interactionSource.interactions.collect {
-                        if (it is PressInteraction.Release) {
-                            onBirthdateChange(mContext)
+    Column(Modifier.padding(16.dp, 8.dp, 16.dp, 12.dp)){
+        OutlinedTextField(
+            value = birthdate,
+            onValueChange = {},
+            modifier = Modifier
+                .fillMaxWidth(),
+            //а ниже страшная штука, найденная вот тут: https://stackoverflow.com/a/70335041
+            //без неё не работает .clickable() :(((
+            interactionSource = remember { MutableInteractionSource() }
+                .also { interactionSource ->
+                    LaunchedEffect(interactionSource) {
+                        interactionSource.interactions.collect {
+                            if (it is PressInteraction.Release) {
+                                onBirthdateChange(mContext)
+                            }
                         }
                     }
-                }
-            },
-        readOnly = true,
-        colors = TextFieldDefaults.outlinedTextFieldColors(
-            cursorColor = colorResource(R.color.dark_red),
-            focusedBorderColor = colorResource(R.color.dark_red),
-            unfocusedBorderColor = colorResource(R.color.gray),
-            textColor = colorResource(R.color.dark_red)
-        ),
-        placeholder = {
+                },
+            readOnly = true,
+            colors = TextFieldDefaults.outlinedTextFieldColors(
+                cursorColor = colorResource(R.color.dark_red),
+                focusedBorderColor = colorResource(R.color.dark_red),
+                unfocusedBorderColor = colorResource(R.color.gray),
+                textColor = colorResource(R.color.dark_red)
+            ),
+            placeholder = {
+                Text(
+                    "Дата рождения",
+                    color = colorResource(R.color.gray),
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.W400,
+                    lineHeight = 18.sp)},
+            isError = !isValid,
+            shape = RoundedCornerShape(8.dp),
+            trailingIcon = {
+                Icon(
+                    modifier = Modifier.padding(13.dp,13.dp,13.dp,13.dp),
+                    tint = colorResource(R.color.gray),
+                    painter = painterResource(R.drawable.calendar_icon),
+                    contentDescription = "Calendar picture")
+            }
+        )
+        if (!isValid) {
             Text(
-                "Дата рождения",
-                color = colorResource(R.color.gray),
-                fontSize = 14.sp,
-                fontWeight = FontWeight.W400,
-                lineHeight = 18.sp)},
-        shape = RoundedCornerShape(8.dp),
-        trailingIcon = {
-            Icon(
-                modifier = Modifier.padding(13.dp,13.dp,13.dp,13.dp),
-                tint = colorResource(R.color.gray),
-                painter = painterResource(R.drawable.calendar_icon),
-                contentDescription = "Calendar picture")
+                text = "Неверная дата рождения",
+                color = MaterialTheme.colors.error,
+                style = MaterialTheme.typography.caption,
+                modifier = Modifier.padding(start = 16.dp)
+            )
         }
-    )
+    }
 }
 
 @Composable
