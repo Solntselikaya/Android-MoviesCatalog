@@ -72,16 +72,15 @@ fun MainScreen(openMovieDescription: () -> Unit) {
             )
         }
         itemsIndexed(
-            items = mainViewModel.movies!!.movies
+            items = mainViewModel.movieList
         ) { index, item ->
-            if (index == moviesListSize - 1 && (mainViewModel.page + 1) != moviesListSize) {
-                mainViewModel.page = mainViewModel.page + 1
-                mainViewModel.getMovies()
-            }
 
-            if (index != 0) {
-                mainViewModel.getGenresString(index)
-                val genres = mainViewModel.genres
+            val lastIndex = mainViewModel.movieList.lastIndex
+            val currentIndex = mainViewModel.movieList.indexOf(item)
+
+            if (currentIndex != 0) {
+                mainViewModel.getGenresString(item.genres)
+                val genres = mainViewModel.genresString
                 MovieCard(
                     viewModel = mainViewModel,
                     id = item.id,
@@ -91,6 +90,10 @@ fun MainScreen(openMovieDescription: () -> Unit) {
                     image = item.poster,
                     genres = genres
                 ) { openMovieDescription() }
+            }
+
+            if (index == lastIndex && mainViewModel.page < 6){
+                mainViewModel.getMovies()
             }
         }
     }
