@@ -14,8 +14,6 @@ class MainViewModel: ViewModel() {
     val movies = Network.movies
     val favorite = Network.favoriteMovies
 
-    var moviesList = movies!!.movies
-
     var genres : String = ""
 
     private val _moviesListSize = mutableStateOf(0)
@@ -35,8 +33,6 @@ class MainViewModel: ViewModel() {
         viewModelScope.launch {
             moviesRepository.getMovies(page).collect {}
         }
-
-        moviesList.add
     }
 
     fun getGenresString(moviePosition: Int){
