@@ -25,6 +25,8 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.movies_catalog.signUpScreen.SignUpViewModel
+import com.example.movies_catalog.ui.theme.DarkRed
+import com.example.movies_catalog.ui.theme.Gray
 
 @Composable
 fun SignUpScreen(navController: NavController){
@@ -34,14 +36,18 @@ fun SignUpScreen(navController: NavController){
 
     val signUpEmail : String by remember { signUpViewModel.email }
     val isEmailValid : Boolean by remember { signUpViewModel.isEmailValid }
+    val isEmailLengthValid : Boolean by remember { signUpViewModel.isEmailLengthValid }
 
     val signUpName : String by remember { signUpViewModel.name }
 
     val signUpPassword : String by remember { signUpViewModel.password }
+    val isPasswordValid : Boolean by remember { signUpViewModel.isPasswordValid }
     val signUpRepeatedPassword : String by remember { signUpViewModel.repeatedPassword }
     val isPasswordsEqual : Boolean by remember { signUpViewModel.isPasswordsEqual }
 
     val signUpBirthdate : String by remember { signUpViewModel.birthdate }
+    val isDateValid : Boolean by remember { signUpViewModel.isDateValid }
+
     val signUpGender : Int by remember { signUpViewModel.gender }
     val isFieldsFilled : Boolean by remember { signUpViewModel.isFieldsFilled }
 
@@ -65,11 +71,11 @@ fun SignUpScreen(navController: NavController){
                     .padding(16.dp, 8.dp)
             )
             SignUpLoginField(login = signUpLogin) { signUpViewModel.onLoginChange(it) }
-            SignUpEmailField(email = signUpEmail, isValid = isEmailValid) { signUpViewModel.onEmailChange(it) }
+            SignUpEmailField(email = signUpEmail, isValid = isEmailValid, isEmailLengthValid) { signUpViewModel.onEmailChange(it) }
             SignUpNameField(name = signUpName) { signUpViewModel.onNameChange(it) }
-            SignUpPasswordField(password = signUpPassword) { signUpViewModel.onPasswordChange(it) }
+            SignUpPasswordField(password = signUpPassword, isValid = isPasswordValid) { signUpViewModel.onPasswordChange(it) }
             SignUpRepeatedPasswordField(repeatedPassword = signUpRepeatedPassword, isValid = isPasswordsEqual) { signUpViewModel.onRepeatedPasswordChange(it) }
-            SignUpBirthdateField(birthdate = signUpBirthdate) { signUpViewModel.onBirthdateChange(it) }
+            SignUpBirthdateField(birthdate = signUpBirthdate, isValid = isDateValid) { signUpViewModel.onBirthdateChange(it) }
             GenderSelect(gender = signUpGender) { signUpViewModel.onGenderChange(it) }
             RegistrationButton(isFieldsFilled) {signUpViewModel.register(navController)}
             Button(
@@ -139,30 +145,47 @@ fun SignUpLoginField(login : String, onLoginChange : (String) -> Unit) {
 }
 
 @Composable
-fun SignUpEmailField(email : String, isValid : Boolean, onEmailChange : (String) -> Unit){
-    OutlinedTextField(
-        value = email,
-        onValueChange = onEmailChange,
-        modifier = Modifier
-            .padding(16.dp, 8.dp)
-            .fillMaxWidth(),
-        colors = TextFieldDefaults.outlinedTextFieldColors(
-            cursorColor = colorResource(R.color.dark_red),
-            focusedBorderColor = colorResource(R.color.dark_red),
-            unfocusedBorderColor = colorResource(R.color.gray),
-            textColor = colorResource(R.color.dark_red)
-        ),
-        placeholder = {
+fun SignUpEmailField(email : String, isValid : Boolean, isLengthValid: Boolean, onEmailChange : (String) -> Unit){
+    Column(Modifier.padding(16.dp, 8.dp)) {
+        OutlinedTextField(
+            value = email,
+            onValueChange = onEmailChange,
+            modifier = Modifier
+                .fillMaxWidth(),
+            colors = TextFieldDefaults.outlinedTextFieldColors(
+                cursorColor = DarkRed,
+                focusedBorderColor = DarkRed,
+                unfocusedBorderColor = Gray,
+                textColor = DarkRed
+            ),
+            placeholder = {
+                Text(
+                    "E-mail",
+                    color = Gray,
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.W400,
+                    lineHeight = 18.sp) },
+            isError = (!isLengthValid || !isValid),
+            shape = RoundedCornerShape(8.dp),
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email)
+        )
+        if (!isValid) {
             Text(
-                "E-mail",
-                color = colorResource(R.color.gray),
-                fontSize = 14.sp,
-                fontWeight = FontWeight.W400,
-                lineHeight = 18.sp) },
-        shape = RoundedCornerShape(8.dp),
-        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
-        isError = !isValid
-    )
+                text = "Неверный e-mail",
+                color = MaterialTheme.colors.error,
+                style = MaterialTheme.typography.caption,
+                modifier = Modifier.padding(start = 16.dp)
+            )
+        }
+        if (!isLengthValid) {
+            Text(
+                text = "Длина имени почты не менее 3 символов",
+                color = MaterialTheme.colors.error,
+                style = MaterialTheme.typography.caption,
+                modifier = Modifier.padding(start = 16.dp)
+            )
+        }
+    }
 }
 
 @Composable
@@ -192,105 +215,136 @@ fun SignUpNameField(name : String, onNameChange : (String) -> Unit){
 
 //добавить проверку, что пароль не менее 8 символов
 @Composable
-fun SignUpPasswordField(password : String, onPasswordChange : (String) -> Unit){
-    OutlinedTextField(
-        value = password,
-        onValueChange = onPasswordChange,
-        modifier = Modifier
-            .padding(16.dp, 8.dp)
-            .fillMaxWidth(),
-        colors = TextFieldDefaults.outlinedTextFieldColors(
-            cursorColor = colorResource(R.color.dark_red),
-            focusedBorderColor = colorResource(R.color.dark_red),
-            unfocusedBorderColor = colorResource(R.color.gray),
-            textColor = colorResource(R.color.dark_red)
-        ),
-        placeholder = {
+fun SignUpPasswordField(password : String, isValid: Boolean, onPasswordChange : (String) -> Unit){
+    Column(Modifier.padding(16.dp, 8.dp)) {
+        OutlinedTextField(
+            value = password,
+            onValueChange = onPasswordChange,
+            modifier = Modifier
+                .fillMaxWidth(),
+            colors = TextFieldDefaults.outlinedTextFieldColors(
+                cursorColor = DarkRed,
+                focusedBorderColor = DarkRed,
+                unfocusedBorderColor = Gray,
+                textColor = DarkRed
+            ),
+            placeholder = {
+                Text(
+                    "Пароль",
+                    color = Gray,
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.W400,
+                    lineHeight = 18.sp)},
+            isError = !isValid,
+            shape = RoundedCornerShape(8.dp),
+            visualTransformation = PasswordVisualTransformation(),
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password)
+        )
+        if (!isValid) {
             Text(
-                "Пароль",
-                color = colorResource(R.color.gray),
-                fontSize = 14.sp,
-                fontWeight = FontWeight.W400,
-                lineHeight = 18.sp)},
-        shape = RoundedCornerShape(8.dp),
-        visualTransformation = PasswordVisualTransformation(),
-        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password)
-    )
+                text = "Длина пароля не менее 8 символов",
+                color = MaterialTheme.colors.error,
+                style = MaterialTheme.typography.caption,
+                modifier = Modifier.padding(start = 16.dp)
+            )
+        }
+    }
 }
 
 @Composable
 fun SignUpRepeatedPasswordField(repeatedPassword : String, isValid : Boolean, onRepeatedPasswordChange : (String) -> Unit){
-    OutlinedTextField(
-        value = repeatedPassword,
-        onValueChange = onRepeatedPasswordChange,
-        modifier = Modifier
-            .padding(16.dp, 8.dp)
-            .fillMaxWidth(),
-        colors = TextFieldDefaults.outlinedTextFieldColors(
-            cursorColor = colorResource(R.color.dark_red),
-            focusedBorderColor = colorResource(R.color.dark_red),
-            unfocusedBorderColor = colorResource(R.color.gray),
-            textColor = colorResource(R.color.dark_red)
-        ),
-        placeholder = {
+    Column (Modifier.padding(16.dp, 8.dp)){
+        OutlinedTextField(
+            value = repeatedPassword,
+            onValueChange = onRepeatedPasswordChange,
+            modifier = Modifier
+                .fillMaxWidth(),
+            colors = TextFieldDefaults.outlinedTextFieldColors(
+                cursorColor = DarkRed,
+                focusedBorderColor = DarkRed,
+                unfocusedBorderColor = Gray,
+                textColor = DarkRed
+            ),
+            placeholder = {
+                Text(
+                    "Подтвердите пароль",
+                    color = Gray,
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.W400,
+                    lineHeight = 18.sp
+                )
+            },
+            isError = !isValid,
+            shape = RoundedCornerShape(8.dp),
+            visualTransformation = PasswordVisualTransformation(),
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password)
+        )
+        if (!isValid) {
             Text(
-                "Подтвердите пароль",
-                color = colorResource(R.color.gray),
-                fontSize = 14.sp,
-                fontWeight = FontWeight.W400,
-                lineHeight = 18.sp)},
-        isError = !isValid,
-        shape = RoundedCornerShape(8.dp),
-        visualTransformation = PasswordVisualTransformation(),
-        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password)
-    )
+                text = "Пароли не совпадают",
+                color = MaterialTheme.colors.error,
+                style = MaterialTheme.typography.caption,
+                modifier = Modifier.padding(start = 16.dp)
+            )
+        }
+    }
 }
 
 @Composable
-fun SignUpBirthdateField(birthdate : String, onBirthdateChange : (Context) -> Unit){
+fun SignUpBirthdateField(birthdate : String, isValid: Boolean, onBirthdateChange : (Context) -> Unit){
     val mContext = LocalContext.current
 
-    OutlinedTextField(
-        value = birthdate,
-        onValueChange = {},
-        modifier = Modifier
-            .padding(16.dp, 8.dp, 16.dp, 16.dp)
-            .fillMaxWidth(),
-        //а ниже страшная штука, найденная вот тут: https://stackoverflow.com/a/70335041
-        //без неё не работает .clickable() :(((
-        interactionSource = remember { MutableInteractionSource() }
-            .also { interactionSource ->
-                LaunchedEffect(interactionSource) {
-                    interactionSource.interactions.collect {
-                        if (it is PressInteraction.Release) {
-                            onBirthdateChange(mContext)
+    Column(Modifier.padding(16.dp, 8.dp, 16.dp, 16.dp)) {
+        OutlinedTextField(
+            value = birthdate,
+            onValueChange = {},
+            modifier = Modifier
+                .fillMaxWidth(),
+            //а ниже страшная штука, найденная вот тут: https://stackoverflow.com/a/70335041
+            //без неё не работает .clickable() :(((
+            interactionSource = remember { MutableInteractionSource() }
+                .also { interactionSource ->
+                    LaunchedEffect(interactionSource) {
+                        interactionSource.interactions.collect {
+                            if (it is PressInteraction.Release) {
+                                onBirthdateChange(mContext)
+                            }
                         }
                     }
-                }
-            },
-        readOnly = true,
-        colors = TextFieldDefaults.outlinedTextFieldColors(
-            cursorColor = colorResource(R.color.dark_red),
-            focusedBorderColor = colorResource(R.color.dark_red),
-            unfocusedBorderColor = colorResource(R.color.gray),
-            textColor = colorResource(R.color.dark_red)
-        ),
-        placeholder = {
+                },
+            readOnly = true,
+            colors = TextFieldDefaults.outlinedTextFieldColors(
+                cursorColor = colorResource(R.color.dark_red),
+                focusedBorderColor = colorResource(R.color.dark_red),
+                unfocusedBorderColor = colorResource(R.color.gray),
+                textColor = colorResource(R.color.dark_red)
+            ),
+            placeholder = {
+                Text(
+                    "Дата рождения",
+                    color = colorResource(R.color.gray),
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.W400,
+                    lineHeight = 18.sp)},
+            isError = !isValid,
+            shape = RoundedCornerShape(8.dp),
+            trailingIcon = {
+                Icon(
+                    modifier = Modifier.padding(13.dp,13.dp,13.dp,13.dp),
+                    tint = colorResource(R.color.gray),
+                    painter = painterResource(R.drawable.calendar_icon),
+                    contentDescription = "Calendar picture")
+            }
+        )
+        if (!isValid) {
             Text(
-                "Дата рождения",
-                color = colorResource(R.color.gray),
-                fontSize = 14.sp,
-                fontWeight = FontWeight.W400,
-                lineHeight = 18.sp)},
-        shape = RoundedCornerShape(8.dp),
-        trailingIcon = {
-            Icon(
-                modifier = Modifier.padding(13.dp,13.dp,13.dp,13.dp),
-                tint = colorResource(R.color.gray),
-                painter = painterResource(R.drawable.calendar_icon),
-                contentDescription = "Calendar picture")
+                text = "Неверная дата рождения",
+                color = MaterialTheme.colors.error,
+                style = MaterialTheme.typography.caption,
+                modifier = Modifier.padding(start = 16.dp)
+            )
         }
-    )
+    }
 }
 
 @Composable

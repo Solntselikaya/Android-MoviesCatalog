@@ -4,7 +4,9 @@ import android.annotation.SuppressLint
 import android.app.DatePickerDialog
 import android.content.Context
 import android.icu.text.DecimalFormat
+import android.icu.text.SimpleDateFormat
 import android.icu.util.Calendar
+import android.text.TextUtils.split
 import android.util.Patterns
 import android.widget.DatePicker
 import androidx.compose.runtime.State
@@ -21,6 +23,7 @@ import com.example.movies_catalog.network.models.UserRegister
 import com.example.movies_catalog.network.movies.MoviesRepository
 import com.example.movies_catalog.network.user.UserRepository
 import kotlinx.coroutines.launch
+import java.time.LocalDateTime
 
 class SignUpViewModel : ViewModel() {
     private val _login = mutableStateOf("")
@@ -37,6 +40,7 @@ class SignUpViewModel : ViewModel() {
     fun onEmailChange(updatedEmail : String) {
         _email.value = updatedEmail
         isEmailValid()
+        isEmailLengthValid()
         isEmpty()
     }
 
@@ -45,6 +49,13 @@ class SignUpViewModel : ViewModel() {
 
     private fun isEmailValid(){
         _isEmailValid.value = Patterns.EMAIL_ADDRESS.matcher(_email.value).matches()
+    }
+
+    private val _isEmailLengthValid = mutableStateOf(true)
+    var isEmailLengthValid : State<Boolean> = _isEmailLengthValid
+
+    private fun isEmailLengthValid(){
+        _isEmailLengthValid.value = _email.value.substringBefore("@").length >= 3
     }
 
     private val _name = mutableStateOf("")
@@ -60,7 +71,15 @@ class SignUpViewModel : ViewModel() {
 
     fun onPasswordChange(updatedPassword : String) {
         _password.value = updatedPassword
+        isPasswordValid()
         isEmpty()
+    }
+
+    private val _isPasswordValid = mutableStateOf(true)
+    var isPasswordValid : State<Boolean> = _isPasswordValid
+
+    private fun isPasswordValid(){
+        _isPasswordValid.value = _password.value.length >= 8
     }
 
     private val _repeatedPassword = mutableStateOf("")
@@ -104,11 +123,28 @@ class SignUpViewModel : ViewModel() {
                 val month = mFormat.format(mMonth+1)
                 val day = mFormat.format(mDayOfMonth)
                 requestData = "${mYear}-$month-$day"
+                isDateValid()
             }, mYear, mMonth, mDay
         )
 
         mDatePickerDialog.show()
         isEmpty()
+        //isDateValid()
+    }
+
+    private val _isDateValid = mutableStateOf(true)
+    var isDateValid : State<Boolean> = _isDateValid
+
+    private fun isDateValid(){
+        val time = Calendar.getInstance().time
+        val formatter = SimpleDateFormat("yyyy-MM-dd")
+        val current = formatter.format(time)
+
+        val currParsed = current.split('-')
+        val resParsed = requestData.split('-')
+
+        _isDateValid.value =
+            !(currParsed[0] < resParsed[0] || currParsed[1] < resParsed[1] || currParsed[2] < resParsed[2])
     }
 
     private val _gender = mutableStateOf(-1)
@@ -126,19 +162,25 @@ class SignUpViewModel : ViewModel() {
         val login = _login.value
         val email = _email.value
         val isEmailValid = _isEmailValid.value
+        val isEmailLengthValid = _isEmailLengthValid.value
         val name = _name.value
         val password = _password.value
+        val isPasswordValid = _isPasswordValid.value
         val repeatedPassword = _repeatedPassword.value
         val isPasswordsEqual = _isPasswordsEqual.value
         val birthdate = _birthdate.value
+        val isDateValid = _isDateValid.value
         val gender = _gender.value
         _isFieldsFilled.value = !login.isNullOrEmpty() &&
                                 !email.isNullOrEmpty() &&
-                                (isEmailValid == true) &&
+                                (isEmailValid) &&
+                                (isEmailLengthValid) &&
+                                (isPasswordValid) &&
+                                (isDateValid) &&
                                 !name.isNullOrEmpty() &&
                                 !password.isNullOrEmpty() &&
                                 !repeatedPassword.isNullOrEmpty() &&
-                                (isPasswordsEqual == true) &&
+                                (isPasswordsEqual) &&
                                 !birthdate.isNullOrEmpty() &&
                                 (gender != -1)
     }
