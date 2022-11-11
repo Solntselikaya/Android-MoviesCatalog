@@ -26,7 +26,7 @@ fun NavBarScreen(logout: () -> Unit, movieDescription: () -> Unit) {
         bottomBar = { BottomNavBar(navController) },
         content = { padding ->
             Box(modifier = Modifier.padding(padding)) {
-                BottomNavBarNavigation(navController = navController, { logout() }, {movieDescription})
+                BottomNavBarNavigation(navController = navController, { logout() }, { movieDescription() })
             }
         },
         backgroundColor = Black

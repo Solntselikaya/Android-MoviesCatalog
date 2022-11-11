@@ -6,12 +6,15 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.movies_catalog.network.Network
 import com.example.movies_catalog.network.favoriteMovies.FavoriteMoviesRepository
+import com.example.movies_catalog.network.models.MovieDetails
 import com.example.movies_catalog.network.movies.MoviesRepository
 import kotlinx.coroutines.launch
 
 class MainViewModel: ViewModel() {
     val movies = Network.movies
     val favorite = Network.favoriteMovies
+
+    var moviesList = movies!!.movies
 
     var genres : String = ""
 
@@ -25,14 +28,15 @@ class MainViewModel: ViewModel() {
     private val _favListSize = mutableStateOf(0)
     var favListSize : State<Int> = _favListSize
 
-    suspend fun getMovies() {
-        val favoriteMoviesRepository = FavoriteMoviesRepository()
+    var page = 1
+    fun getMovies() {
         val moviesRepository = MoviesRepository()
 
         viewModelScope.launch {
-            favoriteMoviesRepository.getFavorites().collect {}
-            moviesRepository.getMovies(1).collect {}
+            moviesRepository.getMovies(page).collect {}
         }
+
+        moviesList.add
     }
 
     fun getGenresString(moviePosition: Int){
@@ -47,6 +51,15 @@ class MainViewModel: ViewModel() {
                 "$txt, "
             }
             curGenre ++
+        }
+    }
+
+    fun getMovieDetails(id: String, openMovieDetails: () -> Unit) {
+        val movieRepository = MoviesRepository()
+
+        viewModelScope.launch {
+            movieRepository.getMovieDetails(id).collect {}
+            openMovieDetails()
         }
     }
 }

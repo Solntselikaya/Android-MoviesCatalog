@@ -1,9 +1,12 @@
 package com.example.movies_catalog.mainScreen.galleryScreen
 
+import android.view.View
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
@@ -24,6 +27,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.rememberAsyncImagePainter
 import com.example.movies_catalog.ui.theme.Black
@@ -31,7 +35,7 @@ import com.example.movies_catalog.ui.theme.DarkRed
 import com.example.movies_catalog.ui.theme.White
 
 @Composable
-fun MainScreen(movieDescription: () -> Unit) {
+fun MainScreen(openMovieDescription: () -> Unit) {
 
     val mainViewModel: MainViewModel = viewModel()
 
@@ -46,7 +50,9 @@ fun MainScreen(movieDescription: () -> Unit) {
             .background(Black)
     ){
         item {
-            FirstMovieCard(mainViewModel.movies!!.movies[0].poster, mainViewModel.movies.movies[0].name)
+            FirstMovieCard(
+                mainViewModel
+            ) {openMovieDescription()}
         }
         item {
             if (favListSize != 0){
@@ -65,27 +71,39 @@ fun MainScreen(movieDescription: () -> Unit) {
                     .padding(16.dp, 16.dp, 0.dp, 0.dp)
             )
         }
-        items(moviesListSize) { index ->
+        itemsIndexed(
+            items = mainViewModel.movies!!.movies
+        ) { index, item ->
+            if (index == moviesListSize - 1 && (mainViewModel.page + 1) != moviesListSize) {
+                mainViewModel.page = mainViewModel.page + 1
+                mainViewModel.getMovies()
+            }
+
             if (index != 0) {
                 mainViewModel.getGenresString(index)
                 val genres = mainViewModel.genres
                 MovieCard(
-                    title = mainViewModel.movies!!.movies[index].name,
-                    year = mainViewModel.movies.movies[index].year,
-                    country = mainViewModel.movies.movies[index].country,
-                    image = mainViewModel.movies.movies[index].poster,
+                    viewModel = mainViewModel,
+                    id = item.id,
+                    title = item.name,
+                    year = item.year,
+                    country = item.country,
+                    image = item.poster,
                     genres = genres
-                )
+                ) { openMovieDescription() }
             }
         }
     }
 }
 
 @Composable
-fun FirstMovieCard(image: String, title: String){
+fun FirstMovieCard(
+    viewModel: MainViewModel,
+    openMovieDescription: () -> Unit
+) {
     Box(modifier = Modifier.wrapContentSize()){
         Image(
-            painter = rememberAsyncImagePainter(image),
+            painter = rememberAsyncImagePainter(viewModel.movies!!.movies[0].poster),
             contentDescription = "Movie's Poster",
             contentScale = ContentScale.Crop,
             modifier = Modifier
@@ -104,7 +122,7 @@ fun FirstMovieCard(image: String, title: String){
                 }
         )
         Button(
-            onClick = { },
+            onClick = { viewModel.getMovieDetails(viewModel.movies.movies[0].id) { openMovieDescription() } },
             modifier = Modifier
                 .align(Alignment.BottomCenter)
                 .padding(0.dp, 0.dp, 0.dp, 32.dp)
@@ -123,7 +141,7 @@ fun FirstMovieCard(image: String, title: String){
 }
 
 @Composable
-fun FavoriteMovieCard(image: String){
+fun FavoriteMovieCard(image: String, openMovieDescription: () -> Unit){
     Box(modifier = Modifier.fillMaxHeight()
     ) {
         Image(
@@ -161,12 +179,21 @@ fun FavoritesList(){
 
 //тут есть странный отступ между началом карточки и картинкой
 @Composable
-fun MovieCard(title: String, year: Int, country: String, image: String, genres: String) {
+fun MovieCard(
+    viewModel: MainViewModel,
+    id: String,
+    title: String,
+    year: Int,
+    country: String,
+    image: String,
+    genres: String,
+    openMovieDescription: () -> Unit
+) {
     Card(
         Modifier
             .wrapContentSize()
             .padding(16.dp, 8.dp)
-            .clickable { },
+            .clickable { viewModel.getMovieDetails(id) { openMovieDescription() } },
         backgroundColor = Black
     ) {
         Row(

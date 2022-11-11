@@ -7,5 +7,5 @@ data class Review (
     val reviewText: String = "",
     val isAnonymous: Boolean,
     val createDateTime: String,
-    val author: UserShort
+    val author: UserShort? = null
 )

@@ -10,6 +10,7 @@ import com.example.movies_catalog.SignUpScreen
 import com.example.movies_catalog.mainScreen.NavBarScreen
 import com.example.movies_catalog.mainScreen.galleryScreen.MainScreen
 import com.example.movies_catalog.mainScreen.profileScreen.ProfileScreen
+import com.example.movies_catalog.movieScreen.MovieScreen
 
 @Composable
 fun Navigation() {
@@ -24,6 +25,10 @@ fun Navigation() {
 
         composable(route = Screens.SignUpScreen.route) {
             SignUpScreen(navController = navController)
+        }
+
+        composable (route = Screens.MovieScreen.route) {
+            MovieScreen()
         }
 
         composable(route = Screens.NavBarScreen.route) {
