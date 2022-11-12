@@ -9,8 +9,10 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawWithCache
@@ -34,22 +36,32 @@ import coil.compose.rememberAsyncImagePainter
 import com.example.movies_catalog.R
 import com.example.movies_catalog.mainScreen.galleryScreen.MainViewModel
 import com.example.movies_catalog.network.models.Review
+import com.example.movies_catalog.network.models.ReviewShort
 import com.example.movies_catalog.ui.theme.*
 import com.google.accompanist.flowlayout.FlowRow
 
 @Preview(showBackground = true)
 @Composable
 fun MovieScreen(){
+
     val movieViewModel = MovieViewModel()
+
+    reviewDialog(viewModel = movieViewModel)
+
+    val postedReview: Boolean by remember {movieViewModel.postedReview}
+    val postedReviewNum: Int by remember {movieViewModel.postedReviewNum}
+
+    //movieViewModel.checkReviews()
 
     Column(
         Modifier
             .fillMaxSize()
             .verticalScroll(rememberScrollState()),
     ) {
-        Poster(movieViewModel.movieDetails!!.poster, movieViewModel.movieDetails.name)
+        movieViewModel.checkReviews()
+        Poster(movieViewModel.movieDetails!!.poster, movieViewModel!!.movieDetails!!.name)
         Text(
-            text = movieViewModel.movieDetails.description,
+            text = movieViewModel!!.movieDetails!!.description,
             Modifier
                 .fillMaxWidth()
                 .padding(16.dp),
@@ -88,8 +100,8 @@ fun MovieScreen(){
                 .wrapContentHeight()
                 .padding(16.dp, 8.dp)
         ) {
-            for (i in 0 until movieViewModel.movieDetails.genres.size){
-                Genre(movieViewModel.movieDetails.genres[i].name)
+            for (i in 0 until movieViewModel!!.movieDetails!!.genres.size){
+                Genre(movieViewModel!!.movieDetails!!.genres[i].name)
             }
         }
         Row(
@@ -109,7 +121,8 @@ fun MovieScreen(){
             )
             Spacer(Modifier.weight(1f))
             IconButton(
-                onClick = { /*TODO*/ }
+                enabled = !postedReview,
+                onClick = { movieViewModel.openDialog() }
             ) {
                 Icon(
                     modifier = Modifier.padding(13.dp,13.dp,13.dp,13.dp),
@@ -118,9 +131,14 @@ fun MovieScreen(){
                     contentDescription = "Plus icon")
             }
         }
-        for (i in 0 until movieViewModel.movieDetails.reviews.size){
-            movieViewModel.parseDate(i)
-            Review(movieViewModel.movieDetails.reviews[i], movieViewModel.reviewDate, movieViewModel.userId)
+
+        MyReviewLoad(postedReview, postedReviewNum, movieViewModel!!.movieDetails!!.reviews)
+
+        for (i in 0 until movieViewModel!!.movieDetails!!.reviews.size){
+            if (i != postedReviewNum) {
+                movieViewModel.parseDate(i)
+                Review(movieViewModel!!.movieDetails!!.reviews[i], movieViewModel.reviewDate, movieViewModel.userId)
+            }
         }
     }
 }
@@ -508,10 +526,12 @@ fun Review(review: Review, date: String, userId: String) {
                 //val ratio: Float = review.rating * 0.1
                 val color = ColorUtils.blendARGB(Red.toArgb(), Green.toArgb(), review.rating * 0.1f)
                 Button(
-                    { },
-                    Modifier
-                        .wrapContentSize()
-                        .padding(0.dp, 6.dp),
+                    onClick = { },
+                    contentPadding = PaddingValues(16.dp, 4.dp),
+                    modifier = Modifier
+                        //.defaultMinSize(minWidth = 42.dp, minHeight = 28.dp)
+                        .padding(0.dp, 6.dp)
+                        .wrapContentSize(),
                     enabled = false,
                     colors = ButtonDefaults.buttonColors(
                         disabledBackgroundColor = Color(color),
@@ -575,6 +595,188 @@ fun Avatar(image: String?, isAnonymous: Boolean){
                 .fillMaxSize(),
             contentScale = ContentScale.Crop,
             alignment = Alignment.Center
+        )
+    }
+}
+
+@Composable
+fun reviewDialog(viewModel: MovieViewModel) {
+
+    val openDialog: Boolean by remember { viewModel.openDialog }
+    val text: String by remember { viewModel.text }
+    val checkedState: Boolean by remember { viewModel.checker }
+
+    if (openDialog) {
+        AlertDialog(
+            onDismissRequest = { viewModel.closeDialog() },
+            modifier = Modifier.wrapContentSize(),
+            buttons = {
+                Column(modifier = Modifier.padding(16.dp, 16.dp))
+                {
+                    Text(
+                        text = "Оставить отзыв",
+                        modifier = Modifier
+                            .fillMaxWidth(),
+                        color = White,
+                        fontSize = 24.sp,
+                        fontWeight = FontWeight.W700,
+                        lineHeight = 32.sp
+                    )
+                    starRatingBar(viewModel = viewModel)
+                    OutlinedTextField(
+                        value = text,
+                        onValueChange = { viewModel.onTextChange(it) },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(0.dp, 16.dp, 0.dp, 16.dp)
+                            .height(120.dp),
+                        placeholder = { Text("Отзыв") },
+                        enabled = true,
+                        shape = RoundedCornerShape(8.dp),
+                        colors = TextFieldDefaults.outlinedTextFieldColors(
+                            backgroundColor = White,
+                            unfocusedBorderColor = White,
+                            focusedBorderColor = White,
+                            placeholderColor = ReviewGray,
+                            cursorColor = Black,
+                            textColor = Black
+                        ),
+                    )
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Text(
+                            text = "Анонимный отзыв",
+                            modifier = Modifier
+                                .padding(0.dp, 0.dp, 0.dp, 16.dp)
+                                .align(CenterVertically),
+                            color = White,
+                            fontSize = 16.sp,
+                            fontWeight = FontWeight.W500,
+                            lineHeight = 20.sp
+                        )
+                        Checkbox(
+                            checked = checkedState,
+                            onCheckedChange = { viewModel.onCheckerChange(it) },
+                            modifier = Modifier
+                                .align(CenterVertically)
+                                .padding(0.dp, 0.dp, 0.dp, 16.dp),
+                            colors = CheckboxDefaults.colors(
+                                checkedColor = ReviewDialogGray,
+                                uncheckedColor = Gray,
+                                checkmarkColor = DarkRed
+                            )
+                        )
+                    }
+                    Button(
+                        modifier = Modifier
+                            .fillMaxWidth(),
+                        shape = RoundedCornerShape(4.dp),
+                        colors = ButtonDefaults.buttonColors(
+                            backgroundColor = DarkRed,
+                            contentColor = White
+                        ),
+                        onClick = {
+                            viewModel.saveReview(viewModel.movieDetails!!.id)
+                            viewModel.closeDialog()
+                            viewModel.checkReviews()
+                        }
+                    )
+                    {
+                        Text(
+                            "Сохранить",
+                            color = White,
+                            fontSize = 16.sp,
+                            fontWeight = FontWeight.W500,
+                            lineHeight = 20.sp
+                        )
+                    }
+                    Button(
+                        modifier = Modifier
+                            .fillMaxWidth(),
+                        shape = RoundedCornerShape(4.dp),
+                        colors = ButtonDefaults.buttonColors(
+                            backgroundColor = ReviewDialogGray,
+                            contentColor = DarkRed
+                        ),
+                        onClick = {
+                            viewModel.closeDialog()
+                            viewModel.newRating(0)
+                        }
+                    )
+                    {
+                        Text(
+                            "Отмена",
+                            color = DarkRed,
+                            fontSize = 16.sp,
+                            fontWeight = FontWeight.W500,
+                            lineHeight = 20.sp
+                        )
+                    }
+                }
+            },
+            shape = RoundedCornerShape(16.dp),
+            backgroundColor = ReviewDialogGray
+        )
+    }
+}
+
+@Composable
+fun starRatingBar(
+    modifier: Modifier = Modifier,
+    stars: Int = 10,
+    starsColor: Color = DarkRed,
+    unfilledStarsColor: Color = Gray,
+    viewModel: MovieViewModel,
+) {
+    val rating: Int by remember { viewModel.rating }
+    val filledStars = rating
+    val unfilledStars = stars - rating
+
+    Row(modifier = modifier.fillMaxWidth().padding(0.dp, 16.dp)) {
+        var star = 0
+        repeat(filledStars) {
+            val cur = star
+            Icon(
+                modifier = Modifier
+                    .weight(0.1f)
+                    .clickable {
+                    viewModel.newRating(cur + 1)
+                },
+                painter = painterResource(R.drawable.filled_star),
+                contentDescription = null,
+                tint = starsColor
+            )
+
+            star++
+        }
+
+        repeat(unfilledStars) {
+            val cur = star
+            Icon(
+                modifier = Modifier
+                    .weight(0.1f)
+                    .clickable { viewModel.newRating(cur + 1) },
+                painter = painterResource(R.drawable.unfilled_star),
+                contentDescription = null,
+                tint = unfilledStarsColor
+            )
+
+            star++
+        }
+    }
+}
+
+@Composable
+fun MyReviewLoad(isPosted: Boolean, num: Int, reviews: List<Review>){
+    if (isPosted) {
+        val date = reviews[num].createDateTime.substringBefore("T").split('-')
+
+        Review(
+            reviews[num],
+            date[2] + "." + date[1] + "." + date[0],
+            reviews[num].author!!.userId
         )
     }
 }

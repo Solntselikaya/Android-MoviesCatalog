@@ -28,15 +28,7 @@ class SignInViewModel: ViewModel() {
 
     fun onPasswordChange(updatedPassword : String) {
         _password.value = updatedPassword
-        isPasswordValid()
         isEmpty()
-    }
-
-    private val _isPasswordValid = mutableStateOf(true)
-    var isPasswordValid : State<Boolean> = _isPasswordValid
-
-    private fun isPasswordValid(){
-        _isPasswordValid.value = _password.value.length >= 8
     }
 
     private val _isFieldsFilled = mutableStateOf(false)
@@ -45,8 +37,7 @@ class SignInViewModel: ViewModel() {
     private fun isEmpty() {
         val login = _login.value
         val password = _password.value
-        val isPasswordValid = _isPasswordValid.value
-        _isFieldsFilled.value = !login.isNullOrEmpty() && !password.isNullOrEmpty() && (isPasswordValid)
+        _isFieldsFilled.value = !login.isNullOrEmpty() && !password.isNullOrEmpty()
     }
 
     private val _hasErrors = mutableStateOf(false)
@@ -70,14 +61,13 @@ class SignInViewModel: ViewModel() {
                 )
             ).catch {
                 _hasErrors.value = true
-            }.collect {}
-
-            if (!_hasErrors.value) {
+            }.collect {
                 favoriteMoviesRepository.getFavorites().collect {}
                 moviesRepository.getMovies(1).collect {}
                 userRepository.getUserData().collect {}
 
                 navController.navigate(Screens.NavBarScreen.route)
+                _hasErrors.value = false
             }
         }
     }

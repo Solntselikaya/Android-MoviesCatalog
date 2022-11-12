@@ -211,9 +211,7 @@ class SignUpViewModel : ViewModel() {
                 gender = _gender.value)
             ).catch {
                 _hasErrors.value = true
-            }.collect {}
-
-            if (!_hasErrors.value) {
+            }.collect {
                 repository.login(
                     LoginCredentials(
                         username = _login.value,

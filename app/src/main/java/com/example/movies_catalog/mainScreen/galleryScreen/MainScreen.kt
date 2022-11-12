@@ -16,32 +16,39 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.Alignment.Companion.Bottom
+import androidx.compose.ui.Alignment.Companion.BottomEnd
+import androidx.compose.ui.Alignment.Companion.BottomStart
+import androidx.compose.ui.Alignment.Companion.Start
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawWithCache
 import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Color.Companion.Transparent
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.graphics.ColorUtils
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.rememberAsyncImagePainter
-import com.example.movies_catalog.ui.theme.Black
-import com.example.movies_catalog.ui.theme.DarkRed
-import com.example.movies_catalog.ui.theme.White
+import com.example.movies_catalog.network.models.ReviewShort
+import com.example.movies_catalog.ui.theme.*
 
 @Composable
 fun MainScreen(openMovieDescription: () -> Unit) {
 
     val mainViewModel: MainViewModel = viewModel()
 
-    mainViewModel.resizeMoviesList()
+    //mainViewModel.resizeMoviesList()
 
-    val moviesListSize : Int by remember { mainViewModel.moviesListSize }
+    //val moviesListSize : Int by remember { mainViewModel.moviesListSize }
     val favListSize : Int by remember { mainViewModel.favListSize }
 
     LazyColumn(
@@ -88,7 +95,8 @@ fun MainScreen(openMovieDescription: () -> Unit) {
                     year = item.year,
                     country = item.country,
                     image = item.poster,
-                    genres = genres
+                    genres = genres,
+                    reviews = item.reviews
                 ) { openMovieDescription() }
             }
 
@@ -190,6 +198,7 @@ fun MovieCard(
     country: String,
     image: String,
     genres: String,
+    reviews: List<ReviewShort>,
     openMovieDescription: () -> Unit
 ) {
     Card(
@@ -202,6 +211,7 @@ fun MovieCard(
         Row(
             Modifier
                 .fillMaxWidth()
+                .wrapContentHeight()
         ) {
             Image(
                 painter = rememberAsyncImagePainter(image),
@@ -241,6 +251,34 @@ fun MovieCard(
                     lineHeight = 18.sp,
                     overflow = TextOverflow.Visible
                 )
+                Spacer(modifier = Modifier.height(4.dp))
+                Box(Modifier.fillMaxSize()) {
+                    viewModel.getMovieRating(reviews)
+                    val color = ColorUtils.blendARGB(Red.toArgb(), Green.toArgb(), viewModel.rating * 0.1f)
+                    Button(
+                        { },
+                        contentPadding = PaddingValues(16.dp, 4.dp),
+                        modifier = Modifier
+                            .wrapContentSize()
+                            .defaultMinSize(minWidth = 42.dp, minHeight = 28.dp)
+                            .align(BottomStart),
+                        enabled = false,
+                        colors = ButtonDefaults.buttonColors(
+                            disabledBackgroundColor = Color(color),
+                            disabledContentColor = White
+                        ),
+                        shape = RoundedCornerShape(16.dp)
+                    ) {
+                        Text(
+                            text = String.format("%.1f", viewModel.rating),
+                            fontSize = 16.sp,
+                            fontWeight = FontWeight.W500,
+                            textAlign = TextAlign.Center,
+                            lineHeight = 20.sp,
+                            color = White
+                        )
+                    }
+                }
             }
         }
     }

@@ -26,10 +26,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.movies_catalog.signUpScreen.SignUpViewModel
-import com.example.movies_catalog.ui.theme.DarkRed
-import com.example.movies_catalog.ui.theme.Gray
-import com.example.movies_catalog.ui.theme.MostlyBlack
-import com.example.movies_catalog.ui.theme.White
+import com.example.movies_catalog.ui.theme.*
 
 @Composable
 fun SignUpScreen(navController: NavController){
@@ -102,7 +99,8 @@ fun SignUpScreen(navController: NavController){
     if (hasErrors) {
 
         AlertDialog(
-            modifier = Modifier.wrapContentSize().background(MostlyBlack),
+            modifier = Modifier
+                .wrapContentSize().background(Transparent),
             onDismissRequest = {
                 signUpViewModel.hasErrors()
             },
@@ -110,20 +108,26 @@ fun SignUpScreen(navController: NavController){
                 Text(
                     text = "Ошибка",
                     color = White,
-                    textAlign = TextAlign.Center
+                    textAlign = TextAlign.Center,
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.W500
                 )
             },
             text = {
                 Text(
                     "Логин или почта уже заняты",
                     color = White,
-                    textAlign = TextAlign.Center)
+                    textAlign = TextAlign.Center,
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.W500
+                )
             },
             buttons = {
 
             },
             shape = RoundedCornerShape(16.dp),
-            backgroundColor = MostlyBlack
+            backgroundColor = MostlyBlack,
+            //contentColor = MostlyBlack
         )
     }
 }

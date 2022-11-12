@@ -18,6 +18,7 @@ import com.example.movies_catalog.network.Network
 import com.example.movies_catalog.network.auth.AuthRepository
 import com.example.movies_catalog.network.models.UserProfile
 import com.example.movies_catalog.network.user.UserRepository
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.launch
 import java.util.*
 
@@ -168,6 +169,13 @@ class ProfileViewModel: ViewModel() {
                 birthdate.isNotEmpty() && changed
     }
 
+    private val _hasErrors = mutableStateOf(false)
+    var hasErrors : State<Boolean> = _hasErrors
+
+    fun hasErrors() {
+        _hasErrors.value = false
+    }
+
     fun save() {
         val userRepository = UserRepository()
 
@@ -185,7 +193,9 @@ class ProfileViewModel: ViewModel() {
             )
             _isFieldsFilled.value = false
 
-            userRepository.getUserData().collect {
+            userRepository.getUserData().catch {
+                _hasErrors.value = true
+            }.collect {
                 profile = it
                 currEmail = it.email
                 currName = it.name

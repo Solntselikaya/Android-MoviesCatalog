@@ -10,7 +10,9 @@ import com.example.movies_catalog.network.favoriteMovies.FavoriteMoviesRepositor
 import com.example.movies_catalog.network.models.Genre
 import com.example.movies_catalog.network.models.MovieDetails
 import com.example.movies_catalog.network.models.MovieElement
+import com.example.movies_catalog.network.models.ReviewShort
 import com.example.movies_catalog.network.movies.MoviesRepository
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.launch
 
 class MainViewModel: ViewModel() {
@@ -66,11 +68,22 @@ class MainViewModel: ViewModel() {
         }
     }
 
+    var rating = 0.0F
+    fun getMovieRating(reviews: List<ReviewShort>) {
+        rating = 0.0F
+        for (r in reviews){
+            rating += r.rating
+        }
+        rating = rating.div(reviews.size)
+    }
+
     fun getMovieDetails(id: String, openMovieDetails: () -> Unit) {
         val movieRepository = MoviesRepository()
 
         viewModelScope.launch {
-            movieRepository.getMovieDetails(id).collect {}
+            movieRepository.getMovieDetails(id).catch {
+
+            }.collect {}
             openMovieDetails()
         }
     }
