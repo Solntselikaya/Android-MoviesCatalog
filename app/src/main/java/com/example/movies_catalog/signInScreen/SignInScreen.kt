@@ -2,6 +2,7 @@ package com.example.movies_catalog
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
@@ -9,15 +10,22 @@ import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.movies_catalog.signInScreen.SignInViewModel
+import com.example.movies_catalog.ui.theme.MostlyBlack
+import com.example.movies_catalog.ui.theme.Transparent
+import com.example.movies_catalog.ui.theme.White
 
 @Composable
 fun SignInScreen(navController: NavController) {
@@ -45,7 +53,7 @@ fun SignInScreen(navController: NavController) {
             )
             SignInLoginField(login = signInLogin) { signInViewModel.onLoginChange(it) }
             Spacer(modifier = Modifier.height(14.41.dp))
-            SignInPasswordField(password = signInPassword) { signInViewModel.onPasswordChange(it) }
+            SignInPasswordField(password = signInPassword,) { signInViewModel.onPasswordChange(it) }
         }
         Spacer(modifier = Modifier.fillMaxHeight())
         Column(
@@ -54,9 +62,9 @@ fun SignInScreen(navController: NavController) {
                 .align(Alignment.BottomCenter),
             horizontalAlignment = Alignment.CenterHorizontally
         ){
-            EntryButton(isFieldsFilled) { signInViewModel.login() }
+            EntryButton(isFieldsFilled) { signInViewModel.login(navController) }
             Button(
-                onClick = {navController.navigate("signUp")},
+                onClick = { navController.navigate("sign_up_screen") },
                 colors = ButtonDefaults.buttonColors(
                     backgroundColor = colorResource(R.color.black),
                     contentColor = colorResource(R.color.dark_red)
@@ -69,6 +77,43 @@ fun SignInScreen(navController: NavController) {
                 Text("Регистрация", fontSize = 16.sp)
             }
         }
+    }
+
+    val hasErrors : Boolean by remember { signInViewModel.hasErrors }
+
+    if (hasErrors) {
+
+        AlertDialog(
+            modifier = Modifier
+                .wrapContentSize().background(Transparent),
+            onDismissRequest = {
+                signInViewModel.hasErrors()
+            },
+            title = {
+                Text(
+                    text = "Ошибка",
+                    color = White,
+                    textAlign = TextAlign.Center,
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.W500
+                )
+            },
+            text = {
+                Text(
+                    "Логин или почта уже заняты",
+                    color = White,
+                    textAlign = TextAlign.Center,
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.W500
+                )
+            },
+            buttons = {
+
+            },
+            shape = RoundedCornerShape(16.dp),
+            backgroundColor = MostlyBlack,
+            //contentColor = MostlyBlack
+        )
     }
 }
 

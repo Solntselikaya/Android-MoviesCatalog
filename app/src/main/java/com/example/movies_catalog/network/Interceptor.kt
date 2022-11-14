@@ -11,7 +11,7 @@ class Interceptor: Interceptor {
             addHeader("Accept", "application/json")
             addHeader("Content-Type", "application/json")
             Network.token?.let {
-                addHeader("Access-Token", "Bearer ${it.token}")
+                addHeader("Authorization", "Bearer ${it.token}")
             }
         }.build()
 
@@ -21,7 +21,7 @@ class Interceptor: Interceptor {
             response = chain.proceed(request)
             response
         } catch (e: Exception){
-            response?.close()
+            //response?.close()
             chain.proceed(request)
         }
     }

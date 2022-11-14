@@ -1,4 +1,4 @@
-package com.example.movies_catalog.network
+package com.example.movies_catalog.network.models
 
 @kotlinx.serialization.Serializable
 data class TokenResponse(
