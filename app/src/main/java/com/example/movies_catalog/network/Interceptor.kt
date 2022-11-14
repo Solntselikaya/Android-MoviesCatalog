@@ -21,7 +21,7 @@ class Interceptor: Interceptor {
             response = chain.proceed(request)
             response
         } catch (e: Exception){
-            response?.close()
+            //response?.close()
             chain.proceed(request)
         }
     }

@@ -37,19 +37,19 @@ fun ProfileScreen(logout: () -> Unit) {
     val profileViewModel: ProfileViewModel = viewModel()
 
     val email: String by remember { profileViewModel.email }
-    val isEmailValid : Boolean by remember { profileViewModel.isEmailValid }
-    val isEmailLengthValid : Boolean by remember { profileViewModel.isEmailLengthValid }
+    val isEmailValid: Boolean by remember { profileViewModel.isEmailValid }
+    val isEmailLengthValid: Boolean by remember { profileViewModel.isEmailLengthValid }
 
     val name: String by remember { profileViewModel.name }
 
     val birthdate: String by remember { profileViewModel.birthdate }
-    val isDateValid : Boolean by remember { profileViewModel.isDateValid }
+    val isDateValid: Boolean by remember { profileViewModel.isDateValid }
 
     val url: String by remember { profileViewModel.url }
 
     val gender: Int by remember { profileViewModel.gender }
 
-    val isFieldsFilled : Boolean by remember { profileViewModel.isFieldsFilled }
+    val isFieldsFilled: Boolean by remember { profileViewModel.isFieldsFilled }
 
     Column(
         Modifier
@@ -58,7 +58,11 @@ fun ProfileScreen(logout: () -> Unit) {
             .background(Black)
     ) {
         Avatar(image = url, nick = profileViewModel.profile!!.nickName)
-        ProfileEmailField(email, isEmailValid, isEmailLengthValid) { profileViewModel.onEmailChange(it) }
+        ProfileEmailField(email, isEmailValid, isEmailLengthValid) {
+            profileViewModel.onEmailChange(
+                it
+            )
+        }
         ProfileLinkToAvatar(url) { profileViewModel.onUrlChange(it) }
         ProfileName(name) { profileViewModel.onNameChange(it) }
         ProfileBirthdateField(birthdate, isDateValid) { profileViewModel.onBirthdateChange(it) }
@@ -76,7 +80,8 @@ fun ProfileScreen(logout: () -> Unit) {
             modifier = Modifier
                 .padding(16.dp, 4.dp, 16.dp, 16.dp)
                 .height(44.dp)
-                .fillMaxWidth())
+                .fillMaxWidth()
+        )
         {
             Text("Выйти из аккаунта", fontSize = 16.sp)
         }
@@ -84,11 +89,14 @@ fun ProfileScreen(logout: () -> Unit) {
 }
 
 @Composable
-fun Avatar(image: String, nick: String){
+fun Avatar(image: String, nick: String) {
 
     val avatar: String =
-        if (image == "") { stringResource(R.string.default_avatar) }
-        else { image }
+        if (image == "") {
+            stringResource(R.string.default_avatar)
+        } else {
+            image
+        }
 
     Row(
         verticalAlignment = Alignment.CenterVertically,
@@ -125,7 +133,12 @@ fun Avatar(image: String, nick: String){
 }
 
 @Composable
-fun ProfileEmailField(email : String, isValid : Boolean, isLengthValid: Boolean, onEmailChange : (String) -> Unit){
+fun ProfileEmailField(
+    email: String,
+    isValid: Boolean,
+    isLengthValid: Boolean,
+    onEmailChange: (String) -> Unit
+) {
     Text(
         "E-mail",
         color = Gray,
@@ -153,7 +166,9 @@ fun ProfileEmailField(email : String, isValid : Boolean, isLengthValid: Boolean,
                     color = colorResource(R.color.gray),
                     fontSize = 14.sp,
                     fontWeight = FontWeight.W400,
-                    lineHeight = 18.sp) },
+                    lineHeight = 18.sp
+                )
+            },
             isError = !isValid,
             shape = RoundedCornerShape(8.dp),
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email)
@@ -238,7 +253,11 @@ fun ProfileName(name: String, onNameChange: (String) -> Unit) {
 }
 
 @Composable
-fun ProfileBirthdateField(birthdate : String, isValid: Boolean, onBirthdateChange : (Context) -> Unit){
+fun ProfileBirthdateField(
+    birthdate: String,
+    isValid: Boolean,
+    onBirthdateChange: (Context) -> Unit
+) {
     val mContext = LocalContext.current
 
     Text(
@@ -250,7 +269,7 @@ fun ProfileBirthdateField(birthdate : String, isValid: Boolean, onBirthdateChang
         lineHeight = 20.sp,
         textAlign = TextAlign.Left
     )
-    Column(Modifier.padding(16.dp, 8.dp, 16.dp, 12.dp)){
+    Column(Modifier.padding(16.dp, 8.dp, 16.dp, 12.dp)) {
         OutlinedTextField(
             value = birthdate,
             onValueChange = {},
@@ -281,15 +300,18 @@ fun ProfileBirthdateField(birthdate : String, isValid: Boolean, onBirthdateChang
                     color = colorResource(R.color.gray),
                     fontSize = 14.sp,
                     fontWeight = FontWeight.W400,
-                    lineHeight = 18.sp)},
+                    lineHeight = 18.sp
+                )
+            },
             isError = !isValid,
             shape = RoundedCornerShape(8.dp),
             trailingIcon = {
                 Icon(
-                    modifier = Modifier.padding(13.dp,13.dp,13.dp,13.dp),
+                    modifier = Modifier.padding(13.dp, 13.dp, 13.dp, 13.dp),
                     tint = colorResource(R.color.gray),
                     painter = painterResource(R.drawable.calendar_icon),
-                    contentDescription = "Calendar picture")
+                    contentDescription = "Calendar picture"
+                )
             }
         )
         if (!isValid) {
@@ -304,7 +326,7 @@ fun ProfileBirthdateField(birthdate : String, isValid: Boolean, onBirthdateChang
 }
 
 @Composable
-fun ProfileGenderSelect(gender : Int, onGenderChange : (Int) -> Unit){
+fun ProfileGenderSelect(gender: Int, onGenderChange: (Int) -> Unit) {
 
     val maleColor = if (gender == 0) DarkRed else Black
     val femaleColor = if (gender == 1) DarkRed else Black
@@ -319,7 +341,7 @@ fun ProfileGenderSelect(gender : Int, onGenderChange : (Int) -> Unit){
         textAlign = TextAlign.Left
     )
 
-    Row (
+    Row(
         modifier = Modifier
             .fillMaxWidth()
             .height(IntrinsicSize.Min)
@@ -345,7 +367,8 @@ fun ProfileGenderSelect(gender : Int, onGenderChange : (Int) -> Unit){
                 "Мужчина",
                 fontSize = 14.sp,
                 fontWeight = FontWeight.W400,
-                lineHeight = 18.sp)
+                lineHeight = 18.sp
+            )
         }
         Divider(
             color = Gray,
@@ -364,16 +387,18 @@ fun ProfileGenderSelect(gender : Int, onGenderChange : (Int) -> Unit){
             ),
             shape = RoundedCornerShape(0.dp, 8.dp, 8.dp, 0.dp)
         ) {
-            Text("Женщина",
+            Text(
+                "Женщина",
                 fontSize = 14.sp,
                 fontWeight = FontWeight.W400,
-                lineHeight = 18.sp)
+                lineHeight = 18.sp
+            )
         }
     }
 }
 
 @Composable
-fun ProfileSaveButton(isFieldsFilled : Boolean, save: () -> Unit){
+fun ProfileSaveButton(isFieldsFilled: Boolean, save: () -> Unit) {
 
     val borderColor = if (isFieldsFilled) DarkRed else Gray
 

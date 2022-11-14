@@ -94,12 +94,52 @@ class MovieViewModel: ViewModel() {
 
         viewModelScope.launch {
             reviewRepository.postReview(
-                movieId = id,
+                movieId = movieDetails!!.id,
                 ReviewModify(
                     _text.value,
                     _rating.value,
                     _checker.value
                 )
+            )
+
+            movieRepository.getMovieDetails(id).catch {
+
+            }.collect {
+                movieDetails = it
+                checkReviews()
+            }
+        }
+    }
+
+    fun updateReview(id: String) {
+
+        val reviewRepository = ReviewRepository()
+        val movieRepository = MoviesRepository()
+
+        viewModelScope.launch {
+            reviewRepository.putReview(
+                movieId = movieDetails!!.id,
+                id
+            )
+
+            movieRepository.getMovieDetails(id).catch {
+
+            }.collect {
+                movieDetails = it
+                checkReviews()
+            }
+        }
+    }
+
+    fun deleteReview(id: String) {
+
+        val reviewRepository = ReviewRepository()
+        val movieRepository = MoviesRepository()
+
+        viewModelScope.launch {
+            reviewRepository.deleteReview(
+                movieId = movieDetails!!.id,
+                id
             )
 
             movieRepository.getMovieDetails(id).catch {

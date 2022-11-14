@@ -211,7 +211,9 @@ class ProfileViewModel: ViewModel() {
         val authRepository = AuthRepository()
 
         viewModelScope.launch {
-            authRepository.logout().collect {}
+            authRepository.logout().collect {
+
+            }
         }
     }
 }

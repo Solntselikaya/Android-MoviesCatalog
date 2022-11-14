@@ -254,6 +254,7 @@ fun MovieCard(
                 Spacer(modifier = Modifier.height(4.dp))
                 Box(Modifier.fillMaxSize()) {
                     viewModel.getMovieRating(reviews)
+                    //выносить
                     val color = ColorUtils.blendARGB(Red.toArgb(), Green.toArgb(), viewModel.rating * 0.1f)
                     Button(
                         { },

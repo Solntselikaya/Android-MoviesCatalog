@@ -137,7 +137,7 @@ fun MovieScreen(){
         for (i in 0 until movieViewModel!!.movieDetails!!.reviews.size){
             if (i != postedReviewNum) {
                 movieViewModel.parseDate(i)
-                Review(movieViewModel!!.movieDetails!!.reviews[i], movieViewModel.reviewDate, movieViewModel.userId)
+                ReviewShow(movieViewModel!!.movieDetails!!.reviews[i], movieViewModel.reviewDate, movieViewModel.userId)
             }
         }
     }
@@ -479,7 +479,7 @@ fun Genre(name: String) {
 }
 
 @Composable
-fun Review(review: Review, date: String, userId: String) {
+fun ReviewShow(review: Review, date: String, userId: String) {
     Card(
         Modifier
             .wrapContentSize()
@@ -560,17 +560,57 @@ fun Review(review: Review, date: String, userId: String) {
                 lineHeight = 18.sp,
                 color = White
             )
-            Text(
-                text = date,
-                Modifier
-                    .padding(8.dp, 4.dp, 8.dp, 8.dp)
-                    .fillMaxWidth(),
-                fontSize = 12.sp,
-                fontWeight = FontWeight.W400,
-                textAlign = TextAlign.Start,
-                lineHeight = 14.sp,
-                color = TextGray
-            )
+            if (review.author?.userId == userId) {
+                Row(
+                    verticalAlignment = Alignment.Bottom,
+                    //horizontalArrangement = Arrangement.Start
+                ) {
+                    Text(
+                        text = date,
+                        Modifier
+                            //.fillMaxWidth()
+                            .padding(8.dp, 0.dp, 8.dp, 0.dp)
+                            .align(CenterVertically),
+                        fontSize = 12.sp,
+                        fontWeight = FontWeight.W400,
+                        textAlign = TextAlign.Start,
+                        lineHeight = 14.sp,
+                        color = TextGray
+                    )
+                    Spacer(Modifier.weight(1f))
+                    IconButton(
+                        onClick = { /* movieViewModel.openDialog() */ }
+                    ) {
+                        Icon(
+                            modifier = Modifier.size(24.dp),
+                            tint = Gray,
+                            painter = painterResource(R.drawable.edit_icon),
+                            contentDescription = "Plus icon")
+                    }
+                    IconButton(
+                        onClick = { /* movieViewModel.openDialog() */ }
+                    ) {
+                        Icon(
+                            modifier = Modifier.size(24.dp),
+                            tint = Red,
+                            painter = painterResource(R.drawable.delete_icon),
+                            contentDescription = "Plus icon")
+                    }
+                }
+            }
+            else {
+                Text(
+                    text = date,
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(8.dp, 4.dp, 8.dp, 8.dp),
+                    fontSize = 12.sp,
+                    fontWeight = FontWeight.W400,
+                    textAlign = TextAlign.Start,
+                    lineHeight = 14.sp,
+                    color = TextGray
+                )
+            }
         }
     }
 }
@@ -773,7 +813,7 @@ fun MyReviewLoad(isPosted: Boolean, num: Int, reviews: List<Review>){
     if (isPosted) {
         val date = reviews[num].createDateTime.substringBefore("T").split('-')
 
-        Review(
+        ReviewShow(
             reviews[num],
             date[2] + "." + date[1] + "." + date[0],
             reviews[num].author!!.userId
