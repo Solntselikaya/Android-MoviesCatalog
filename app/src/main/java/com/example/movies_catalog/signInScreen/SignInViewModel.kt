@@ -1,8 +1,12 @@
-package com.example.movies_catalog.SignInScreen
+package com.example.movies_catalog.signInScreen
 
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.example.movies_catalog.network.auth.AuthRepository
+import com.example.movies_catalog.network.auth.LoginCredentials
+import kotlinx.coroutines.launch
 
 class SignInViewModel: ViewModel() {
     private val _login = mutableStateOf("")
@@ -28,5 +32,20 @@ class SignInViewModel: ViewModel() {
         val login = _login.value
         val password = _password.value
         _isFieldsFilled.value = !login.isNullOrEmpty() && !password.isNullOrEmpty()
+    }
+
+    fun login() {
+        val repository = AuthRepository()
+
+        viewModelScope.launch {
+            repository.login(
+                LoginCredentials(
+                    username = _login.value,
+                    password = _password.value
+                )
+            ).collect { token ->
+                val a = token
+            }
+        }
     }
 }

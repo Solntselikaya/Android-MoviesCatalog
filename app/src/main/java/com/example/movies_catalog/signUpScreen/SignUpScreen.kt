@@ -23,7 +23,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.movies_catalog.SignUpScreen.SignUpViewModel
+import com.example.movies_catalog.signUpScreen.SignUpViewModel
 
 @Composable
 fun SignUpScreen(){
@@ -70,7 +70,7 @@ fun SignUpScreen(){
             SignUpRepeatedPasswordField(repeatedPassword = signUpRepeatedPassword, isValid = isPasswordsEqual) { signUpViewModel.onRepeatedPasswordChange(it) }
             SignUpBirthdateField(birthdate = signUpBirthdate) { signUpViewModel.onBirthdateChange(it) }
             GenderSelect(gender = signUpGender) { signUpViewModel.onGenderChange(it) }
-            RegistrationButton(isFieldsFilled)
+            RegistrationButton(isFieldsFilled) {signUpViewModel.register()}
             Button(
                 onClick = {},
                 colors = ButtonDefaults.buttonColors(
@@ -189,6 +189,7 @@ fun SignUpNameField(name : String, onNameChange : (String) -> Unit){
     )
 }
 
+//добавить проверку, что пароль не менее 8 символов
 @Composable
 fun SignUpPasswordField(password : String, onPasswordChange : (String) -> Unit){
     OutlinedTextField(
@@ -350,10 +351,10 @@ fun GenderSelect(gender : Int, onGenderChange : (Int) -> Unit){
 }
 
 @Composable
-fun RegistrationButton(isFieldsFilled : Boolean){
+fun RegistrationButton(isFieldsFilled : Boolean, register: () -> Unit){
     val borderColor = if (isFieldsFilled) colorResource(R.color.dark_red) else colorResource(R.color.gray)
     Button(
-        onClick = {/* TODO */},
+        onClick = { register() },
         enabled = isFieldsFilled,
         colors = ButtonDefaults.buttonColors(
             backgroundColor = colorResource(R.color.dark_red),

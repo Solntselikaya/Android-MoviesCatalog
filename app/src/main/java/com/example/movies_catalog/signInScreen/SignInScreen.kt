@@ -17,7 +17,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import com.example.movies_catalog.SignInScreen.SignInViewModel
+import com.example.movies_catalog.signInScreen.SignInViewModel
 
 @Composable
 fun SignInScreen(navController: NavController) {
@@ -54,7 +54,7 @@ fun SignInScreen(navController: NavController) {
                 .align(Alignment.BottomCenter),
             horizontalAlignment = Alignment.CenterHorizontally
         ){
-            EntryButton(isFieldsFilled)
+            EntryButton(isFieldsFilled) { signInViewModel.login() }
             Button(
                 onClick = {navController.navigate("signUp")},
                 colors = ButtonDefaults.buttonColors(
@@ -123,10 +123,10 @@ fun SignInPasswordField(password: String, onPasswordChange: (String) -> Unit) {
 }
 
 @Composable
-fun EntryButton(isFieldsFilled: Boolean) {
+fun EntryButton(isFieldsFilled: Boolean, login: () -> Unit) {
     val borderColor = if (isFieldsFilled) colorResource(R.color.dark_red) else colorResource(R.color.gray)
     Button(
-        onClick = {/* TODO */ },
+        onClick = { login() },
         enabled = isFieldsFilled,
         colors = ButtonDefaults.buttonColors(
             backgroundColor = colorResource(R.color.dark_red),
