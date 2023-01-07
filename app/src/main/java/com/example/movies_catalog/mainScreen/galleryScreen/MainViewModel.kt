@@ -15,11 +15,11 @@ import com.example.movies_catalog.network.movies.MoviesRepository
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.launch
 
-class MainViewModel: ViewModel() {
+class MainViewModel : ViewModel() {
     val movies = Network.movies
     val favorite = Network.favoriteMovies
 
-    var genresString : String = ""
+    var genresString: String = ""
 
     var movieList = mutableStateListOf(
         movies!!.movies[0],
@@ -31,7 +31,7 @@ class MainViewModel: ViewModel() {
     )
 
     private val _moviesListSize = mutableStateOf(0)
-    var moviesListSize : State<Int> = _moviesListSize
+    var moviesListSize: State<Int> = _moviesListSize
 
     fun resizeMoviesList() {
         _moviesListSize.value = movies!!.movies.size
@@ -39,7 +39,7 @@ class MainViewModel: ViewModel() {
     }
 
     private val _favListSize = mutableStateOf(0)
-    var favListSize : State<Int> = _favListSize
+    var favListSize: State<Int> = _favListSize
 
     var page = 2
     fun getMovies() {
@@ -53,25 +53,26 @@ class MainViewModel: ViewModel() {
         }
     }
 
-    fun getGenresString(genres: List<Genre>){
+    fun getGenresString(genres: List<Genre>) {
         val genresListSize = genres.size
         var curGenre = 0
         genresString = ""
 
-        while (curGenre != genresListSize){
+        while (curGenre != genresListSize) {
             val txt = genres[curGenre].name
-            genresString += if (curGenre == genresListSize - 1){ "$txt" }
-            else {
+            genresString += if (curGenre == genresListSize - 1) {
+                "$txt"
+            } else {
                 "$txt, "
             }
-            curGenre ++
+            curGenre++
         }
     }
 
     var rating = 0.0F
     fun getMovieRating(reviews: List<ReviewShort>) {
         rating = 0.0F
-        for (r in reviews){
+        for (r in reviews) {
             rating += r.rating
         }
         rating = rating.div(reviews.size)

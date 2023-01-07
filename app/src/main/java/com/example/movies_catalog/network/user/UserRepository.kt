@@ -10,13 +10,13 @@ import kotlinx.coroutines.flow.flowOn
 class UserRepository {
     private val api: UserApi = Network.getUserApi()
 
-    fun getUserData(): Flow<UserProfile> = flow{
+    fun getUserData(): Flow<UserProfile> = flow {
         val userProfile = api.getProfile()
         Network.profile = userProfile
         emit(userProfile)
     }.flowOn(Dispatchers.IO)
 
-    suspend fun putUserData(body: UserProfile){
+    suspend fun putUserData(body: UserProfile) {
         api.updateProfile(body)
     }
 }

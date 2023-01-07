@@ -1,7 +1,7 @@
 package com.example.movies_catalog.network.models
 
 @kotlinx.serialization.Serializable
-data class MovieElement (
+data class MovieElement(
     val id: String,
     val name: String = "",
     val poster: String = "",

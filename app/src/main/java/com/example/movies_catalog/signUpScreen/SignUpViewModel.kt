@@ -29,17 +29,17 @@ import java.time.LocalDateTime
 
 class SignUpViewModel : ViewModel() {
     private val _login = mutableStateOf("")
-    var login : State<String> = _login
+    var login: State<String> = _login
 
-    fun onLoginChange(updatedLogin : String) {
+    fun onLoginChange(updatedLogin: String) {
         _login.value = updatedLogin
         isEmpty()
     }
 
     private val _email = mutableStateOf("")
-    var email : State<String> = _email
+    var email: State<String> = _email
 
-    fun onEmailChange(updatedEmail : String) {
+    fun onEmailChange(updatedEmail: String) {
         _email.value = updatedEmail
         isEmailValid()
         isEmailLengthValid()
@@ -47,66 +47,67 @@ class SignUpViewModel : ViewModel() {
     }
 
     private val _isEmailValid = mutableStateOf(true)
-    var isEmailValid : State<Boolean> = _isEmailValid
+    var isEmailValid: State<Boolean> = _isEmailValid
 
-    private fun isEmailValid(){
+    private fun isEmailValid() {
         _isEmailValid.value = Patterns.EMAIL_ADDRESS.matcher(_email.value).matches()
     }
 
     private val _isEmailLengthValid = mutableStateOf(true)
-    var isEmailLengthValid : State<Boolean> = _isEmailLengthValid
+    var isEmailLengthValid: State<Boolean> = _isEmailLengthValid
 
-    private fun isEmailLengthValid(){
+    private fun isEmailLengthValid() {
         _isEmailLengthValid.value = _email.value.substringBefore("@").length >= 3
     }
 
     private val _name = mutableStateOf("")
-    var name : State<String> = _name
+    var name: State<String> = _name
 
-    fun onNameChange(updatedName : String) {
+    fun onNameChange(updatedName: String) {
         _name.value = updatedName
         isEmpty()
     }
 
     private val _password = mutableStateOf("")
-    var password : State<String> = _password
+    var password: State<String> = _password
 
-    fun onPasswordChange(updatedPassword : String) {
+    fun onPasswordChange(updatedPassword: String) {
         _password.value = updatedPassword
         isPasswordValid()
         isEmpty()
     }
 
     private val _isPasswordValid = mutableStateOf(true)
-    var isPasswordValid : State<Boolean> = _isPasswordValid
+    var isPasswordValid: State<Boolean> = _isPasswordValid
 
-    private fun isPasswordValid(){
+    private fun isPasswordValid() {
         _isPasswordValid.value = _password.value.length >= 8
     }
 
     private val _repeatedPassword = mutableStateOf("")
-    var repeatedPassword : State<String> = _repeatedPassword
+    var repeatedPassword: State<String> = _repeatedPassword
 
-    fun onRepeatedPasswordChange(updatedPassword : String) {
+    fun onRepeatedPasswordChange(updatedPassword: String) {
         _repeatedPassword.value = updatedPassword
         isPasswordsEqual()
         isEmpty()
     }
 
     private val _isPasswordsEqual = mutableStateOf(true)
-    var isPasswordsEqual : State<Boolean> = _isPasswordsEqual
+    var isPasswordsEqual: State<Boolean> = _isPasswordsEqual
 
-    private fun isPasswordsEqual(){
+    private fun isPasswordsEqual() {
         _isPasswordsEqual.value = _password.value == _repeatedPassword.value
     }
 
     private val _birthdate = mutableStateOf("")
-    var birthdate : State<String> = _birthdate
+    var birthdate: State<String> = _birthdate
 
 
     private var requestData = ""
+
     @SuppressLint("SimpleDateFormat")
-    fun onBirthdateChange(context : Context) {
+    fun onBirthdateChange(context: Context) {
         val mCalendar = Calendar.getInstance()
 
         val mYear = mCalendar.get(Calendar.YEAR)
@@ -120,9 +121,9 @@ class SignUpViewModel : ViewModel() {
             context,
             R.style.MyDatePickerDialogTheme,
             { _: DatePicker, mYear: Int, mMonth: Int, mDayOfMonth: Int ->
-                _birthdate.value = "$mDayOfMonth.${mMonth+1}.$mYear"
+                _birthdate.value = "$mDayOfMonth.${mMonth + 1}.$mYear"
 
-                val month = mFormat.format(mMonth+1)
+                val month = mFormat.format(mMonth + 1)
                 val day = mFormat.format(mDayOfMonth)
                 requestData = "${mYear}-$month-$day"
                 isDateValid()
@@ -133,10 +134,11 @@ class SignUpViewModel : ViewModel() {
         mDatePickerDialog.show()
     }
 
+    //неправильная проверка даты, нужно поменять
     private val _isDateValid = mutableStateOf(true)
-    var isDateValid : State<Boolean> = _isDateValid
+    var isDateValid: State<Boolean> = _isDateValid
 
-    private fun isDateValid(){
+    private fun isDateValid() {
         val time = Calendar.getInstance().time
         val formatter = SimpleDateFormat("yyyy-MM-dd")
         val current = formatter.format(time)
@@ -149,15 +151,15 @@ class SignUpViewModel : ViewModel() {
     }
 
     private val _gender = mutableStateOf(-1)
-    var gender : State<Int> = _gender
+    var gender: State<Int> = _gender
 
-    fun onGenderChange(updatedGender : Int){
+    fun onGenderChange(updatedGender: Int) {
         _gender.value = updatedGender
         isEmpty()
     }
 
     private val _isFieldsFilled = mutableStateOf(false)
-    var isFieldsFilled : State<Boolean> = _isFieldsFilled
+    var isFieldsFilled: State<Boolean> = _isFieldsFilled
 
     private fun isEmpty() {
         val login = _login.value
@@ -173,21 +175,21 @@ class SignUpViewModel : ViewModel() {
         val isDateValid = _isDateValid.value
         val gender = _gender.value
         _isFieldsFilled.value = !login.isNullOrEmpty() &&
-                                !email.isNullOrEmpty() &&
-                                (isEmailValid) &&
-                                (isEmailLengthValid) &&
-                                (isPasswordValid) &&
-                                (isDateValid) &&
-                                !name.isNullOrEmpty() &&
-                                !password.isNullOrEmpty() &&
-                                !repeatedPassword.isNullOrEmpty() &&
-                                (isPasswordsEqual) &&
-                                !birthdate.isNullOrEmpty() &&
-                                (gender != -1)
+                !email.isNullOrEmpty() &&
+                (isEmailValid) &&
+                (isEmailLengthValid) &&
+                (isPasswordValid) &&
+                //(isDateValid) &&
+                !name.isNullOrEmpty() &&
+                !password.isNullOrEmpty() &&
+                !repeatedPassword.isNullOrEmpty() &&
+                (isPasswordsEqual) &&
+                !birthdate.isNullOrEmpty() &&
+                (gender != -1)
     }
 
     private val _hasErrors = mutableStateOf(false)
-    var hasErrors : State<Boolean> = _hasErrors
+    var hasErrors: State<Boolean> = _hasErrors
 
     fun hasErrors() {
         _hasErrors.value = false
@@ -203,12 +205,13 @@ class SignUpViewModel : ViewModel() {
         viewModelScope.launch {
             repository.register(
                 UserRegister(
-                userName = _login.value,
-                name = _name.value,
-                password = _password.value,
-                email = _email.value,
-                birthDate = requestData,
-                gender = _gender.value)
+                    userName = _login.value,
+                    name = _name.value,
+                    password = _password.value,
+                    email = _email.value,
+                    birthDate = requestData,
+                    gender = _gender.value
+                )
             ).catch {
                 _hasErrors.value = true
             }.collect {

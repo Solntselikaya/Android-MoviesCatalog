@@ -4,7 +4,7 @@ import okhttp3.Interceptor
 import okhttp3.Request
 import okhttp3.Response
 
-class Interceptor: Interceptor {
+class Interceptor : Interceptor {
     override fun intercept(chain: Interceptor.Chain): Response {
 
         val request: Request = chain.request().newBuilder().apply {
@@ -17,10 +17,10 @@ class Interceptor: Interceptor {
 
         var response: Response? = null
 
-        return try{
+        return try {
             response = chain.proceed(request)
             response
-        } catch (e: Exception){
+        } catch (e: Exception) {
             //response?.close()
             chain.proceed(request)
         }

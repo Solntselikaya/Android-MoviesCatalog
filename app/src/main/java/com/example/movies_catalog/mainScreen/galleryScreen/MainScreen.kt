@@ -28,6 +28,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Color.Companion.Transparent
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -38,6 +39,7 @@ import androidx.core.graphics.ColorUtils
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.rememberAsyncImagePainter
+import com.example.movies_catalog.R
 import com.example.movies_catalog.network.models.ReviewShort
 import com.example.movies_catalog.ui.theme.*
 
@@ -49,26 +51,26 @@ fun MainScreen(openMovieDescription: () -> Unit) {
     //mainViewModel.resizeMoviesList()
 
     //val moviesListSize : Int by remember { mainViewModel.moviesListSize }
-    val favListSize : Int by remember { mainViewModel.favListSize }
+    val favListSize: Int by remember { mainViewModel.favListSize }
 
     LazyColumn(
         Modifier
             .fillMaxSize()
             .background(Black)
-    ){
+    ) {
         item {
             FirstMovieCard(
                 mainViewModel
-            ) {openMovieDescription()}
+            ) { openMovieDescription() }
         }
         item {
-            if (favListSize != 0){
+            if (favListSize != 0) {
                 FavoritesList()
             }
         }
         item {
             Text(
-                text = "Галерея",
+                text = stringResource(R.string.gallery),
                 color = DarkRed,
                 fontSize = 24.sp,
                 fontWeight = FontWeight.W700,
@@ -100,7 +102,7 @@ fun MainScreen(openMovieDescription: () -> Unit) {
                 ) { openMovieDescription() }
             }
 
-            if (index == lastIndex && mainViewModel.page < 6){
+            if (index == lastIndex && mainViewModel.page < 6) {
                 mainViewModel.getMovies()
             }
         }
@@ -112,7 +114,7 @@ fun FirstMovieCard(
     viewModel: MainViewModel,
     openMovieDescription: () -> Unit
 ) {
-    Box(modifier = Modifier.wrapContentSize()){
+    Box(modifier = Modifier.wrapContentSize()) {
         Image(
             painter = rememberAsyncImagePainter(viewModel.movies!!.movies[0].poster),
             contentDescription = "Movie's Poster",
@@ -146,14 +148,15 @@ fun FirstMovieCard(
             shape = RoundedCornerShape(8.dp)
         )
         {
-            Text("Смотреть", fontSize = 16.sp)
+            Text(stringResource(R.string.watch), fontSize = 16.sp)
         }
     }
 }
 
 @Composable
-fun FavoriteMovieCard(image: String, openMovieDescription: () -> Unit){
-    Box(modifier = Modifier.fillMaxHeight()
+fun FavoriteMovieCard(image: String, openMovieDescription: () -> Unit) {
+    Box(
+        modifier = Modifier.fillMaxHeight()
     ) {
         Image(
             painter = rememberAsyncImagePainter(image),
@@ -166,9 +169,9 @@ fun FavoriteMovieCard(image: String, openMovieDescription: () -> Unit){
 }
 
 @Composable
-fun FavoritesList(){
+fun FavoritesList() {
     Text(
-        text = "Избранное",
+        text = stringResource(R.string.favourites),
         color = DarkRed,
         fontSize = 24.sp,
         fontWeight = FontWeight.W700,
@@ -255,7 +258,8 @@ fun MovieCard(
                 Box(Modifier.fillMaxSize()) {
                     viewModel.getMovieRating(reviews)
                     //выносить
-                    val color = ColorUtils.blendARGB(Red.toArgb(), Green.toArgb(), viewModel.rating * 0.1f)
+                    val color =
+                        ColorUtils.blendARGB(Red.toArgb(), Green.toArgb(), viewModel.rating * 0.1f)
                     Button(
                         { },
                         contentPadding = PaddingValues(16.dp, 4.dp),

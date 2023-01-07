@@ -1,18 +1,18 @@
 package com.example.movies_catalog.movieScreen
 
 import androidx.compose.foundation.*
-import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.Alignment.Companion.Center
+import androidx.compose.ui.Alignment.Companion.CenterEnd
 import androidx.compose.ui.Alignment.Companion.CenterVertically
+import androidx.compose.ui.Alignment.Companion.End
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawWithCache
@@ -20,36 +20,30 @@ import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import androidx.core.app.NotificationCompat.getColor
-import androidx.core.content.ContextCompat
 import androidx.core.graphics.ColorUtils
 import coil.compose.rememberAsyncImagePainter
 import com.example.movies_catalog.R
-import com.example.movies_catalog.mainScreen.galleryScreen.MainViewModel
 import com.example.movies_catalog.network.models.Review
-import com.example.movies_catalog.network.models.ReviewShort
 import com.example.movies_catalog.ui.theme.*
 import com.google.accompanist.flowlayout.FlowRow
 
-@Preview(showBackground = true)
+//@Preview(showBackground = true)
 @Composable
-fun MovieScreen(){
+fun MovieScreen() {
 
     val movieViewModel = MovieViewModel()
 
-    reviewDialog(viewModel = movieViewModel)
+    ReviewDialog(viewModel = movieViewModel)
 
-    val postedReview: Boolean by remember {movieViewModel.postedReview}
-    val postedReviewNum: Int by remember {movieViewModel.postedReviewNum}
+    val postedReview: Boolean by remember { movieViewModel.postedReview }
+    val postedReviewNum: Int by remember { movieViewModel.postedReviewNum }
 
     //movieViewModel.checkReviews()
 
@@ -59,39 +53,33 @@ fun MovieScreen(){
             .verticalScroll(rememberScrollState()),
     ) {
         movieViewModel.checkReviews()
-        Poster(movieViewModel.movieDetails!!.poster, movieViewModel!!.movieDetails!!.name)
+        Poster(movieViewModel.movieDetails!!.poster, movieViewModel.movieDetails!!.name)
         Text(
-            text = movieViewModel!!.movieDetails!!.description,
+            text = movieViewModel.movieDetails!!.description,
             Modifier
                 .fillMaxWidth()
                 .padding(16.dp),
-            color = White,
-            fontSize = 14.sp,
-            fontWeight = FontWeight.W400,
+            style = MaterialTheme.typography.body2,
             textAlign = TextAlign.Start,
-            lineHeight = 18.sp
+            color = White
         )
         Text(
-            text = "О фильме",
+            text = stringResource(R.string.about_movie),
             Modifier
                 .fillMaxWidth()
                 .padding(16.dp, 0.dp),
-            fontSize = 16.sp,
-            fontWeight = FontWeight.W500,
+            style = MaterialTheme.typography.body1,
             textAlign = TextAlign.Start,
-            lineHeight = 20.sp,
             color = White
         )
         Description(movieViewModel)
         Text(
-            text = "Жанры",
+            text = stringResource(R.string.genres),
             Modifier
                 .fillMaxWidth()
                 .padding(16.dp, 0.dp),
-            fontSize = 16.sp,
-            fontWeight = FontWeight.W500,
+            style = MaterialTheme.typography.body1,
             textAlign = TextAlign.Start,
-            lineHeight = 20.sp,
             color = White
         )
         FlowRow(
@@ -100,44 +88,51 @@ fun MovieScreen(){
                 .wrapContentHeight()
                 .padding(16.dp, 8.dp)
         ) {
-            for (i in 0 until movieViewModel!!.movieDetails!!.genres.size){
-                Genre(movieViewModel!!.movieDetails!!.genres[i].name)
+            for (i in 0 until movieViewModel.movieDetails!!.genres.size) {
+                Genre(movieViewModel.movieDetails!!.genres[i].name)
             }
         }
         Row(
             Modifier
+                .padding(16.dp, 8.dp)
                 .fillMaxWidth()
-                .wrapContentHeight()
-                .padding(16.dp, 16.dp, 16.dp, 8.dp),
-            verticalAlignment = Alignment.CenterVertically
+                .height(24.dp),
+            verticalAlignment = CenterVertically
         ) {
             Text(
-                text = "Отзывы",
-                fontSize = 16.sp,
-                fontWeight = FontWeight.W500,
+                text = stringResource(R.string.reviews),
+                modifier = Modifier.padding(0.dp, 0.dp, 0.dp, 4.dp),
+                style = MaterialTheme.typography.body1,
                 textAlign = TextAlign.Start,
-                lineHeight = 20.sp,
                 color = White
             )
             Spacer(Modifier.weight(1f))
             IconButton(
+                modifier = Modifier.requiredSize(24.dp),
                 enabled = !postedReview,
                 onClick = { movieViewModel.openDialog() }
             ) {
                 Icon(
-                    modifier = Modifier.padding(13.dp,13.dp,13.dp,13.dp),
+                    modifier = Modifier
+                        .padding(4.dp)
+                        .size(16.dp),
                     tint = DarkRed,
                     painter = painterResource(R.drawable.plus_icon),
-                    contentDescription = "Plus icon")
+                    contentDescription = stringResource(R.string.plus_icon_description)
+                )
             }
         }
 
-        MyReviewLoad(postedReview, postedReviewNum, movieViewModel!!.movieDetails!!.reviews)
+        MyReviewLoad(postedReview, postedReviewNum, movieViewModel.movieDetails!!.reviews)
 
-        for (i in 0 until movieViewModel!!.movieDetails!!.reviews.size){
+        for (i in 0 until movieViewModel.movieDetails!!.reviews.size) {
             if (i != postedReviewNum) {
                 movieViewModel.parseDate(i)
-                ReviewShow(movieViewModel!!.movieDetails!!.reviews[i], movieViewModel.reviewDate, movieViewModel.userId)
+                ReviewShow(
+                    movieViewModel.movieDetails!!.reviews[i],
+                    movieViewModel.reviewDate,
+                    movieViewModel.userId
+                )
             }
         }
     }
@@ -145,10 +140,10 @@ fun MovieScreen(){
 
 @Composable
 fun Poster(image: String, name: String) {
-    Box(modifier = Modifier.wrapContentSize()){
+    Box(modifier = Modifier.wrapContentSize()) {
         Image(
             painter = rememberAsyncImagePainter(image),
-            contentDescription = "Movie's Poster",
+            contentDescription = stringResource(R.string.movies_poster_description),
             contentScale = ContentScale.Crop,
             modifier = Modifier
                 .fillMaxWidth()
@@ -171,16 +166,14 @@ fun Poster(image: String, name: String) {
                 .fillMaxWidth()
                 .padding(16.dp, 0.dp, 16.dp, 16.dp)
                 .align(Alignment.BottomCenter),
-            fontWeight = FontWeight.W700,
-            fontSize = 36.sp,
-            lineHeight = 40.sp,
+            style = MaterialTheme.typography.h4,
             color = White
         )
     }
 }
 
 @Composable
-fun Description(viewModel: MovieViewModel){
+fun Description(viewModel: MovieViewModel) {
     Column(
         Modifier
             .fillMaxWidth()
@@ -193,15 +186,13 @@ fun Description(viewModel: MovieViewModel){
                 .wrapContentHeight()
         ) {
             Text(
-                text = "Год",
+                text = stringResource(R.string.year),
                 Modifier
                     .fillMaxWidth()
                     .padding(0.dp, 0.dp, 8.dp, 0.dp)
                     .weight(0.34f),
-                fontSize = 12.sp,
-                fontWeight = FontWeight.W500,
+                style = MaterialTheme.typography.subtitle1,
                 textAlign = TextAlign.Start,
-                lineHeight = 14.sp,
                 color = TextGray
             )
             Text(
@@ -209,32 +200,29 @@ fun Description(viewModel: MovieViewModel){
                 Modifier
                     .fillMaxWidth()
                     .weight(0.66f),
-                fontSize = 12.sp,
-                fontWeight = FontWeight.W500,
+                style = MaterialTheme.typography.subtitle1,
                 textAlign = TextAlign.Start,
-                lineHeight = 14.sp,
                 color = White
             )
         }
         Spacer(
             Modifier
                 .fillMaxWidth()
-                .height(4.dp))
+                .height(4.dp)
+        )
         Row(
             Modifier
                 .fillMaxWidth()
                 .wrapContentHeight()
         ) {
             Text(
-                text = "Страна",
+                text = stringResource(R.string.country),
                 Modifier
                     .fillMaxWidth()
                     .padding(0.dp, 0.dp, 8.dp, 0.dp)
                     .weight(0.34f),
-                fontSize = 12.sp,
-                fontWeight = FontWeight.W500,
+                style = MaterialTheme.typography.subtitle1,
                 textAlign = TextAlign.Start,
-                lineHeight = 14.sp,
                 color = TextGray
             )
             Text(
@@ -242,43 +230,38 @@ fun Description(viewModel: MovieViewModel){
                 Modifier
                     .fillMaxWidth()
                     .weight(0.66f),
-                fontSize = 12.sp,
-                fontWeight = FontWeight.W500,
+                style = MaterialTheme.typography.subtitle1,
                 textAlign = TextAlign.Start,
-                lineHeight = 14.sp,
                 color = White
             )
         }
         Spacer(
             Modifier
                 .fillMaxWidth()
-                .height(4.dp))
+                .height(4.dp)
+        )
         Row(
             Modifier
                 .fillMaxWidth()
                 .wrapContentHeight()
         ) {
             Text(
-                text = "Время",
+                text = stringResource(R.string.time),
                 Modifier
                     .fillMaxWidth()
                     .padding(0.dp, 0.dp, 8.dp, 0.dp)
                     .weight(0.34f),
-                fontSize = 12.sp,
-                fontWeight = FontWeight.W500,
+                style = MaterialTheme.typography.subtitle1,
                 textAlign = TextAlign.Start,
-                lineHeight = 14.sp,
                 color = TextGray
             )
             Text(
-                text = viewModel.movieDetails!!.time.toString() + " мин.",
+                text = viewModel.movieDetails!!.time.toString() + stringResource(R.string.minutes),
                 Modifier
                     .fillMaxWidth()
                     .weight(0.66f),
-                fontSize = 12.sp,
-                fontWeight = FontWeight.W500,
+                style = MaterialTheme.typography.subtitle1,
                 textAlign = TextAlign.Start,
-                lineHeight = 14.sp,
                 color = White
             )
 
@@ -286,22 +269,21 @@ fun Description(viewModel: MovieViewModel){
         Spacer(
             Modifier
                 .fillMaxWidth()
-                .height(4.dp))
+                .height(4.dp)
+        )
         Row(
             Modifier
                 .fillMaxWidth()
                 .wrapContentHeight()
         ) {
             Text(
-                text = "Слоган",
+                text = stringResource(R.string.slogan),
                 Modifier
                     .fillMaxWidth()
                     .padding(0.dp, 0.dp, 8.dp, 0.dp)
                     .weight(0.34f),
-                fontSize = 12.sp,
-                fontWeight = FontWeight.W500,
+                style = MaterialTheme.typography.subtitle1,
                 textAlign = TextAlign.Start,
-                lineHeight = 14.sp,
                 color = TextGray
             )
             Text(
@@ -309,32 +291,29 @@ fun Description(viewModel: MovieViewModel){
                 Modifier
                     .fillMaxWidth()
                     .weight(0.66f),
-                fontSize = 12.sp,
-                fontWeight = FontWeight.W500,
+                style = MaterialTheme.typography.subtitle1,
                 textAlign = TextAlign.Start,
-                lineHeight = 14.sp,
                 color = White
             )
         }
         Spacer(
             Modifier
                 .fillMaxWidth()
-                .height(4.dp))
+                .height(4.dp)
+        )
         Row(
             Modifier
                 .fillMaxWidth()
                 .wrapContentHeight()
         ) {
             Text(
-                text = "Режиссер",
+                text = stringResource(R.string.director),
                 Modifier
                     .fillMaxWidth()
                     .padding(0.dp, 0.dp, 8.dp, 0.dp)
                     .weight(0.34f),
-                fontSize = 12.sp,
-                fontWeight = FontWeight.W500,
+                style = MaterialTheme.typography.subtitle1,
                 textAlign = TextAlign.Start,
-                lineHeight = 14.sp,
                 color = TextGray
             )
             Text(
@@ -342,32 +321,29 @@ fun Description(viewModel: MovieViewModel){
                 Modifier
                     .fillMaxWidth()
                     .weight(0.66f),
-                fontSize = 12.sp,
-                fontWeight = FontWeight.W500,
+                style = MaterialTheme.typography.subtitle1,
                 textAlign = TextAlign.Start,
-                lineHeight = 14.sp,
                 color = White
             )
         }
         Spacer(
             Modifier
                 .fillMaxWidth()
-                .height(4.dp))
+                .height(4.dp)
+        )
         Row(
             Modifier
                 .fillMaxWidth()
                 .wrapContentHeight()
         ) {
             Text(
-                text = "Бюджет",
+                text = stringResource(R.string.budget),
                 Modifier
                     .fillMaxWidth()
                     .padding(0.dp, 0.dp, 8.dp, 0.dp)
                     .weight(0.34f),
-                fontSize = 12.sp,
-                fontWeight = FontWeight.W500,
+                style = MaterialTheme.typography.subtitle1,
                 textAlign = TextAlign.Start,
-                lineHeight = 14.sp,
                 color = TextGray
             )
             Text(
@@ -375,32 +351,29 @@ fun Description(viewModel: MovieViewModel){
                 Modifier
                     .fillMaxWidth()
                     .weight(0.66f),
-                fontSize = 12.sp,
-                fontWeight = FontWeight.W500,
+                style = MaterialTheme.typography.subtitle1,
                 textAlign = TextAlign.Start,
-                lineHeight = 14.sp,
                 color = White
             )
         }
         Spacer(
             Modifier
                 .fillMaxWidth()
-                .height(4.dp))
+                .height(4.dp)
+        )
         Row(
             Modifier
                 .fillMaxWidth()
                 .wrapContentHeight()
         ) {
             Text(
-                text = "Сборы в мире",
+                text = stringResource(R.string.fees),
                 Modifier
                     .fillMaxWidth()
                     .padding(0.dp, 0.dp, 8.dp, 0.dp)
                     .weight(0.34f),
-                fontSize = 12.sp,
-                fontWeight = FontWeight.W500,
+                style = MaterialTheme.typography.subtitle1,
                 textAlign = TextAlign.Start,
-                lineHeight = 14.sp,
                 color = TextGray
             )
             Text(
@@ -408,32 +381,29 @@ fun Description(viewModel: MovieViewModel){
                 Modifier
                     .fillMaxWidth()
                     .weight(0.66f),
-                fontSize = 12.sp,
-                fontWeight = FontWeight.W500,
+                style = MaterialTheme.typography.subtitle1,
                 textAlign = TextAlign.Start,
-                lineHeight = 14.sp,
                 color = White
             )
         }
         Spacer(
             Modifier
                 .fillMaxWidth()
-                .height(4.dp))
+                .height(4.dp)
+        )
         Row(
             Modifier
                 .fillMaxWidth()
                 .wrapContentHeight()
         ) {
             Text(
-                text = "Возраст",
+                text = stringResource(R.string.age_limit),
                 Modifier
                     .fillMaxWidth()
                     .padding(0.dp, 0.dp, 8.dp, 0.dp)
                     .weight(0.34f),
-                fontSize = 12.sp,
-                fontWeight = FontWeight.W500,
+                style = MaterialTheme.typography.subtitle1,
                 textAlign = TextAlign.Start,
-                lineHeight = 14.sp,
                 color = TextGray
             )
             Text(
@@ -441,10 +411,8 @@ fun Description(viewModel: MovieViewModel){
                 Modifier
                     .fillMaxWidth()
                     .weight(0.66f),
-                fontSize = 12.sp,
-                fontWeight = FontWeight.W500,
+                style = MaterialTheme.typography.subtitle1,
                 textAlign = TextAlign.Start,
-                lineHeight = 14.sp,
                 color = White
             )
         }
@@ -463,75 +431,66 @@ fun Genre(name: String) {
             disabledBackgroundColor = DarkRed,
             disabledContentColor = White
         ),
-        shape = RoundedCornerShape(8.dp)
+        shape = RoundedCornerShape(16.dp)
     ) {
         Text(
             text = name,
-            //Modifier
-            //    .fillMaxWidth(),
-            fontSize = 12.sp,
-            fontWeight = FontWeight.W500,
+            style = MaterialTheme.typography.subtitle1,
             textAlign = TextAlign.Center,
-            lineHeight = 14.sp,
             color = White
         )
     }
 }
 
 @Composable
-fun ReviewShow(review: Review, date: String, userId: String) {
+fun ReviewShow(
+    review: Review,
+    date: String,
+    userId: String
+) {
     Card(
-        Modifier
-            .wrapContentSize()
-            .padding(16.dp, 4.dp),
+        Modifier.padding(16.dp, 4.dp),
         shape = RoundedCornerShape(8.dp),
         backgroundColor = Black,
-        border = BorderStroke(1.dp, Gray),
+        border = BorderStroke(1.dp, GrayFaded),
     ) {
-        Column (Modifier.fillMaxSize()) {
+        Column(Modifier.fillMaxSize()) {
             Row(
-                verticalAlignment = Alignment.CenterVertically,
+                verticalAlignment = CenterVertically,
                 modifier = Modifier
+                    .padding(8.dp)
                     .fillMaxWidth()
-                    .padding(8.dp, 0.dp)
             )
             {
                 Avatar(review.author?.avatar, review.isAnonymous)
                 Column(
-                    Modifier
-                        .fillMaxHeight()
-                        .padding(8.dp, 0.dp),
+                    Modifier.padding(8.dp, 0.dp),
                     verticalArrangement = Arrangement.Center
                 ) {
                     Text(
-                        text = if (review.isAnonymous) "Анонимный пользователь" else review.author!!.nickName,
+                        text = if (review.isAnonymous) stringResource(R.string.anonymous_user) else review.author!!.nickName,
                         color = White,
-                        fontSize = 16.sp,
-                        textAlign = TextAlign.Left,
-                        fontWeight = FontWeight.W500,
-                        lineHeight = 20.sp
+                        style = MaterialTheme.typography.body1,
+                        textAlign = TextAlign.Left
                     )
                     if (review.author?.userId == userId) {
                         Text(
-                            text = "мой отзыв",
+                            text = stringResource(R.string.my_review),
                             color = TextGray,
-                            fontSize = 12.sp,
-                            textAlign = TextAlign.Left,
-                            fontWeight = FontWeight.W400,
-                            lineHeight = 14.sp
+                            style = MaterialTheme.typography.subtitle2,
+                            textAlign = TextAlign.Left
                         )
                     }
                 }
                 Spacer(Modifier.weight(1f))
-                //val ratio: Float = review.rating * 0.1
                 val color = ColorUtils.blendARGB(Red.toArgb(), Green.toArgb(), review.rating * 0.1f)
                 Button(
                     onClick = { },
-                    contentPadding = PaddingValues(16.dp, 4.dp),
                     modifier = Modifier
-                        //.defaultMinSize(minWidth = 42.dp, minHeight = 28.dp)
-                        .padding(0.dp, 6.dp)
-                        .wrapContentSize(),
+                        .padding(8.dp, 6.dp, 0.dp, 6.dp)
+                        .height(28.dp)
+                        .width(42.dp),
+                    contentPadding = PaddingValues(0.dp),
                     enabled = false,
                     colors = ButtonDefaults.buttonColors(
                         disabledBackgroundColor = Color(color),
@@ -541,10 +500,9 @@ fun ReviewShow(review: Review, date: String, userId: String) {
                 ) {
                     Text(
                         text = review.rating.toString(),
-                        fontSize = 16.sp,
-                        fontWeight = FontWeight.W500,
+                        style = MaterialTheme.typography.body1,
                         textAlign = TextAlign.Center,
-                        lineHeight = 20.sp,
+                        modifier = Modifier.align(CenterVertically),
                         color = White
                     )
                 }
@@ -552,12 +510,10 @@ fun ReviewShow(review: Review, date: String, userId: String) {
             Text(
                 text = review.reviewText,
                 Modifier
-                    .fillMaxWidth()
-                    .padding(8.dp, 0.dp),
-                fontSize = 14.sp,
-                fontWeight = FontWeight.W400,
+                    .padding(8.dp, 0.dp)
+                    .fillMaxWidth(),
+                style = MaterialTheme.typography.body2,
                 textAlign = TextAlign.Start,
-                lineHeight = 18.sp,
                 color = White
             )
             if (review.author?.userId == userId) {
@@ -571,10 +527,8 @@ fun ReviewShow(review: Review, date: String, userId: String) {
                             //.fillMaxWidth()
                             .padding(8.dp, 0.dp, 8.dp, 0.dp)
                             .align(CenterVertically),
-                        fontSize = 12.sp,
-                        fontWeight = FontWeight.W400,
+                        style = MaterialTheme.typography.subtitle2,
                         textAlign = TextAlign.Start,
-                        lineHeight = 14.sp,
                         color = TextGray
                     )
                     Spacer(Modifier.weight(1f))
@@ -585,7 +539,8 @@ fun ReviewShow(review: Review, date: String, userId: String) {
                             modifier = Modifier.size(24.dp),
                             tint = Gray,
                             painter = painterResource(R.drawable.edit_icon),
-                            contentDescription = "Plus icon")
+                            contentDescription = stringResource(R.string.edit_icon_description)
+                        )
                     }
                     IconButton(
                         onClick = { /* movieViewModel.openDialog() */ }
@@ -594,20 +549,18 @@ fun ReviewShow(review: Review, date: String, userId: String) {
                             modifier = Modifier.size(24.dp),
                             tint = Red,
                             painter = painterResource(R.drawable.delete_icon),
-                            contentDescription = "Plus icon")
+                            contentDescription = stringResource(R.string.delete_icon_description)
+                        )
                     }
                 }
-            }
-            else {
+            } else {
                 Text(
                     text = date,
                     Modifier
                         .fillMaxWidth()
                         .padding(8.dp, 4.dp, 8.dp, 8.dp),
-                    fontSize = 12.sp,
-                    fontWeight = FontWeight.W400,
+                    style = MaterialTheme.typography.subtitle2,
                     textAlign = TextAlign.Start,
-                    lineHeight = 14.sp,
                     color = TextGray
                 )
             }
@@ -616,11 +569,13 @@ fun ReviewShow(review: Review, date: String, userId: String) {
 }
 
 @Composable
-fun Avatar(image: String?, isAnonymous: Boolean){
+fun Avatar(image: String?, isAnonymous: Boolean) {
 
     val avatar: String =
-        if (image == "" || isAnonymous || image == null) { stringResource(R.string.default_avatar) }
-        else { image }
+        if (image == "" || isAnonymous || image == null)
+            stringResource(R.string.default_avatar)
+        else
+            image
 
     Box(
         modifier = Modifier
@@ -630,9 +585,8 @@ fun Avatar(image: String?, isAnonymous: Boolean){
     ) {
         Image(
             painter = rememberAsyncImagePainter(avatar),
-            contentDescription = "avatar",
-            modifier = Modifier
-                .fillMaxSize(),
+            contentDescription = stringResource(R.string.avatar_content_description),
+            modifier = Modifier.fillMaxSize(),
             contentScale = ContentScale.Crop,
             alignment = Alignment.Center
         )
@@ -640,7 +594,7 @@ fun Avatar(image: String?, isAnonymous: Boolean){
 }
 
 @Composable
-fun reviewDialog(viewModel: MovieViewModel) {
+fun ReviewDialog(viewModel: MovieViewModel) {
 
     val openDialog: Boolean by remember { viewModel.openDialog }
     val text: String by remember { viewModel.text }
@@ -651,26 +605,23 @@ fun reviewDialog(viewModel: MovieViewModel) {
             onDismissRequest = { viewModel.closeDialog() },
             modifier = Modifier.wrapContentSize(),
             buttons = {
-                Column(modifier = Modifier.padding(16.dp, 16.dp))
+                Column(modifier = Modifier.padding(16.dp))
                 {
                     Text(
-                        text = "Оставить отзыв",
+                        text = stringResource(R.string.leave_a_review),
                         modifier = Modifier
                             .fillMaxWidth(),
                         color = White,
-                        fontSize = 24.sp,
-                        fontWeight = FontWeight.W700,
-                        lineHeight = 32.sp
+                        style = MaterialTheme.typography.h5
                     )
-                    starRatingBar(viewModel = viewModel)
+                    StarRatingBar(viewModel = viewModel)
                     OutlinedTextField(
                         value = text,
                         onValueChange = { viewModel.onTextChange(it) },
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(0.dp, 16.dp, 0.dp, 16.dp)
                             .height(120.dp),
-                        placeholder = { Text("Отзыв") },
+                        textStyle = MaterialTheme.typography.caption,
                         enabled = true,
                         shape = RoundedCornerShape(8.dp),
                         colors = TextFieldDefaults.outlinedTextFieldColors(
@@ -681,37 +632,74 @@ fun reviewDialog(viewModel: MovieViewModel) {
                             cursorColor = Black,
                             textColor = Black
                         ),
+                        placeholder = {
+                            Text(
+                                stringResource(R.string.review),
+                                color = ReviewGray,
+                                style = MaterialTheme.typography.caption
+                            )
+                        },
                     )
                     Row(
-                        modifier = Modifier.fillMaxWidth(),
+                        modifier = Modifier
+                            .padding(0.dp, 16.dp)
+                            .fillMaxWidth()
+                            .height(24.dp),
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
                         Text(
-                            text = "Анонимный отзыв",
+                            text = stringResource(R.string.anonymous_review),
                             modifier = Modifier
-                                .padding(0.dp, 0.dp, 0.dp, 16.dp)
                                 .align(CenterVertically),
                             color = White,
-                            fontSize = 16.sp,
-                            fontWeight = FontWeight.W500,
-                            lineHeight = 20.sp
+                            style = MaterialTheme.typography.body1
                         )
+
+                        /* normal checkbox
                         Checkbox(
                             checked = checkedState,
                             onCheckedChange = { viewModel.onCheckerChange(it) },
                             modifier = Modifier
-                                .align(CenterVertically)
-                                .padding(0.dp, 0.dp, 0.dp, 16.dp),
+                                .align(CenterVertically),
                             colors = CheckboxDefaults.colors(
                                 checkedColor = ReviewDialogGray,
-                                uncheckedColor = Gray,
+                                uncheckedColor = CheckerGray,
                                 checkmarkColor = DarkRed
                             )
                         )
+                        */
+
+                        //Spacer(Modifier.weight(1f))
+
+                        //checkbox курильщика, зато по макету
+                        val tickColor =
+                            if (checkedState) DarkRed else ReviewDialogGray
+
+                        IconButton(
+                            onClick = { viewModel.onCheckerChange(!checkedState) },
+                            modifier = Modifier
+                                .align(CenterVertically)
+                        ) {
+                            Box(Modifier.wrapContentSize()){
+                                Icon(
+                                    imageVector = ImageVector.vectorResource(R.drawable.checkbox),
+                                    tint = CheckerGray,
+                                    contentDescription = "checkbox",
+                                    modifier = Modifier.align(Center)
+                                )
+                                Icon(
+                                    imageVector = ImageVector.vectorResource(R.drawable.tick),
+                                    tint = tickColor,
+                                    contentDescription = "tick",
+                                    modifier = Modifier.align(Center)
+                                )
+                            }
+                        }
                     }
                     Button(
                         modifier = Modifier
-                            .fillMaxWidth(),
+                            .fillMaxWidth()
+                            .height(44.dp),
                         shape = RoundedCornerShape(4.dp),
                         colors = ButtonDefaults.buttonColors(
                             backgroundColor = DarkRed,
@@ -725,11 +713,9 @@ fun reviewDialog(viewModel: MovieViewModel) {
                     )
                     {
                         Text(
-                            "Сохранить",
+                            stringResource(R.string.save),
                             color = White,
-                            fontSize = 16.sp,
-                            fontWeight = FontWeight.W500,
-                            lineHeight = 20.sp
+                            style = MaterialTheme.typography.body1
                         )
                     }
                     Button(
@@ -747,11 +733,9 @@ fun reviewDialog(viewModel: MovieViewModel) {
                     )
                     {
                         Text(
-                            "Отмена",
+                            stringResource(R.string.cancel),
                             color = DarkRed,
-                            fontSize = 16.sp,
-                            fontWeight = FontWeight.W500,
-                            lineHeight = 20.sp
+                            style = MaterialTheme.typography.body1
                         )
                     }
                 }
@@ -763,8 +747,7 @@ fun reviewDialog(viewModel: MovieViewModel) {
 }
 
 @Composable
-fun starRatingBar(
-    modifier: Modifier = Modifier,
+fun StarRatingBar(
     stars: Int = 10,
     starsColor: Color = DarkRed,
     unfilledStarsColor: Color = Gray,
@@ -774,7 +757,11 @@ fun starRatingBar(
     val filledStars = rating
     val unfilledStars = stars - rating
 
-    Row(modifier = modifier.fillMaxWidth().padding(0.dp, 16.dp)) {
+    Row(
+        Modifier
+            .padding(0.dp, 16.dp)
+            .fillMaxWidth()
+    ) {
         var star = 0
         repeat(filledStars) {
             val cur = star
@@ -782,8 +769,8 @@ fun starRatingBar(
                 modifier = Modifier
                     .weight(0.1f)
                     .clickable {
-                    viewModel.newRating(cur + 1)
-                },
+                        viewModel.newRating(cur + 1)
+                    },
                 painter = painterResource(R.drawable.filled_star),
                 contentDescription = null,
                 tint = starsColor
@@ -809,7 +796,7 @@ fun starRatingBar(
 }
 
 @Composable
-fun MyReviewLoad(isPosted: Boolean, num: Int, reviews: List<Review>){
+fun MyReviewLoad(isPosted: Boolean, num: Int, reviews: List<Review>) {
     if (isPosted) {
         val date = reviews[num].createDateTime.substringBefore("T").split('-')
 
@@ -820,3 +807,148 @@ fun MyReviewLoad(isPosted: Boolean, num: Int, reviews: List<Review>){
         )
     }
 }
+
+/*
+@Preview(showBackground = true)
+@Composable
+fun ReviewSh() {
+    Card(
+        Modifier.padding(16.dp, 4.dp),
+        shape = RoundedCornerShape(8.dp),
+        backgroundColor = Black,
+        border = BorderStroke(1.dp, GrayFaded),
+    ) {
+        Column() {
+            Row(
+                verticalAlignment = CenterVertically,
+                modifier = Modifier
+                    .padding(8.dp)
+                    .fillMaxWidth()
+            )
+            {
+                Avatar("", true)
+                Column(
+                    Modifier
+                        .padding(8.dp, 0.dp),
+                    verticalArrangement = Arrangement.Center
+                ) {
+                    Text(
+                        text = "bdfyjd bdfy bdfhhhkhkhkhkh",
+                        color = White,
+                        style = MaterialTheme.typography.body1,
+                        textAlign = TextAlign.Left
+                    )
+                    Text(
+                        text = stringResource(R.string.my_review),
+                        color = TextGray,
+                        style = MaterialTheme.typography.subtitle2,
+                        textAlign = TextAlign.Left
+                    )
+                    /*
+                    if (review.author?.userId == userId) {
+                        Text(
+                            text = stringResource(R.string.my_review),
+                            color = TextGray,
+                            style = MaterialTheme.typography.subtitle2,
+                            textAlign = TextAlign.Left
+                        )
+                    }
+                     */
+                }
+                Spacer(Modifier.weight(1f))
+                val color = ColorUtils.blendARGB(Red.toArgb(), Green.toArgb(), 8 * 0.1f)
+                Button(
+                    onClick = { },
+                    contentPadding = PaddingValues(0.dp),
+                    modifier = Modifier
+                        .padding(8.dp, 6.dp, 0.dp, 6.dp)
+                        .height(28.dp)
+                        .width(42.dp),
+                    enabled = false,
+                    colors = ButtonDefaults.buttonColors(
+                        disabledBackgroundColor = Color(color),
+                        disabledContentColor = White
+                    ),
+                    shape = RoundedCornerShape(16.dp)
+                ) {
+                    Text(
+                        text = "9.1",
+                        style = MaterialTheme.typography.body1,
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier.align(CenterVertically),
+                        color = White
+                    )
+                }
+            }
+            Text(
+                text = "блалаальавалалвьаывазшвыоащзвыоавоазоывщаощывоашщзвоаышщаышщовщаошщвоышщаоышщоаыоазыоваоышоашщвыоашыоашвыоашщо",
+                Modifier
+                    .padding(8.dp, 0.dp)
+                    .fillMaxWidth(),
+                style = MaterialTheme.typography.body2,
+                textAlign = TextAlign.Start,
+                color = White
+            )
+            /*
+            if (review.author?.userId == userId) {
+                Row(
+                    verticalAlignment = Alignment.Bottom,
+                    //horizontalArrangement = Arrangement.Start
+                ) {
+                    Text(
+                        text = date,
+                        Modifier
+                            //.fillMaxWidth()
+                            .padding(8.dp, 0.dp, 8.dp, 0.dp)
+                            .align(CenterVertically),
+                        style = MaterialTheme.typography.subtitle2,
+                        textAlign = TextAlign.Start,
+                        color = TextGray
+                    )
+                    Spacer(Modifier.weight(1f))
+                    IconButton(
+                        onClick = { /* movieViewModel.openDialog() */ }
+                    ) {
+                        Icon(
+                            modifier = Modifier.size(24.dp),
+                            tint = Gray,
+                            painter = painterResource(R.drawable.edit_icon),
+                            contentDescription = stringResource(R.string.edit_icon_description)
+                        )
+                    }
+                    IconButton(
+                        onClick = { /* movieViewModel.openDialog() */ }
+                    ) {
+                        Icon(
+                            modifier = Modifier.size(24.dp),
+                            tint = Red,
+                            painter = painterResource(R.drawable.delete_icon),
+                            contentDescription = stringResource(R.string.delete_icon_description)
+                        )
+                    }
+                }
+            } else {
+                Text(
+                    text = date,
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(8.dp, 4.dp, 8.dp, 8.dp),
+                    style = MaterialTheme.typography.subtitle2,
+                    textAlign = TextAlign.Start,
+                    color = TextGray
+                )
+            }
+             */
+            Text(
+                text = "22.05.2011",
+                Modifier
+                    .fillMaxWidth()
+                    .padding(8.dp, 4.dp, 8.dp, 8.dp),
+                style = MaterialTheme.typography.subtitle2,
+                textAlign = TextAlign.Start,
+                color = TextGray
+            )
+        }
+    }
+}
+*/

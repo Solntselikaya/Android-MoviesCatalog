@@ -13,7 +13,7 @@ import com.example.movies_catalog.network.review.ReviewRepository
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.launch
 
-class MovieViewModel: ViewModel() {
+class MovieViewModel : ViewModel() {
     var movieDetails = Network.movieDetails
 
     private val budget = movieDetails!!.budget.toString()
@@ -27,15 +27,14 @@ class MovieViewModel: ViewModel() {
     val userId = profileData!!.id
 
     var reviewDate = ""
-    fun parseDate(num: Int){
+    fun parseDate(num: Int) {
         val parsed = movieDetails!!.reviews[num].createDateTime.substringBefore("T").split('-')
         reviewDate = parsed[2] + "." + parsed[1] + "." + parsed[0]
     }
 
 
-
     private val _openDialog = mutableStateOf(false)
-    var openDialog : State<Boolean> = _openDialog
+    var openDialog: State<Boolean> = _openDialog
 
     private val _rating = mutableStateOf(0)
     var rating: State<Int> = _rating
@@ -45,26 +44,26 @@ class MovieViewModel: ViewModel() {
     }
 
     private val _text = mutableStateOf("")
-    var text : State<String> = _text
+    var text: State<String> = _text
 
-    fun onTextChange(updatedText : String) {
+    fun onTextChange(updatedText: String) {
         _text.value = updatedText
         //isEmpty()
     }
 
     private val _checker = mutableStateOf(false)
-    var checker : State<Boolean> = _checker
+    var checker: State<Boolean> = _checker
 
-    fun onCheckerChange(updatedStatus : Boolean) {
+    fun onCheckerChange(updatedStatus: Boolean) {
         _checker.value = updatedStatus
         //isEmpty()
     }
 
     private val _postedReview = mutableStateOf(false)
-    var postedReview : State<Boolean> = _postedReview
+    var postedReview: State<Boolean> = _postedReview
 
     private val _postedReviewNum = mutableStateOf(-1)
-    var postedReviewNum : State<Int> = _postedReviewNum
+    var postedReviewNum: State<Int> = _postedReviewNum
 
     private val currUserId = Network.profile!!.id
 

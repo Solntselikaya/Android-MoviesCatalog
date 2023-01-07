@@ -14,25 +14,25 @@ import com.example.movies_catalog.network.user.UserRepository
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.launch
 
-class SignInViewModel: ViewModel() {
+class SignInViewModel : ViewModel() {
     private val _login = mutableStateOf("")
-    var login : State<String> = _login
+    var login: State<String> = _login
 
-    fun onLoginChange(updatedLogin : String) {
+    fun onLoginChange(updatedLogin: String) {
         _login.value = updatedLogin
         isEmpty()
     }
 
     private val _password = mutableStateOf("")
-    var password : State<String> = _password
+    var password: State<String> = _password
 
-    fun onPasswordChange(updatedPassword : String) {
+    fun onPasswordChange(updatedPassword: String) {
         _password.value = updatedPassword
         isEmpty()
     }
 
     private val _isFieldsFilled = mutableStateOf(false)
-    var isFieldsFilled : State<Boolean> = _isFieldsFilled
+    var isFieldsFilled: State<Boolean> = _isFieldsFilled
 
     private fun isEmpty() {
         val login = _login.value
@@ -41,7 +41,7 @@ class SignInViewModel: ViewModel() {
     }
 
     private val _hasErrors = mutableStateOf(false)
-    var hasErrors : State<Boolean> = _hasErrors
+    var hasErrors: State<Boolean> = _hasErrors
 
     fun hasErrors() {
         _hasErrors.value = false

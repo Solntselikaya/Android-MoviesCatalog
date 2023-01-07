@@ -8,15 +8,15 @@ class ReviewRepository {
 
     private val api: ReviewApi = Network.getReviewApi()
 
-    suspend fun postReview(movieId: String, body: ReviewModify){
+    suspend fun postReview(movieId: String, body: ReviewModify) {
         api.postReview(movieId, body)
     }
 
-    suspend fun putReview(movieId: String, id: String){
+    suspend fun putReview(movieId: String, id: String) {
         api.putReview(movieId, id)
     }
 
-    suspend fun deleteReview(movieId: String, id: String){
+    suspend fun deleteReview(movieId: String, id: String) {
         api.deleteReview(movieId, id)
     }
 

@@ -22,55 +22,57 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.launch
 import java.util.*
 
-class ProfileViewModel: ViewModel() {
+class ProfileViewModel : ViewModel() {
 
     var profile = Network.profile
 
     private var currEmail = profile!!.email
 
     private val _email = mutableStateOf(currEmail)
-    var email : State<String> = _email
+    var email: State<String> = _email
 
-    fun onEmailChange(updatedEmail : String) {
+    fun onEmailChange(updatedEmail: String) {
         _email.value = updatedEmail
         isEmailValid()
         isEmpty()
     }
 
     private val _isEmailValid = mutableStateOf(true)
-    var isEmailValid : State<Boolean> = _isEmailValid
+    var isEmailValid: State<Boolean> = _isEmailValid
 
-    private fun isEmailValid(){
+    private fun isEmailValid() {
         _isEmailValid.value = Patterns.EMAIL_ADDRESS.matcher(_email.value).matches()
     }
 
     private val _isEmailLengthValid = mutableStateOf(true)
-    var isEmailLengthValid : State<Boolean> = _isEmailLengthValid
+    var isEmailLengthValid: State<Boolean> = _isEmailLengthValid
 
-    private fun isEmailLengthValid(){
+    private fun isEmailLengthValid() {
         _isEmailLengthValid.value = _email.value.substringBefore("@").length >= 3
     }
 
     private var currName = profile!!.name
 
     private val _name = mutableStateOf(currName)
-    var name : State<String> = _name
+    var name: State<String> = _name
 
-    fun onNameChange(updatedName : String) {
+    fun onNameChange(updatedName: String) {
         _name.value = updatedName
         isEmpty()
     }
 
     private var currBirthdate = profile!!.birthDate.substringBefore("T")
     private val parsedCurrBirthdate = currBirthdate.split('-')
-    private val showBirthdate = parsedCurrBirthdate[2] + "." + parsedCurrBirthdate[1] + "." + parsedCurrBirthdate[0]
+    private val showBirthdate =
+        parsedCurrBirthdate[2] + "." + parsedCurrBirthdate[1] + "." + parsedCurrBirthdate[0]
 
-        private val _birthdate = mutableStateOf(showBirthdate)
-    var birthdate : State<String> = _birthdate
+    private val _birthdate = mutableStateOf(showBirthdate)
+    var birthdate: State<String> = _birthdate
 
     private var requestDate = profile!!.birthDate.substringBefore("T")
+
     @SuppressLint("SimpleDateFormat")
-    fun onBirthdateChange(context : Context) {
+    fun onBirthdateChange(context: Context) {
         val mCalendar = Calendar.getInstance()
 
         val mYear = mCalendar.get(Calendar.YEAR)
@@ -84,9 +86,9 @@ class ProfileViewModel: ViewModel() {
             context,
             R.style.MyDatePickerDialogTheme,
             { _: DatePicker, mYear: Int, mMonth: Int, mDayOfMonth: Int ->
-                _birthdate.value = "$mDayOfMonth.${mMonth+1}.$mYear"
+                _birthdate.value = "$mDayOfMonth.${mMonth + 1}.$mYear"
 
-                val month = mFormat.format(mMonth+1)
+                val month = mFormat.format(mMonth + 1)
                 val day = mFormat.format(mDayOfMonth)
                 requestDate = "${mYear}-$month-$day"
 
@@ -100,9 +102,9 @@ class ProfileViewModel: ViewModel() {
     }
 
     private val _isDateValid = mutableStateOf(true)
-    var isDateValid : State<Boolean> = _isDateValid
+    var isDateValid: State<Boolean> = _isDateValid
 
-    private fun isDateValid(){
+    private fun isDateValid() {
         val time = Calendar.getInstance().time
         val formatter = SimpleDateFormat("yyyy-MM-dd")
         val current = formatter.format(time)
@@ -119,9 +121,9 @@ class ProfileViewModel: ViewModel() {
         else profile!!.avatarLink.toString()
 
     private val _url = mutableStateOf(currUrl)
-    var url : State<String> = _url
+    var url: State<String> = _url
 
-    fun onUrlChange(newUrl : String) {
+    fun onUrlChange(newUrl: String) {
         _url.value = newUrl
         isEmpty()
     }
@@ -129,15 +131,15 @@ class ProfileViewModel: ViewModel() {
     private var currGender: Int = profile!!.gender
 
     private val _gender = mutableStateOf(currGender)
-    var gender : State<Int> = _gender
+    var gender: State<Int> = _gender
 
-    fun onGenderChange(updatedGender : Int){
+    fun onGenderChange(updatedGender: Int) {
         _gender.value = updatedGender
         isEmpty()
     }
 
     private val _isFieldsFilled = mutableStateOf(false)
-    var isFieldsFilled : State<Boolean> = _isFieldsFilled
+    var isFieldsFilled: State<Boolean> = _isFieldsFilled
 
     var changed: Boolean = false
     private fun isChanged() {
@@ -148,7 +150,8 @@ class ProfileViewModel: ViewModel() {
         val dateNotChanged = (requestDate == currBirthdate)
         val genderNotChanged = (_gender.value == currGender)
 
-        changed = !(emailNotChanged && urlNotChanged && nameNotChanged && dateNotChanged && genderNotChanged)
+        changed =
+            !(emailNotChanged && urlNotChanged && nameNotChanged && dateNotChanged && genderNotChanged)
     }
 
     private fun isEmpty() {
@@ -161,16 +164,16 @@ class ProfileViewModel: ViewModel() {
         val name = _name.value
         val birthdate = _birthdate.value
         _isFieldsFilled.value =
-                email.isNotEmpty() &&
-                (isEmailValid) &&
-                (isEmailLengthValid) &&
-                (isDateValid) &&
-                name.isNotEmpty() &&
-                birthdate.isNotEmpty() && changed
+            email.isNotEmpty() &&
+                    (isEmailValid) &&
+                    (isEmailLengthValid) &&
+                    (isDateValid) &&
+                    name.isNotEmpty() &&
+                    birthdate.isNotEmpty() && changed
     }
 
     private val _hasErrors = mutableStateOf(false)
-    var hasErrors : State<Boolean> = _hasErrors
+    var hasErrors: State<Boolean> = _hasErrors
 
     fun hasErrors() {
         _hasErrors.value = false
@@ -213,6 +216,7 @@ class ProfileViewModel: ViewModel() {
         viewModelScope.launch {
             authRepository.logout().collect {
 
+                //почистить нетворк
             }
         }
     }
