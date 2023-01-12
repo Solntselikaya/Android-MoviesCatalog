@@ -92,7 +92,10 @@ fun SignUpScreen(navController: NavController) {
             GenderSelect(gender = signUpGender) { signUpViewModel.onGenderChange(it) }
             RegistrationButton(isFieldsFilled) { signUpViewModel.register(navController) }
             Button(
-                onClick = { navController.navigate("sign_in_screen") },
+                onClick = {
+                    navController.popBackStack()
+                    navController.navigate("sign_in_screen") { launchSingleTop = true }
+                          },
                 colors = ButtonDefaults.buttonColors(
                     backgroundColor = Black,
                     contentColor = DarkRed
@@ -510,7 +513,7 @@ fun RegistrationButton(isFieldsFilled: Boolean, register: () -> Unit) {
             .padding(16.dp, 24.dp, 16.dp, 4.dp)
             .height(44.dp)
             .fillMaxWidth(),
-        shape = RoundedCornerShape(8.dp)
+        shape = RoundedCornerShape(4.dp)
     )
     {
         Text(

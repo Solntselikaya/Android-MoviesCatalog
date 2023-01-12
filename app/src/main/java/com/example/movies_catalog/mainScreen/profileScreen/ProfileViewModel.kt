@@ -23,7 +23,6 @@ import kotlinx.coroutines.launch
 import java.util.*
 
 class ProfileViewModel : ViewModel() {
-
     var profile = Network.profile
 
     private var currEmail = profile!!.email
@@ -92,7 +91,7 @@ class ProfileViewModel : ViewModel() {
                 val day = mFormat.format(mDayOfMonth)
                 requestDate = "${mYear}-$month-$day"
 
-                isDateValid()
+                //isDateValid()
                 isEmpty()
             }, mYear, mMonth, mDay
         )
@@ -101,6 +100,7 @@ class ProfileViewModel : ViewModel() {
 
     }
 
+    /*
     private val _isDateValid = mutableStateOf(true)
     var isDateValid: State<Boolean> = _isDateValid
 
@@ -115,6 +115,7 @@ class ProfileViewModel : ViewModel() {
         _isDateValid.value =
             !(currParsed[0] < resParsed[0] || currParsed[1] < resParsed[1] || currParsed[2] < resParsed[2])
     }
+     */
 
     private var currUrl =
         if (profile!!.avatarLink == null) ""
@@ -160,14 +161,14 @@ class ProfileViewModel : ViewModel() {
         val email = _email.value
         val isEmailValid = _isEmailValid.value
         val isEmailLengthValid = _isEmailLengthValid.value
-        val isDateValid = _isDateValid.value
+        //val isDateValid = _isDateValid.value
         val name = _name.value
         val birthdate = _birthdate.value
         _isFieldsFilled.value =
             email.isNotEmpty() &&
                     (isEmailValid) &&
                     (isEmailLengthValid) &&
-                    (isDateValid) &&
+                    //(isDateValid) &&
                     name.isNotEmpty() &&
                     birthdate.isNotEmpty() && changed
     }

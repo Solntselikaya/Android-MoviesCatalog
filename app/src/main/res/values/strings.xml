@@ -1,6 +1,6 @@
 <resources>
     <string name="app_name">Movies-Catalog</string>
-    <string name="default_avatar">https://www.figma.com/file/DYtQJNn8p0oK3iPV3lHSTp/Mobile-Lab-2022?node-id=53%3A92</string>
+    <string name="default_avatar">https://s3-alpha-sig.figma.com/img/a92b/ba97/a13937d71ea4ab29b068a92fd325aa74?Expires=1674432000&amp;Signature=Uwdu5ByHy~x-yO3Qlzi161SkT6TBTwEmlecnqJkqrXQn1RGR3AjGi4NHjuv87TgiY6-Lvae3INjTYlwXEFh9U5W~7Y8ZQFVt3md0C9aoDzzBYpCgE9o6wy3lihxxK0eitNLtDm1W66arHYwrgLsJlSnzvh898sjoNX8y0tiT4dWB-Z3Rcc2h27Yn2zVeOgArTE4bJ9PMjGA9KND5wCrhNYlFtYQ06CjP3j2TwD0RCtAyH7ikU4Nx1VPjDwWpbv7spS0KA6aLkfF941no7BaV8G9BDrAgNgVvZftw51HPqfgvK79-WJh1yDfxneuhGKCNVIxEXUUfnne8ENbYy5Lwnw__&amp;Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4</string>
 
     <string name="registration">Регистрация</string>
     <string name="login">Логин</string>
@@ -31,7 +31,7 @@
     <string name="anonymous_review">Анонимный отзыв</string>
     <string name="cancel">Отмена</string>
     <string name="log_out">Выйти из аккаунта</string>
-    <string name="link_to_the_avatar">Ссылка на аватар</string>
+    <string name="link_to_the_avatar">Ссылка на аватарку</string>
     <string name="url">Url</string>
     <string name="gender">Пол</string>
     <string name="save">Сохранить</string>
@@ -57,4 +57,5 @@
     <string name="edit_icon_description">Edit icon</string>
     <string name="delete_icon_description">Delete icon</string>
     <string name="avatar_content_description">avatar</string>
+    <string name="calendar_icon_description">Calendar picture</string>
 </resources>

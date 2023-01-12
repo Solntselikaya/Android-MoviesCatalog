@@ -1,25 +1,26 @@
+@file:OptIn(ExperimentalMaterialApi::class)
+
 package com.example.movies_catalog.movieScreen
 
+import androidx.activity.compose.LocalOnBackPressedDispatcherOwner
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.Alignment.Companion.BottomStart
 import androidx.compose.ui.Alignment.Companion.Center
-import androidx.compose.ui.Alignment.Companion.CenterEnd
 import androidx.compose.ui.Alignment.Companion.CenterVertically
-import androidx.compose.ui.Alignment.Companion.End
+import androidx.compose.ui.Alignment.Companion.TopStart
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawWithCache
-import androidx.compose.ui.graphics.BlendMode
-import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.toArgb
+import androidx.compose.ui.graphics.*
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
@@ -27,148 +28,202 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.core.graphics.ColorUtils
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
 import com.example.movies_catalog.R
 import com.example.movies_catalog.network.models.Review
 import com.example.movies_catalog.ui.theme.*
 import com.google.accompanist.flowlayout.FlowRow
+import me.onebone.toolbar.CollapsingToolbarScaffold
+import me.onebone.toolbar.ScrollStrategy
+import me.onebone.toolbar.rememberCollapsingToolbarScaffoldState
 
 //@Preview(showBackground = true)
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun MovieScreen() {
+fun MovieScreen(navController: NavController) {
+    val movieViewModel: MovieViewModel = viewModel()
 
-    val movieViewModel = MovieViewModel()
+    val userHasPostedReview: Boolean by remember {movieViewModel.postedReview}
+    val postedReviewNum: Int by remember {movieViewModel.postedReviewNum}
+    val isReviewEdited: Boolean by remember {movieViewModel.editedReview}
 
-    ReviewDialog(viewModel = movieViewModel)
+    ReviewDialog(movieViewModel)
 
-    val postedReview: Boolean by remember { movieViewModel.postedReview }
-    val postedReviewNum: Int by remember { movieViewModel.postedReviewNum }
+    val state = rememberCollapsingToolbarScaffoldState()
+    CollapsingToolbarScaffold(
+        modifier = Modifier.fillMaxSize(),
+        state = state,
+        scrollStrategy = ScrollStrategy.ExitUntilCollapsed,
+        toolbar = {
+            Image(
+                painter = rememberAsyncImagePainter(movieViewModel.movieDetails!!.poster),
+                contentDescription = stringResource(R.string.movies_poster_description),
+                contentScale = ContentScale.Crop,
+                modifier = Modifier
+                    .parallax(0.5f)
+                    .fillMaxWidth()
+                    .height(250.dp)
+                    .drawWithCache {
+                        val gradient = Brush.verticalGradient(
+                            colors = listOf(Transparent, Black),
+                            startY = size.height / 2,
+                            endY = size.height + 10
+                        )
+                        onDrawWithContent {
+                            drawContent()
+                            drawRect(gradient, blendMode = BlendMode.Darken)
+                        }
+                    }
+                    .graphicsLayer {
+                        // change alpha of Image as the toolbar expands
+                        alpha = state.toolbarState.progress
+                    }
+            )
 
-    //movieViewModel.checkReviews()
-
-    Column(
-        Modifier
-            .fillMaxSize()
-            .verticalScroll(rememberScrollState()),
-    ) {
-        movieViewModel.checkReviews()
-        Poster(movieViewModel.movieDetails!!.poster, movieViewModel.movieDetails!!.name)
-        Text(
-            text = movieViewModel.movieDetails!!.description,
-            Modifier
-                .fillMaxWidth()
-                .padding(16.dp),
-            style = MaterialTheme.typography.body2,
-            textAlign = TextAlign.Start,
-            color = White
-        )
-        Text(
-            text = stringResource(R.string.about_movie),
-            Modifier
-                .fillMaxWidth()
-                .padding(16.dp, 0.dp),
-            style = MaterialTheme.typography.body1,
-            textAlign = TextAlign.Start,
-            color = White
-        )
-        Description(movieViewModel)
-        Text(
-            text = stringResource(R.string.genres),
-            Modifier
-                .fillMaxWidth()
-                .padding(16.dp, 0.dp),
-            style = MaterialTheme.typography.body1,
-            textAlign = TextAlign.Start,
-            color = White
-        )
-        FlowRow(
-            Modifier
-                .fillMaxWidth()
-                .wrapContentHeight()
-                .padding(16.dp, 8.dp)
-        ) {
-            for (i in 0 until movieViewModel.movieDetails!!.genres.size) {
-                Genre(movieViewModel.movieDetails!!.genres[i].name)
+            CompositionLocalProvider(LocalMinimumTouchTargetEnforcement provides false) {
+                val onBackPressedDispatcher = LocalOnBackPressedDispatcherOwner.current?.onBackPressedDispatcher
+                IconButton(
+                    onClick = { onBackPressedDispatcher?.onBackPressed() },
+                    Modifier
+                        .pin()
+                        .padding(16.dp)
+                ) {
+                    Icon(
+                        modifier = Modifier.size(24.dp),
+                        painter = painterResource(R.drawable.arrow_back),
+                        contentDescription = null,
+                        tint = White,
+                    )
+                }
             }
-        }
-        Row(
-            Modifier
-                .padding(16.dp, 8.dp)
-                .fillMaxWidth()
-                .height(24.dp),
-            verticalAlignment = CenterVertically
-        ) {
+
+            val textSize = (24 + (12) * state.toolbarState.progress).sp
+            val textLeftPadding = (49 - (33) * state.toolbarState.progress).dp
+            val textBottomPadding = (12 + (4) * state.toolbarState.progress).dp
             Text(
-                text = stringResource(R.string.reviews),
-                modifier = Modifier.padding(0.dp, 0.dp, 0.dp, 4.dp),
+                text = movieViewModel.movieDetails!!.name,
+                Modifier
+                    .road(
+                        whenCollapsed = TopStart,
+                        whenExpanded = BottomStart
+                    )
+                    .padding(textLeftPadding, 10.dp, 16.dp, textBottomPadding)
+                    .defaultMinSize(minHeight = 32.dp),
+                textAlign = TextAlign.Left,
+                style = MaterialTheme.typography.h4,
+                fontSize = textSize,
+                color = White
+            )
+        }
+    ) {
+        Column(
+            Modifier
+                .fillMaxSize()
+                .verticalScroll(rememberScrollState()),
+        ) {
+            movieViewModel.checkReviews()
+
+            Text(
+                text = movieViewModel.movieDetails!!.description,
+                Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp),
+                style = MaterialTheme.typography.body2,
+                textAlign = TextAlign.Start,
+                color = White
+            )
+            Text(
+                text = stringResource(R.string.about_movie),
+                Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp, 0.dp),
                 style = MaterialTheme.typography.body1,
                 textAlign = TextAlign.Start,
                 color = White
             )
-            Spacer(Modifier.weight(1f))
-            IconButton(
-                modifier = Modifier.requiredSize(24.dp),
-                enabled = !postedReview,
-                onClick = { movieViewModel.openDialog() }
+            Description(movieViewModel)
+            Text(
+                text = stringResource(R.string.genres),
+                Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp, 0.dp),
+                style = MaterialTheme.typography.body1,
+                textAlign = TextAlign.Start,
+                color = White
+            )
+            FlowRow(
+                Modifier
+                    .fillMaxWidth()
+                    .wrapContentHeight()
+                    .padding(16.dp, 8.dp)
             ) {
-                Icon(
-                    modifier = Modifier
-                        .padding(4.dp)
-                        .size(16.dp),
-                    tint = DarkRed,
-                    painter = painterResource(R.drawable.plus_icon),
-                    contentDescription = stringResource(R.string.plus_icon_description)
-                )
+                for (i in 0 until movieViewModel.movieDetails!!.genres.size) {
+                    Genre(movieViewModel.movieDetails!!.genres[i].name)
+                }
             }
-        }
-
-        MyReviewLoad(postedReview, postedReviewNum, movieViewModel.movieDetails!!.reviews)
-
-        for (i in 0 until movieViewModel.movieDetails!!.reviews.size) {
-            if (i != postedReviewNum) {
-                movieViewModel.parseDate(i)
-                ReviewShow(
-                    movieViewModel.movieDetails!!.reviews[i],
-                    movieViewModel.reviewDate,
-                    movieViewModel.userId
+            Row(
+                Modifier
+                    .padding(16.dp, 8.dp)
+                    .fillMaxWidth()
+                    .height(24.dp),
+                verticalAlignment = CenterVertically
+            ) {
+                Text(
+                    text = stringResource(R.string.reviews),
+                    modifier = Modifier.padding(0.dp, 0.dp, 0.dp, 4.dp),
+                    style = MaterialTheme.typography.body1,
+                    textAlign = TextAlign.Start,
+                    color = White
                 )
-            }
-        }
-    }
-}
+                Spacer(Modifier.weight(1f))
 
-@Composable
-fun Poster(image: String, name: String) {
-    Box(modifier = Modifier.wrapContentSize()) {
-        Image(
-            painter = rememberAsyncImagePainter(image),
-            contentDescription = stringResource(R.string.movies_poster_description),
-            contentScale = ContentScale.Crop,
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(250.dp)
-                .drawWithCache {
-                    val gradient = Brush.verticalGradient(
-                        colors = listOf(Color.Transparent, Black),
-                        startY = size.height / 5,
-                        endY = size.height
-                    )
-                    onDrawWithContent {
-                        drawContent()
-                        drawRect(gradient, blendMode = BlendMode.Multiply)
+
+                if (!userHasPostedReview) {
+                    IconButton(
+                        modifier = Modifier.requiredSize(24.dp),
+                        //enabled = !postedReview,
+                        onClick = { movieViewModel.openDialog() }
+                    ) {
+                        Icon(
+                            modifier = Modifier
+                                .padding(4.dp)
+                                .size(16.dp),
+                            tint = DarkRed,
+                            painter = painterResource(R.drawable.plus_icon),
+                            contentDescription = stringResource(R.string.plus_icon_description)
+                        )
                     }
                 }
-        )
-        Text(
-            text = name,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp, 0.dp, 16.dp, 16.dp)
-                .align(Alignment.BottomCenter),
-            style = MaterialTheme.typography.h4,
-            color = White
-        )
+            }
+
+            if (userHasPostedReview || isReviewEdited) {
+                movieViewModel.parseDate(postedReviewNum)
+                ReviewShow(
+                    movieViewModel.movieDetails!!.reviews[postedReviewNum],
+                    movieViewModel.reviewDate,
+                    movieViewModel.userId,
+                    {movieViewModel.openDialog()},
+                    {movieViewModel.deleteReview()}
+                )
+            }
+
+            for (i in 0 until movieViewModel.movieDetails!!.reviews.size) {
+                if (i != postedReviewNum) {
+                    movieViewModel.parseDate(i)
+                    ReviewShow(
+                        movieViewModel.movieDetails!!.reviews[i],
+                        movieViewModel.reviewDate,
+                        movieViewModel.userId,
+                        {movieViewModel.openDialog()},
+                        {movieViewModel.deleteReview()}
+                    )
+                }
+            }
+        }
     }
 }
 
@@ -208,8 +263,7 @@ fun Description(viewModel: MovieViewModel) {
         Spacer(
             Modifier
                 .fillMaxWidth()
-                .height(4.dp)
-        )
+                .height(4.dp))
         Row(
             Modifier
                 .fillMaxWidth()
@@ -238,8 +292,7 @@ fun Description(viewModel: MovieViewModel) {
         Spacer(
             Modifier
                 .fillMaxWidth()
-                .height(4.dp)
-        )
+                .height(4.dp))
         Row(
             Modifier
                 .fillMaxWidth()
@@ -269,8 +322,7 @@ fun Description(viewModel: MovieViewModel) {
         Spacer(
             Modifier
                 .fillMaxWidth()
-                .height(4.dp)
-        )
+                .height(4.dp))
         Row(
             Modifier
                 .fillMaxWidth()
@@ -299,8 +351,7 @@ fun Description(viewModel: MovieViewModel) {
         Spacer(
             Modifier
                 .fillMaxWidth()
-                .height(4.dp)
-        )
+                .height(4.dp))
         Row(
             Modifier
                 .fillMaxWidth()
@@ -329,8 +380,7 @@ fun Description(viewModel: MovieViewModel) {
         Spacer(
             Modifier
                 .fillMaxWidth()
-                .height(4.dp)
-        )
+                .height(4.dp))
         Row(
             Modifier
                 .fillMaxWidth()
@@ -359,8 +409,7 @@ fun Description(viewModel: MovieViewModel) {
         Spacer(
             Modifier
                 .fillMaxWidth()
-                .height(4.dp)
-        )
+                .height(4.dp))
         Row(
             Modifier
                 .fillMaxWidth()
@@ -389,8 +438,7 @@ fun Description(viewModel: MovieViewModel) {
         Spacer(
             Modifier
                 .fillMaxWidth()
-                .height(4.dp)
-        )
+                .height(4.dp))
         Row(
             Modifier
                 .fillMaxWidth()
@@ -431,7 +479,7 @@ fun Genre(name: String) {
             disabledBackgroundColor = DarkRed,
             disabledContentColor = White
         ),
-        shape = RoundedCornerShape(16.dp)
+        shape = RoundedCornerShape(8.dp)
     ) {
         Text(
             text = name,
@@ -446,7 +494,9 @@ fun Genre(name: String) {
 fun ReviewShow(
     review: Review,
     date: String,
-    userId: String
+    userId: String,
+    openDialog: () -> Unit,
+    deleteReview: () -> Unit
 ) {
     Card(
         Modifier.padding(16.dp, 4.dp),
@@ -460,6 +510,7 @@ fun ReviewShow(
                 modifier = Modifier
                     .padding(8.dp)
                     .fillMaxWidth()
+                    .height(40.dp)
             )
             {
                 Avatar(review.author?.avatar, review.isAnonymous)
@@ -487,10 +538,10 @@ fun ReviewShow(
                 Button(
                     onClick = { },
                     modifier = Modifier
-                        .padding(8.dp, 6.dp, 0.dp, 6.dp)
-                        .height(28.dp)
-                        .width(42.dp),
-                    contentPadding = PaddingValues(0.dp),
+                        //.padding(8.dp, 6.dp, 0.dp, 6.dp)
+                        .wrapContentSize()
+                        .defaultMinSize(minWidth = 42.dp, minHeight = 28.dp),
+                    contentPadding = PaddingValues(16.dp, 4.dp),
                     enabled = false,
                     colors = ButtonDefaults.buttonColors(
                         disabledBackgroundColor = Color(color),
@@ -516,53 +567,55 @@ fun ReviewShow(
                 textAlign = TextAlign.Start,
                 color = White
             )
-            if (review.author?.userId == userId) {
-                Row(
-                    verticalAlignment = Alignment.Bottom,
-                    //horizontalArrangement = Arrangement.Start
-                ) {
-                    Text(
-                        text = date,
-                        Modifier
-                            //.fillMaxWidth()
-                            .padding(8.dp, 0.dp, 8.dp, 0.dp)
-                            .align(CenterVertically),
-                        style = MaterialTheme.typography.subtitle2,
-                        textAlign = TextAlign.Start,
-                        color = TextGray
-                    )
-                    Spacer(Modifier.weight(1f))
-                    IconButton(
-                        onClick = { /* movieViewModel.openDialog() */ }
-                    ) {
-                        Icon(
-                            modifier = Modifier.size(24.dp),
-                            tint = Gray,
-                            painter = painterResource(R.drawable.edit_icon),
-                            contentDescription = stringResource(R.string.edit_icon_description)
-                        )
-                    }
-                    IconButton(
-                        onClick = { /* movieViewModel.openDialog() */ }
-                    ) {
-                        Icon(
-                            modifier = Modifier.size(24.dp),
-                            tint = Red,
-                            painter = painterResource(R.drawable.delete_icon),
-                            contentDescription = stringResource(R.string.delete_icon_description)
-                        )
-                    }
-                }
-            } else {
+
+            Row(
+                Modifier
+                    .padding(8.dp, 4.dp, 8.dp, 8.dp)
+                    .defaultMinSize(minHeight = 24.dp),
+                verticalAlignment = Alignment.Bottom,
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
                 Text(
                     text = date,
                     Modifier
-                        .fillMaxWidth()
-                        .padding(8.dp, 4.dp, 8.dp, 8.dp),
+                        //.fillMaxWidth()
+                        .align(CenterVertically),
                     style = MaterialTheme.typography.subtitle2,
                     textAlign = TextAlign.Start,
                     color = TextGray
                 )
+
+                if (review.author?.userId == userId) {
+                    Spacer(Modifier.weight(1f))
+
+                    CompositionLocalProvider(LocalMinimumTouchTargetEnforcement provides false) {
+                        IconButton(
+                            onClick = { openDialog() }
+                        ) {
+                            Icon(
+                                modifier = Modifier
+                                    .padding(0.dp, 0.dp, 4.dp, 0.dp)
+                                    .size(24.dp),
+                                tint = Color.Unspecified,
+                                painter = painterResource(R.drawable.edit_icon),
+                                contentDescription = stringResource(R.string.edit_icon_description)
+                            )
+                        }
+
+                        IconButton(
+                            onClick = { deleteReview() }
+                        ) {
+                            Icon(
+                                modifier = Modifier
+                                    .padding(4.dp, 0.dp, 0.dp, 0.dp)
+                                    .size(24.dp),
+                                tint = Color.Unspecified,
+                                painter = painterResource(R.drawable.delete_icon),
+                                contentDescription = stringResource(R.string.delete_icon_description)
+                            )
+                        }
+                    }
+                }
             }
         }
     }
@@ -588,22 +641,23 @@ fun Avatar(image: String?, isAnonymous: Boolean) {
             contentDescription = stringResource(R.string.avatar_content_description),
             modifier = Modifier.fillMaxSize(),
             contentScale = ContentScale.Crop,
-            alignment = Alignment.Center
+            alignment = Center
         )
     }
 }
 
 @Composable
 fun ReviewDialog(viewModel: MovieViewModel) {
-
     val openDialog: Boolean by remember { viewModel.openDialog }
-    val text: String by remember { viewModel.text }
-    val checkedState: Boolean by remember { viewModel.checker }
+    val reviewText: String by remember { viewModel.text }
+    val checkboxState: Boolean by remember { viewModel.isAnonymousChecker }
 
-    if (openDialog) {
+    if(openDialog) {
         AlertDialog(
             onDismissRequest = { viewModel.closeDialog() },
             modifier = Modifier.wrapContentSize(),
+            shape = RoundedCornerShape(16.dp),
+            backgroundColor = ReviewDialogGray,
             buttons = {
                 Column(modifier = Modifier.padding(16.dp))
                 {
@@ -616,7 +670,7 @@ fun ReviewDialog(viewModel: MovieViewModel) {
                     )
                     StarRatingBar(viewModel = viewModel)
                     OutlinedTextField(
-                        value = text,
+                        value = reviewText,
                         onValueChange = { viewModel.onTextChange(it) },
                         modifier = Modifier
                             .fillMaxWidth()
@@ -654,45 +708,33 @@ fun ReviewDialog(viewModel: MovieViewModel) {
                             color = White,
                             style = MaterialTheme.typography.body1
                         )
-
-                        /* normal checkbox
-                        Checkbox(
-                            checked = checkedState,
-                            onCheckedChange = { viewModel.onCheckerChange(it) },
-                            modifier = Modifier
-                                .align(CenterVertically),
-                            colors = CheckboxDefaults.colors(
-                                checkedColor = ReviewDialogGray,
-                                uncheckedColor = CheckerGray,
-                                checkmarkColor = DarkRed
-                            )
-                        )
-                        */
-
-                        //Spacer(Modifier.weight(1f))
-
                         //checkbox курильщика, зато по макету
-                        val tickColor =
-                            if (checkedState) DarkRed else ReviewDialogGray
+                        CompositionLocalProvider(LocalMinimumTouchTargetEnforcement provides false) {
+                            val tickColor = if (checkboxState) DarkRed else ReviewDialogGray
 
-                        IconButton(
-                            onClick = { viewModel.onCheckerChange(!checkedState) },
-                            modifier = Modifier
-                                .align(CenterVertically)
-                        ) {
-                            Box(Modifier.wrapContentSize()){
-                                Icon(
-                                    imageVector = ImageVector.vectorResource(R.drawable.checkbox),
-                                    tint = CheckerGray,
-                                    contentDescription = "checkbox",
-                                    modifier = Modifier.align(Center)
-                                )
-                                Icon(
-                                    imageVector = ImageVector.vectorResource(R.drawable.tick),
-                                    tint = tickColor,
-                                    contentDescription = "tick",
-                                    modifier = Modifier.align(Center)
-                                )
+                            IconButton(
+                                onClick = {viewModel.onAnonymousCheckerChange(!checkboxState)},
+                                modifier = Modifier
+                                    .align(CenterVertically)
+                            ) {
+                                Box(Modifier.wrapContentSize()){
+                                    Icon(
+                                        imageVector = ImageVector.vectorResource(R.drawable.checkbox),
+                                        tint = Color.Unspecified,
+                                        contentDescription = null,
+                                        modifier = Modifier
+                                            .align(Center)
+                                            .size(24.dp)
+                                    )
+                                    Icon(
+                                        imageVector = ImageVector.vectorResource(R.drawable.tick),
+                                        tint = tickColor,
+                                        contentDescription = null,
+                                        modifier = Modifier
+                                            .align(Center)
+                                            .size(17.dp, 12.dp)
+                                    )
+                                }
                             }
                         }
                     }
@@ -706,9 +748,8 @@ fun ReviewDialog(viewModel: MovieViewModel) {
                             contentColor = White
                         ),
                         onClick = {
-                            viewModel.saveReview(viewModel.movieDetails!!.id)
+                            viewModel.saveOrEditReview()
                             viewModel.closeDialog()
-                            viewModel.checkReviews()
                         }
                     )
                     {
@@ -726,10 +767,7 @@ fun ReviewDialog(viewModel: MovieViewModel) {
                             backgroundColor = ReviewDialogGray,
                             contentColor = DarkRed
                         ),
-                        onClick = {
-                            viewModel.closeDialog()
-                            viewModel.newRating(0)
-                        }
+                        onClick = { viewModel.closeDialog() }
                     )
                     {
                         Text(
@@ -739,9 +777,7 @@ fun ReviewDialog(viewModel: MovieViewModel) {
                         )
                     }
                 }
-            },
-            shape = RoundedCornerShape(16.dp),
-            backgroundColor = ReviewDialogGray
+            }
         )
     }
 }
@@ -751,11 +787,10 @@ fun StarRatingBar(
     stars: Int = 10,
     starsColor: Color = DarkRed,
     unfilledStarsColor: Color = Gray,
-    viewModel: MovieViewModel,
+    viewModel: MovieViewModel
 ) {
-    val rating: Int by remember { viewModel.rating }
-    val filledStars = rating
-    val unfilledStars = stars - rating
+    val filledStars: Int by remember { viewModel.rating }
+    val unfilledStars = stars - filledStars
 
     Row(
         Modifier
@@ -794,161 +829,3 @@ fun StarRatingBar(
         }
     }
 }
-
-@Composable
-fun MyReviewLoad(isPosted: Boolean, num: Int, reviews: List<Review>) {
-    if (isPosted) {
-        val date = reviews[num].createDateTime.substringBefore("T").split('-')
-
-        ReviewShow(
-            reviews[num],
-            date[2] + "." + date[1] + "." + date[0],
-            reviews[num].author!!.userId
-        )
-    }
-}
-
-/*
-@Preview(showBackground = true)
-@Composable
-fun ReviewSh() {
-    Card(
-        Modifier.padding(16.dp, 4.dp),
-        shape = RoundedCornerShape(8.dp),
-        backgroundColor = Black,
-        border = BorderStroke(1.dp, GrayFaded),
-    ) {
-        Column() {
-            Row(
-                verticalAlignment = CenterVertically,
-                modifier = Modifier
-                    .padding(8.dp)
-                    .fillMaxWidth()
-            )
-            {
-                Avatar("", true)
-                Column(
-                    Modifier
-                        .padding(8.dp, 0.dp),
-                    verticalArrangement = Arrangement.Center
-                ) {
-                    Text(
-                        text = "bdfyjd bdfy bdfhhhkhkhkhkh",
-                        color = White,
-                        style = MaterialTheme.typography.body1,
-                        textAlign = TextAlign.Left
-                    )
-                    Text(
-                        text = stringResource(R.string.my_review),
-                        color = TextGray,
-                        style = MaterialTheme.typography.subtitle2,
-                        textAlign = TextAlign.Left
-                    )
-                    /*
-                    if (review.author?.userId == userId) {
-                        Text(
-                            text = stringResource(R.string.my_review),
-                            color = TextGray,
-                            style = MaterialTheme.typography.subtitle2,
-                            textAlign = TextAlign.Left
-                        )
-                    }
-                     */
-                }
-                Spacer(Modifier.weight(1f))
-                val color = ColorUtils.blendARGB(Red.toArgb(), Green.toArgb(), 8 * 0.1f)
-                Button(
-                    onClick = { },
-                    contentPadding = PaddingValues(0.dp),
-                    modifier = Modifier
-                        .padding(8.dp, 6.dp, 0.dp, 6.dp)
-                        .height(28.dp)
-                        .width(42.dp),
-                    enabled = false,
-                    colors = ButtonDefaults.buttonColors(
-                        disabledBackgroundColor = Color(color),
-                        disabledContentColor = White
-                    ),
-                    shape = RoundedCornerShape(16.dp)
-                ) {
-                    Text(
-                        text = "9.1",
-                        style = MaterialTheme.typography.body1,
-                        textAlign = TextAlign.Center,
-                        modifier = Modifier.align(CenterVertically),
-                        color = White
-                    )
-                }
-            }
-            Text(
-                text = "блалаальавалалвьаывазшвыоащзвыоавоазоывщаощывоашщзвоаышщаышщовщаошщвоышщаоышщоаыоазыоваоышоашщвыоашыоашвыоашщо",
-                Modifier
-                    .padding(8.dp, 0.dp)
-                    .fillMaxWidth(),
-                style = MaterialTheme.typography.body2,
-                textAlign = TextAlign.Start,
-                color = White
-            )
-            /*
-            if (review.author?.userId == userId) {
-                Row(
-                    verticalAlignment = Alignment.Bottom,
-                    //horizontalArrangement = Arrangement.Start
-                ) {
-                    Text(
-                        text = date,
-                        Modifier
-                            //.fillMaxWidth()
-                            .padding(8.dp, 0.dp, 8.dp, 0.dp)
-                            .align(CenterVertically),
-                        style = MaterialTheme.typography.subtitle2,
-                        textAlign = TextAlign.Start,
-                        color = TextGray
-                    )
-                    Spacer(Modifier.weight(1f))
-                    IconButton(
-                        onClick = { /* movieViewModel.openDialog() */ }
-                    ) {
-                        Icon(
-                            modifier = Modifier.size(24.dp),
-                            tint = Gray,
-                            painter = painterResource(R.drawable.edit_icon),
-                            contentDescription = stringResource(R.string.edit_icon_description)
-                        )
-                    }
-                    IconButton(
-                        onClick = { /* movieViewModel.openDialog() */ }
-                    ) {
-                        Icon(
-                            modifier = Modifier.size(24.dp),
-                            tint = Red,
-                            painter = painterResource(R.drawable.delete_icon),
-                            contentDescription = stringResource(R.string.delete_icon_description)
-                        )
-                    }
-                }
-            } else {
-                Text(
-                    text = date,
-                    Modifier
-                        .fillMaxWidth()
-                        .padding(8.dp, 4.dp, 8.dp, 8.dp),
-                    style = MaterialTheme.typography.subtitle2,
-                    textAlign = TextAlign.Start,
-                    color = TextGray
-                )
-            }
-             */
-            Text(
-                text = "22.05.2011",
-                Modifier
-                    .fillMaxWidth()
-                    .padding(8.dp, 4.dp, 8.dp, 8.dp),
-                style = MaterialTheme.typography.subtitle2,
-                textAlign = TextAlign.Start,
-                color = TextGray
-            )
-        }
-    }
-}
-*/

@@ -66,7 +66,14 @@ class SignInViewModel : ViewModel() {
                 moviesRepository.getMovies(1).collect {}
                 userRepository.getUserData().collect {}
 
-                navController.navigate(Screens.NavBarScreen.route)
+                navController.navigate(Screens.NavBarScreen.route) {
+                    popUpTo(Screens.SignInScreen.route) {
+                        saveState = false
+                        inclusive = true
+                    }
+                    restoreState = false
+                    launchSingleTop = true
+                }
                 _hasErrors.value = false
             }
         }

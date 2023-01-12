@@ -21,6 +21,12 @@ val Montserrat = FontFamily(
 
 // Set of Material typography styles to start with
 val Typography = Typography(
+    h3 = TextStyle(
+        fontSize = 20.sp,
+        fontFamily = IbmPlexSans,
+        fontWeight = FontWeight.Bold,
+        lineHeight = 24.sp
+    ),
     h4 = TextStyle(
         fontSize = 36.sp,
         fontFamily = IbmPlexSans,
@@ -62,6 +68,12 @@ val Typography = Typography(
         fontFamily = Montserrat,
         fontWeight = FontWeight.Medium,
         lineHeight = 17.sp
+    ),
+    button = TextStyle(
+        fontSize = 14.sp,
+        fontFamily = IbmPlexSans,
+        fontWeight = FontWeight.Medium,
+        lineHeight = 16.sp
     )
 
     /* Other default text styles to override

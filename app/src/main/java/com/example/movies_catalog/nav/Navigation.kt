@@ -28,12 +28,21 @@ fun Navigation() {
         }
 
         composable(route = Screens.MovieScreen.route) {
-            MovieScreen()
+            MovieScreen(navController = navController)
         }
 
         composable(route = Screens.NavBarScreen.route) {
-            NavBarScreen({ navController.navigate(Screens.SignInScreen.route) },
-                { navController.navigate(Screens.MovieScreen.route) })
+            NavBarScreen(
+                { navController.navigate(Screens.SignInScreen.route){
+                    popUpTo(Screens.SignInScreen.route){
+                        saveState = false
+                        inclusive = true
+                    }
+                    restoreState = false
+                    launchSingleTop = true
+                } },
+                { navController.navigate(Screens.MovieScreen.route) }
+            )
         }
     }
 }

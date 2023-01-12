@@ -1,42 +1,30 @@
 package com.example.movies_catalog.mainScreen.galleryScreen
 
-import android.view.View
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Button
-import androidx.compose.material.ButtonDefaults
-import androidx.compose.material.Card
-import androidx.compose.material.Text
+import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.Alignment.Companion.Bottom
-import androidx.compose.ui.Alignment.Companion.BottomEnd
 import androidx.compose.ui.Alignment.Companion.BottomStart
-import androidx.compose.ui.Alignment.Companion.Start
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawWithCache
 import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Color.Companion.Transparent
+import androidx.compose.ui.graphics.Color.Companion.Unspecified
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.core.graphics.ColorUtils
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.rememberAsyncImagePainter
 import com.example.movies_catalog.R
@@ -71,13 +59,11 @@ fun MainScreen(openMovieDescription: () -> Unit) {
         item {
             Text(
                 text = stringResource(R.string.gallery),
-                color = DarkRed,
-                fontSize = 24.sp,
-                fontWeight = FontWeight.W700,
-                lineHeight = 32.sp,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(16.dp, 16.dp, 0.dp, 0.dp)
+                    .padding(16.dp, 16.dp, 0.dp, 0.dp),
+                color = DarkRed,
+                style = MaterialTheme.typography.h5
             )
         }
         itemsIndexed(
@@ -118,19 +104,19 @@ fun FirstMovieCard(
         Image(
             painter = rememberAsyncImagePainter(viewModel.movies!!.movies[0].poster),
             contentDescription = "Movie's Poster",
-            contentScale = ContentScale.Crop,
+            contentScale = ContentScale.FillWidth,
             modifier = Modifier
                 .fillMaxWidth()
-                .height(320.dp)
+                .heightIn(320.dp)
                 .drawWithCache {
                     val gradient = Brush.verticalGradient(
-                        colors = listOf(Transparent, Black),
-                        startY = size.height / 5,
+                        colors = listOf(Unspecified, Black),
+                        startY = size.height / 2,
                         endY = size.height
                     )
                     onDrawWithContent {
                         drawContent()
-                        drawRect(gradient, blendMode = BlendMode.Multiply)
+                        drawRect(gradient, blendMode = BlendMode.Darken)
                     }
                 }
         )
@@ -145,10 +131,13 @@ fun FirstMovieCard(
                 backgroundColor = DarkRed,
                 contentColor = White
             ),
-            shape = RoundedCornerShape(8.dp)
+            shape = RoundedCornerShape(4.dp)
         )
         {
-            Text(stringResource(R.string.watch), fontSize = 16.sp)
+            Text(
+                stringResource(R.string.watch),
+                style = MaterialTheme.typography.body1
+            )
         }
     }
 }
@@ -172,13 +161,11 @@ fun FavoriteMovieCard(image: String, openMovieDescription: () -> Unit) {
 fun FavoritesList() {
     Text(
         text = stringResource(R.string.favourites),
-        color = DarkRed,
-        fontSize = 24.sp,
-        fontWeight = FontWeight.W700,
-        lineHeight = 32.sp,
         modifier = Modifier
             .fillMaxWidth()
-            .padding(16.dp, 32.dp, 0.dp, 0.dp)
+            .padding(16.dp, 32.dp, 0.dp, 0.dp),
+        color = DarkRed,
+        style = MaterialTheme.typography.h5
     )
     LazyRow(
         modifier = Modifier
@@ -225,33 +212,27 @@ fun MovieCard(
             )
             Column(
                 modifier = Modifier
-                    .fillMaxHeight()
                     .padding(16.dp, 0.dp, 0.dp, 0.dp)
+                    .wrapContentHeight()
                     .weight(0.7f),
                 horizontalAlignment = Alignment.Start
             ) {
                 Text(
                     text = title,
                     color = White,
-                    fontWeight = FontWeight.W700,
-                    fontSize = 20.sp,
-                    lineHeight = 24.sp
+                    style = MaterialTheme.typography.h3
                 )
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
                     text = "$year • $country",
                     color = White,
-                    fontWeight = FontWeight.W700,
-                    fontSize = 14.sp,
-                    lineHeight = 18.sp
+                    style = MaterialTheme.typography.body2
                 )
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
                     text = genres,
                     color = White,
-                    fontWeight = FontWeight.W700,
-                    fontSize = 14.sp,
-                    lineHeight = 18.sp,
+                    style = MaterialTheme.typography.body2,
                     overflow = TextOverflow.Visible
                 )
                 Spacer(modifier = Modifier.height(4.dp))
@@ -265,7 +246,7 @@ fun MovieCard(
                         contentPadding = PaddingValues(16.dp, 4.dp),
                         modifier = Modifier
                             .wrapContentSize()
-                            .defaultMinSize(minWidth = 42.dp, minHeight = 28.dp)
+                            .defaultMinSize(minWidth = 56.dp, minHeight = 28.dp)
                             .align(BottomStart),
                         enabled = false,
                         colors = ButtonDefaults.buttonColors(
@@ -276,10 +257,8 @@ fun MovieCard(
                     ) {
                         Text(
                             text = String.format("%.1f", viewModel.rating),
-                            fontSize = 16.sp,
-                            fontWeight = FontWeight.W500,
+                            style = MaterialTheme.typography.body1,
                             textAlign = TextAlign.Center,
-                            lineHeight = 20.sp,
                             color = White
                         )
                     }

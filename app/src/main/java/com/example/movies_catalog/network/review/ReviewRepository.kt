@@ -12,8 +12,8 @@ class ReviewRepository {
         api.postReview(movieId, body)
     }
 
-    suspend fun putReview(movieId: String, id: String) {
-        api.putReview(movieId, id)
+    suspend fun putReview(movieId: String, id: String, body: ReviewModify) {
+        api.putReview(movieId, id, body)
     }
 
     suspend fun deleteReview(movieId: String, id: String) {

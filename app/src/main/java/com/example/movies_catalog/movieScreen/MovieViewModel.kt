@@ -4,9 +4,8 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.movies_catalog.nav.Screens
 import com.example.movies_catalog.network.Network
-import com.example.movies_catalog.network.models.LoginCredentials
+import com.example.movies_catalog.network.models.Review
 import com.example.movies_catalog.network.models.ReviewModify
 import com.example.movies_catalog.network.movies.MoviesRepository
 import com.example.movies_catalog.network.review.ReviewRepository
@@ -23,7 +22,6 @@ class MovieViewModel : ViewModel() {
     var showFees = fees.reversed().chunked(3).joinToString(separator = " ").reversed()
 
     private val profileData = Network.profile
-
     val userId = profileData!!.id
 
     var reviewDate = ""
@@ -32,62 +30,99 @@ class MovieViewModel : ViewModel() {
         reviewDate = parsed[2] + "." + parsed[1] + "." + parsed[0]
     }
 
-
-    private val _openDialog = mutableStateOf(false)
-    var openDialog: State<Boolean> = _openDialog
-
-    private val _rating = mutableStateOf(0)
-    var rating: State<Int> = _rating
-
-    fun newRating(rating: Int) {
-        _rating.value = rating
-    }
-
-    private val _text = mutableStateOf("")
-    var text: State<String> = _text
-
-    fun onTextChange(updatedText: String) {
-        _text.value = updatedText
-        //isEmpty()
-    }
-
-    private val _checker = mutableStateOf(false)
-    var checker: State<Boolean> = _checker
-
-    fun onCheckerChange(updatedStatus: Boolean) {
-        _checker.value = updatedStatus
-        //isEmpty()
-    }
-
     private val _postedReview = mutableStateOf(false)
     var postedReview: State<Boolean> = _postedReview
+
+    fun hasPostedReview(updatedStatus: Boolean) {
+        _postedReview.value = updatedStatus
+    }
 
     private val _postedReviewNum = mutableStateOf(-1)
     var postedReviewNum: State<Int> = _postedReviewNum
 
-    private val currUserId = Network.profile!!.id
-
-    fun checkReviews() {
-        for (i in 0 until movieDetails!!.reviews.size) {
-            if (currUserId == movieDetails!!.reviews[i].author!!.userId) {
-                _postedReview.value = true
-                _postedReviewNum.value = i
-            }
-        }
-    }
-
-    fun closeDialog() {
-        _openDialog.value = false
-        newRating(0)
-        onTextChange("")
-    }
+    private val _openDialog = mutableStateOf(false)
+    var openDialog: State<Boolean> = _openDialog
 
     fun openDialog() {
         _openDialog.value = true
     }
 
-    fun saveReview(id: String) {
+    //var currRating = userReviewDetails.rating
+    private val _rating = mutableStateOf(0)
+    var rating: State<Int> = _rating
 
+    fun newRating(updatedRating: Int) {
+        _rating.value = updatedRating
+    }
+
+    //var currReviewText = userReviewDetails.reviewText
+    private val _text = mutableStateOf("")
+    var text: State<String> = _text
+
+    fun onTextChange(updatedText: String) {
+        _text.value = updatedText
+    }
+
+    //var currAnonymousState = userReviewDetails.isAnonymous
+    private val _isAnonymousChecker = mutableStateOf(false)
+    var isAnonymousChecker: State<Boolean> = _isAnonymousChecker
+
+    fun onAnonymousCheckerChange(updatedState: Boolean) {
+        _isAnonymousChecker.value = updatedState
+    }
+
+    private val _editedReview = mutableStateOf(false)
+    var editedReview: State<Boolean> = _editedReview
+
+    fun onReviewEdit(newState: Boolean) {
+        _editedReview.value = newState
+    }
+
+    init {
+        checkReviews()
+    }
+
+    //var userReviewDetails = Review("", 0, "", false, "")
+    fun checkReviews() {
+        for (i in 0 until movieDetails!!.reviews.size) {
+            if (userId == movieDetails!!.reviews[i].author!!.userId) {
+                hasPostedReview(true)
+                _postedReviewNum.value = i
+                //userReviewDetails = movieDetails!!.reviews[i]
+
+                _text.value = movieDetails!!.reviews[i].reviewText
+                _rating.value = movieDetails!!.reviews[i].rating
+                _isAnonymousChecker.value = movieDetails!!.reviews[i].isAnonymous
+                return
+            }
+        }
+
+        _text.value = ""
+        _rating.value = 0
+        _isAnonymousChecker.value = false
+        hasPostedReview(false)
+    }
+
+    fun closeDialog() {
+        _openDialog.value = false
+
+        if (!_postedReview.value) {
+            newRating(0)
+            onTextChange("")
+            onAnonymousCheckerChange(false)
+        }
+    }
+
+    fun saveOrEditReview() {
+        if (!_postedReview.value) {
+            saveReview()
+        }
+        else {
+            editReview()
+        }
+    }
+
+    private fun saveReview() {
         val reviewRepository = ReviewRepository()
         val movieRepository = MoviesRepository()
 
@@ -97,56 +132,65 @@ class MovieViewModel : ViewModel() {
                 ReviewModify(
                     _text.value,
                     _rating.value,
-                    _checker.value
+                    _isAnonymousChecker.value
                 )
             )
 
-            movieRepository.getMovieDetails(id).catch {
+            movieRepository.getMovieDetails(movieDetails!!.id).catch {
 
             }.collect {
                 movieDetails = it
-                checkReviews()
             }
+
+            checkReviews()
+            onReviewEdit(false)
         }
     }
 
-    fun updateReview(id: String) {
-
+    private fun editReview() {
         val reviewRepository = ReviewRepository()
         val movieRepository = MoviesRepository()
 
         viewModelScope.launch {
             reviewRepository.putReview(
                 movieId = movieDetails!!.id,
-                id
+                movieDetails!!.reviews[_postedReviewNum.value].id,
+                ReviewModify(
+                    _text.value,
+                    _rating.value,
+                    _isAnonymousChecker.value
+                )
             )
 
-            movieRepository.getMovieDetails(id).catch {
+            movieRepository.getMovieDetails(movieDetails!!.id).catch {
 
             }.collect {
                 movieDetails = it
-                checkReviews()
             }
+
+            checkReviews()
+            onReviewEdit(true)
         }
     }
 
-    fun deleteReview(id: String) {
-
+    fun deleteReview() {
         val reviewRepository = ReviewRepository()
         val movieRepository = MoviesRepository()
 
         viewModelScope.launch {
             reviewRepository.deleteReview(
                 movieId = movieDetails!!.id,
-                id
+                movieDetails!!.reviews[_postedReviewNum.value].id,
             )
 
-            movieRepository.getMovieDetails(id).catch {
+            movieRepository.getMovieDetails(movieDetails!!.id).catch {
 
             }.collect {
                 movieDetails = it
-                checkReviews()
             }
+
+            checkReviews()
+            onReviewEdit(false)
         }
     }
 }

@@ -60,7 +60,9 @@ fun SignInScreen(navController: NavController) {
         ) {
             EntryButton(isFieldsFilled) { signInViewModel.login(navController) }
             Button(
-                onClick = { navController.navigate("sign_up_screen") },
+                onClick = {
+
+                    navController.navigate("sign_up_screen") { launchSingleTop = true } },
                 colors = ButtonDefaults.buttonColors(
                     backgroundColor = Black,
                     contentColor = DarkRed
@@ -187,7 +189,7 @@ fun EntryButton(isFieldsFilled: Boolean, login: () -> Unit) {
             .padding(16.dp, 8.dp, 16.dp, 4.dp)
             .height(44.dp)
             .fillMaxWidth(),
-        shape = RoundedCornerShape(8.dp)
+        shape = RoundedCornerShape(4.dp)
     )
     {
         Text(
