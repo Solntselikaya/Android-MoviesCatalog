@@ -5,6 +5,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.movies_catalog.network.Network
+import com.example.movies_catalog.network.favoriteMovies.FavoriteMoviesRepository
 import com.example.movies_catalog.network.models.Review
 import com.example.movies_catalog.network.models.ReviewModify
 import com.example.movies_catalog.network.movies.MoviesRepository
@@ -39,7 +40,6 @@ class MovieViewModel : ViewModel() {
     private fun hasPostedReview(updatedStatus: Boolean) {
         _postedReview.value = updatedStatus
     }
-
 
     private val _openDialog = mutableStateOf(false)
     var openDialog: State<Boolean> = _openDialog
@@ -86,8 +86,24 @@ class MovieViewModel : ViewModel() {
     private val _userReviewDetails = mutableStateOf(emptyReview)
     var userReviewDetails: State<Review> = _userReviewDetails
 
+    var favorites = Network.favoriteMovies
+    private val _isInFavorites = mutableStateOf(false)
+    var isInFavorites: State<Boolean> = _isInFavorites
+
+    fun onFavoritesChange(isAddedToFavorites: Boolean) {
+        //_isInFavorites.value = newState
+
+        if (isAddedToFavorites) {
+            addFavorite()
+        }
+        else {
+            deleteFavorite()
+        }
+    }
+
     init {
         checkReviews()
+        checkFavorites()
     }
 
     fun checkReviews() {
@@ -110,8 +126,46 @@ class MovieViewModel : ViewModel() {
         hasPostedReview(false)
     }
 
-    fun addFavorite() {
-        
+    private fun checkFavorites() {
+        for (i in 0 until favorites!!.movies.size) {
+            if (favorites!!.movies[i].id == movieDetails!!.id) {
+                _isInFavorites.value = true
+                return
+            }
+        }
+        _isInFavorites.value = false
+    }
+
+    private fun addFavorite() {
+        val favoritesRepository = FavoriteMoviesRepository()
+
+        viewModelScope.launch {
+            favoritesRepository.addFavorites(
+                movieDetails!!.id
+            )
+
+            favoritesRepository.getFavorites().catch {  }.collect {
+                favorites = it
+            }
+
+            checkFavorites()
+        }
+    }
+
+    private fun deleteFavorite() {
+        val favoritesRepository = FavoriteMoviesRepository()
+
+        viewModelScope.launch {
+            favoritesRepository.deleteFavorites(
+                movieDetails!!.id
+            )
+
+            favoritesRepository.getFavorites().catch {  }.collect {
+                favorites = it
+            }
+
+            checkFavorites()
+        }
     }
 
     fun saveOrEditReview() {

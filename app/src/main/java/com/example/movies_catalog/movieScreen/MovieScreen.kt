@@ -57,6 +57,8 @@ fun MovieScreen() {
     //val isReviewEdited: Boolean by remember {movieViewModel.editedReview}
     val userReview: Review by remember {movieViewModel.userReviewDetails}
 
+    val isInFavorites: Boolean by remember {movieViewModel.isInFavorites}
+
     ReviewDialog(movieViewModel)
 
     val state = rememberCollapsingToolbarScaffoldState()
@@ -114,14 +116,14 @@ fun MovieScreen() {
 
                 CompositionLocalProvider(LocalMinimumTouchTargetEnforcement provides false) {
                     IconButton(
-                        onClick = { },
+                        onClick = { movieViewModel.onFavoritesChange(!isInFavorites) },
                         Modifier
                             .padding(16.dp),
                         enabled = state.toolbarState.progress.equals(0.toFloat())
                     ) {
                         Icon(
                             painter =
-                            if (/*inFavorites*/false)
+                            if (isInFavorites)
                                 painterResource(R.drawable.filled_heart)
                             else
                                 painterResource(R.drawable.unfilled_heart),
