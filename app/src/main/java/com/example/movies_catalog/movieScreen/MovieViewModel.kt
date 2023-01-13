@@ -33,18 +33,29 @@ class MovieViewModel : ViewModel() {
     private val _postedReview = mutableStateOf(false)
     var postedReview: State<Boolean> = _postedReview
 
-    fun hasPostedReview(updatedStatus: Boolean) {
+    private val _postedReviewNum = mutableStateOf(-1)
+    var postedReviewNum: State<Int> = _postedReviewNum
+
+    private fun hasPostedReview(updatedStatus: Boolean) {
         _postedReview.value = updatedStatus
     }
 
-    private val _postedReviewNum = mutableStateOf(-1)
-    var postedReviewNum: State<Int> = _postedReviewNum
 
     private val _openDialog = mutableStateOf(false)
     var openDialog: State<Boolean> = _openDialog
 
     fun openDialog() {
         _openDialog.value = true
+    }
+
+    fun closeDialog() {
+        _openDialog.value = false
+
+        if (!_postedReview.value) {
+            newRating(0)
+            onTextChange("")
+            onAnonymousCheckerChange(false)
+        }
     }
 
     //var currRating = userReviewDetails.rating
@@ -71,24 +82,20 @@ class MovieViewModel : ViewModel() {
         _isAnonymousChecker.value = updatedState
     }
 
-    private val _editedReview = mutableStateOf(false)
-    var editedReview: State<Boolean> = _editedReview
-
-    fun onReviewEdit(newState: Boolean) {
-        _editedReview.value = newState
-    }
+    var emptyReview = Review("", 0, "", false, "")
+    private val _userReviewDetails = mutableStateOf(emptyReview)
+    var userReviewDetails: State<Review> = _userReviewDetails
 
     init {
         checkReviews()
     }
 
-    //var userReviewDetails = Review("", 0, "", false, "")
     fun checkReviews() {
         for (i in 0 until movieDetails!!.reviews.size) {
             if (userId == movieDetails!!.reviews[i].author!!.userId) {
                 hasPostedReview(true)
                 _postedReviewNum.value = i
-                //userReviewDetails = movieDetails!!.reviews[i]
+                _userReviewDetails.value = movieDetails!!.reviews[i]
 
                 _text.value = movieDetails!!.reviews[i].reviewText
                 _rating.value = movieDetails!!.reviews[i].rating
@@ -103,14 +110,8 @@ class MovieViewModel : ViewModel() {
         hasPostedReview(false)
     }
 
-    fun closeDialog() {
-        _openDialog.value = false
-
-        if (!_postedReview.value) {
-            newRating(0)
-            onTextChange("")
-            onAnonymousCheckerChange(false)
-        }
+    fun addFavorite() {
+        
     }
 
     fun saveOrEditReview() {
@@ -143,7 +144,6 @@ class MovieViewModel : ViewModel() {
             }
 
             checkReviews()
-            onReviewEdit(false)
         }
     }
 
@@ -169,7 +169,6 @@ class MovieViewModel : ViewModel() {
             }
 
             checkReviews()
-            onReviewEdit(true)
         }
     }
 
@@ -190,7 +189,6 @@ class MovieViewModel : ViewModel() {
             }
 
             checkReviews()
-            onReviewEdit(false)
         }
     }
 }

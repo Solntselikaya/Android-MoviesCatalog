@@ -215,13 +215,6 @@ class SignUpViewModel : ViewModel() {
             ).catch {
                 _hasErrors.value = true
             }.collect {
-                repository.login(
-                    LoginCredentials(
-                        username = _login.value,
-                        password = _password.value
-                    )
-                ).collect {}
-
                 favoriteMoviesRepository.getFavorites().collect {}
                 moviesRepository.getMovies(1).collect {}
                 userRepository.getUserData().collect {}

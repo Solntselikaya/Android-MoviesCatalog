@@ -28,7 +28,7 @@ fun Navigation() {
         }
 
         composable(route = Screens.MovieScreen.route) {
-            MovieScreen(navController = navController)
+            MovieScreen()
         }
 
         composable(route = Screens.NavBarScreen.route) {

@@ -8,6 +8,9 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
@@ -15,6 +18,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.BottomStart
 import androidx.compose.ui.Alignment.Companion.Center
+import androidx.compose.ui.Alignment.Companion.CenterEnd
 import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Alignment.Companion.TopStart
 import androidx.compose.ui.Modifier
@@ -27,6 +31,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.graphics.ColorUtils
@@ -44,12 +49,13 @@ import me.onebone.toolbar.rememberCollapsingToolbarScaffoldState
 //@Preview(showBackground = true)
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun MovieScreen(navController: NavController) {
+fun MovieScreen() {
     val movieViewModel: MovieViewModel = viewModel()
 
     val userHasPostedReview: Boolean by remember {movieViewModel.postedReview}
     val postedReviewNum: Int by remember {movieViewModel.postedReviewNum}
-    val isReviewEdited: Boolean by remember {movieViewModel.editedReview}
+    //val isReviewEdited: Boolean by remember {movieViewModel.editedReview}
+    val userReview: Review by remember {movieViewModel.userReviewDetails}
 
     ReviewDialog(movieViewModel)
 
@@ -84,25 +90,54 @@ fun MovieScreen(navController: NavController) {
                     }
             )
 
-            CompositionLocalProvider(LocalMinimumTouchTargetEnforcement provides false) {
-                val onBackPressedDispatcher = LocalOnBackPressedDispatcherOwner.current?.onBackPressedDispatcher
-                IconButton(
-                    onClick = { onBackPressedDispatcher?.onBackPressed() },
-                    Modifier
-                        .pin()
-                        .padding(16.dp)
-                ) {
-                    Icon(
-                        modifier = Modifier.size(24.dp),
-                        painter = painterResource(R.drawable.arrow_back),
-                        contentDescription = null,
-                        tint = White,
-                    )
+            Row(
+                Modifier
+                    .pin()
+                    .fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                CompositionLocalProvider(LocalMinimumTouchTargetEnforcement provides false) {
+                    val onBackPressedDispatcher = LocalOnBackPressedDispatcherOwner.current?.onBackPressedDispatcher
+                    IconButton(
+                        onClick = { onBackPressedDispatcher?.onBackPressed() },
+                        Modifier
+                            .padding(16.dp)
+                    ) {
+                        Icon(
+                            modifier = Modifier.size(24.dp),
+                            painter = painterResource(R.drawable.arrow_back),
+                            contentDescription = null,
+                            tint = White,
+                        )
+                    }
+                }
+
+                CompositionLocalProvider(LocalMinimumTouchTargetEnforcement provides false) {
+                    IconButton(
+                        onClick = { },
+                        Modifier
+                            .padding(16.dp),
+                        enabled = state.toolbarState.progress.equals(0.toFloat())
+                    ) {
+                        Icon(
+                            painter =
+                            if (/*inFavorites*/false)
+                                painterResource(R.drawable.filled_heart)
+                            else
+                                painterResource(R.drawable.unfilled_heart),
+                            contentDescription = null,
+                            modifier = Modifier
+                                .size(24.dp)
+                                .graphicsLayer { alpha = 1 - state.toolbarState.progress },
+                            tint = DarkRed
+                        )
+                    }
                 }
             }
 
             val textSize = (24 + (12) * state.toolbarState.progress).sp
             val textLeftPadding = (49 - (33) * state.toolbarState.progress).dp
+            val textRightPadding = (48 - (32) * state.toolbarState.progress).dp
             val textBottomPadding = (12 + (4) * state.toolbarState.progress).dp
             Text(
                 text = movieViewModel.movieDetails!!.name,
@@ -111,12 +146,14 @@ fun MovieScreen(navController: NavController) {
                         whenCollapsed = TopStart,
                         whenExpanded = BottomStart
                     )
-                    .padding(textLeftPadding, 10.dp, 16.dp, textBottomPadding)
+                    .padding(textLeftPadding, 9.dp, textRightPadding, textBottomPadding)
                     .defaultMinSize(minHeight = 32.dp),
                 textAlign = TextAlign.Left,
                 style = MaterialTheme.typography.h4,
                 fontSize = textSize,
-                color = White
+                color = White,
+                overflow = TextOverflow.Ellipsis,
+                maxLines = if (state.toolbarState.progress.equals(0.toFloat())) 1 else Int.MAX_VALUE
             )
         }
     ) {
@@ -200,10 +237,10 @@ fun MovieScreen(navController: NavController) {
                 }
             }
 
-            if (userHasPostedReview || isReviewEdited) {
+            if (userHasPostedReview) {
                 movieViewModel.parseDate(postedReviewNum)
                 ReviewShow(
-                    movieViewModel.movieDetails!!.reviews[postedReviewNum],
+                    userReview,
                     movieViewModel.reviewDate,
                     movieViewModel.userId,
                     {movieViewModel.openDialog()},
