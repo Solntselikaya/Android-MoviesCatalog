@@ -46,6 +46,13 @@ class MainViewModel : ViewModel() {
     private val _favListSize = mutableStateOf(favorite.size)
     var favListSize: State<Int> = _favListSize
 
+    private val _isNeedAnimation = mutableStateOf(false)
+    var isNeedAnimation: State<Boolean> = _isNeedAnimation
+
+    fun updateAnimation(newState: Boolean) {
+        _isNeedAnimation.value = newState
+    }
+
     fun updateFavorites() {
         val favoritesRepository = FavoriteMoviesRepository()
 

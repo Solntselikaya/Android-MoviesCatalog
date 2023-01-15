@@ -66,4 +66,12 @@ object Network {
     fun getMoviesApi(): MoviesApi = retrofit.create(MoviesApi::class.java)
     fun getUserApi(): UserApi = retrofit.create(UserApi::class.java)
     fun getReviewApi(): ReviewApi = retrofit.create(ReviewApi::class.java)
+
+    fun clearData() {
+        token = null
+        favoriteMovies = null
+        movies = null
+        profile = null
+        movieDetails = null
+    }
 }

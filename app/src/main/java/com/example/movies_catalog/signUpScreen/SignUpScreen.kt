@@ -172,7 +172,7 @@ fun LogoImage() {
             .fillMaxWidth()
             .padding(0.dp, 56.dp, 0.dp, 8.dp)
             .height(animatedHeightDp)
-            .width((animatedWidthDp)),
+            .width(animatedWidthDp),
         painter = painterResource(R.drawable.logo),
         contentDescription = stringResource(R.string.logo_picture_description)
     )

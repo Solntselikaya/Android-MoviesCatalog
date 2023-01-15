@@ -2,15 +2,14 @@
 
 package com.example.movies_catalog.mainScreen.galleryScreen
 
+import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.BottomStart
 import androidx.compose.ui.Alignment.Companion.TopEnd
@@ -24,6 +23,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.core.graphics.ColorUtils
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -58,7 +58,9 @@ fun MainScreen(openMovieDescription: () -> Unit) {
             }
             item {
                 if (mainViewModel.favListSize.value != 0) {
-                    FavoritesList(favList) { mainViewModel.deleteFavorite(it)}
+                    FavoritesList(
+                        favList,
+                    ) { mainViewModel.deleteFavorite(it)}
                 }
             }
             item {
@@ -152,12 +154,32 @@ fun FirstMovieCard(
 fun FavoriteMovieCard(
     image: String,
     id: String,
+    isNeedAnimation: Boolean,
     deleteFromFavorite: (String) -> Unit
 ) {
+
+    var isNeedAnim by remember { mutableStateOf(false) }
+
+    if (isNeedAnimation) {
+        LaunchedEffect(isNeedAnim) {
+            isNeedAnim = true
+        }
+    }
+
+    val animatedHeightDp: Dp by animateDpAsState(
+        targetValue = if (isNeedAnim) 172.dp else 144.dp,
+        animationSpec = tween(durationMillis = 400)
+    )
+    val animatedWidthDp: Dp by animateDpAsState(
+        targetValue = if (isNeedAnim) 120.dp else 100.dp,
+        animationSpec = tween(durationMillis = 400)
+    )
+
     Box(
         modifier = Modifier
-            .size(120.dp, 172.dp)
+            .size(animatedWidthDp, animatedHeightDp)
             .clip(RoundedCornerShape(8.dp))
+
     ) {
         Image(
             painter = rememberAsyncImagePainter(image),
@@ -200,19 +222,58 @@ fun FavoritesList(
     )
 
     val rowState = rememberLazyListState()
+    val fullyVisibleIndices: List<Int> by remember {
+        derivedStateOf {
+            val layoutInfo = rowState.layoutInfo
+            val visibleItemsInfo = layoutInfo.visibleItemsInfo
+            val fullyVisibleItemsInfo = visibleItemsInfo.toMutableList()
+
+            if (visibleItemsInfo.isEmpty()) {
+                emptyList()
+            }
+            else {
+                val firstItemIfLeft = fullyVisibleItemsInfo.firstOrNull()
+                if (firstItemIfLeft != null && firstItemIfLeft.offset < layoutInfo.viewportStartOffset) {
+                    fullyVisibleItemsInfo.removeFirst()
+                }
+
+                fullyVisibleItemsInfo.map { it.index }
+            }
+        }
+    }
+
     LazyRow(
         state = rowState,
         modifier = Modifier
             .fillMaxWidth()
-            .wrapContentHeight()
-            .padding(16.dp, 8.dp, 0.dp, 16.dp),
-        horizontalArrangement = Arrangement.spacedBy(16.dp)
+            .padding(16.dp, 8.dp, 0.dp, 16.dp)
+            .height(172.dp),
+        horizontalArrangement = Arrangement.spacedBy(16.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        //flingBehavior = rememberSnapperFlingBehavior(
+        //    lazyListState = rowState,
+        //    snapOffsetForItem = SnapOffsets.Start
+        //),
+        //flingBehavior = rememberSnapFlingBehavior(lazyListState = rowState)
     ) {
-        items (items) { item ->
-            FavoriteMovieCard(
-                item.poster,
-                item.id
-            ) { deleteFromFavorite(it) }
+        itemsIndexed (items) { index, item ->
+
+            if (fullyVisibleIndices.isNotEmpty() && index == fullyVisibleIndices.first()) {
+                //updateAnimation(true)
+                FavoriteMovieCard(
+                    item.poster,
+                    item.id,
+                    true,
+                ) { deleteFromFavorite(it) }
+            }
+            else {
+                //updateAnimation(false)
+                FavoriteMovieCard(
+                    item.poster,
+                    item.id,
+                    false,
+                ) { deleteFromFavorite(it) }
+            }
         }
     }
 }

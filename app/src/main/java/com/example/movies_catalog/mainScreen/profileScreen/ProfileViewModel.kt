@@ -80,7 +80,6 @@ class ProfileViewModel : ViewModel() {
 
         val mFormat = DecimalFormat("00")
 
-        // TODO : попробовать сделать так, чтобы изначальные дд.мм.гггг были на календарике относительно прошлого выбора пользователя
         val mDatePickerDialog = DatePickerDialog(
             context,
             R.style.MyDatePickerDialogTheme,
@@ -211,14 +210,14 @@ class ProfileViewModel : ViewModel() {
     }
 
     fun logout() {
-
         val authRepository = AuthRepository()
 
         viewModelScope.launch {
             authRepository.logout().collect {
 
-                //почистить нетворк
             }
+
+            Network.clearData()
         }
     }
 }

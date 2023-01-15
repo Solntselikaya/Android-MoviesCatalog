@@ -6,7 +6,6 @@ import android.content.Context
 import android.icu.text.DecimalFormat
 import android.icu.text.SimpleDateFormat
 import android.icu.util.Calendar
-import android.text.TextUtils.split
 import android.util.Patterns
 import android.widget.DatePicker
 import androidx.compose.runtime.State
@@ -18,14 +17,11 @@ import com.example.movies_catalog.R
 import com.example.movies_catalog.nav.Screens
 import com.example.movies_catalog.network.auth.AuthRepository
 import com.example.movies_catalog.network.favoriteMovies.FavoriteMoviesRepository
-import com.example.movies_catalog.network.models.LoginCredentials
 import com.example.movies_catalog.network.models.UserRegister
 import com.example.movies_catalog.network.movies.MoviesRepository
 import com.example.movies_catalog.network.user.UserRepository
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.launch
-import okhttp3.OkHttpClient
-import java.time.LocalDateTime
 
 class SignUpViewModel : ViewModel() {
     private val _login = mutableStateOf("")
@@ -174,14 +170,14 @@ class SignUpViewModel : ViewModel() {
         val birthdate = _birthdate.value
         val isDateValid = _isDateValid.value
         val gender = _gender.value
-        _isFieldsFilled.value = !login.isNullOrEmpty() &&
+        _isFieldsFilled.value = login.isNotEmpty() &&
                 !email.isNullOrEmpty() &&
                 (isEmailValid) &&
                 (isEmailLengthValid) &&
                 (isPasswordValid) &&
                 //(isDateValid) &&
                 !name.isNullOrEmpty() &&
-                !password.isNullOrEmpty() &&
+                password.isNotEmpty() &&
                 !repeatedPassword.isNullOrEmpty() &&
                 (isPasswordsEqual) &&
                 !birthdate.isNullOrEmpty() &&
