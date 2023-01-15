@@ -1,25 +1,26 @@
+@file:OptIn(ExperimentalMaterialApi::class)
+
 package com.example.movies_catalog.mainScreen.galleryScreen
 
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.BottomStart
+import androidx.compose.ui.Alignment.Companion.TopEnd
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawWithCache
-import androidx.compose.ui.graphics.BlendMode
-import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.*
 import androidx.compose.ui.graphics.Color.Companion.Unspecified
-import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -28,6 +29,7 @@ import androidx.core.graphics.ColorUtils
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.rememberAsyncImagePainter
 import com.example.movies_catalog.R
+import com.example.movies_catalog.network.models.MovieElement
 import com.example.movies_catalog.network.models.ReviewShort
 import com.example.movies_catalog.ui.theme.*
 
@@ -36,60 +38,64 @@ fun MainScreen(openMovieDescription: () -> Unit) {
 
     val mainViewModel: MainViewModel = viewModel()
 
-    //mainViewModel.resizeMoviesList()
+    mainViewModel.updateFavorites()
 
     //val moviesListSize : Int by remember { mainViewModel.moviesListSize }
-    val favListSize: Int by remember { mainViewModel.favListSize }
+    val favList: List<MovieElement> by remember { mainViewModel.favList }
+    val isPageReady: Boolean by remember { mainViewModel.isReady }
+    //val favListSize: Int by remember { mainViewModel.favListSize }
 
-    LazyColumn(
-        Modifier
-            .fillMaxSize()
-            .background(Black)
-    ) {
-        item {
-            FirstMovieCard(
-                mainViewModel
-            ) { openMovieDescription() }
-        }
-        item {
-            if (favListSize != 0) {
-                FavoritesList()
-            }
-        }
-        item {
-            Text(
-                text = stringResource(R.string.gallery),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp, 16.dp, 0.dp, 0.dp),
-                color = DarkRed,
-                style = MaterialTheme.typography.h5
-            )
-        }
-        itemsIndexed(
-            items = mainViewModel.movieList
-        ) { index, item ->
-
-            val lastIndex = mainViewModel.movieList.lastIndex
-            val currentIndex = mainViewModel.movieList.indexOf(item)
-
-            if (currentIndex != 0) {
-                mainViewModel.getGenresString(item.genres)
-                val genres = mainViewModel.genresString
-                MovieCard(
-                    viewModel = mainViewModel,
-                    id = item.id,
-                    title = item.name,
-                    year = item.year,
-                    country = item.country,
-                    image = item.poster,
-                    genres = genres,
-                    reviews = item.reviews
+    if (isPageReady) {
+        LazyColumn(
+            Modifier
+                .fillMaxSize()
+                .background(Black)
+        ) {
+            item {
+                FirstMovieCard(
+                    mainViewModel
                 ) { openMovieDescription() }
             }
+            item {
+                if (mainViewModel.favListSize.value != 0) {
+                    FavoritesList(favList) { mainViewModel.deleteFavorite(it)}
+                }
+            }
+            item {
+                Text(
+                    text = stringResource(R.string.gallery),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp, 16.dp, 0.dp, 0.dp),
+                    color = DarkRed,
+                    style = MaterialTheme.typography.h5
+                )
+            }
+            itemsIndexed(
+                items = mainViewModel.movieList
+            ) { index, item ->
 
-            if (index == lastIndex && mainViewModel.page < 6) {
-                mainViewModel.getMovies()
+                val lastIndex = mainViewModel.movieList.lastIndex
+                val currentIndex = mainViewModel.movieList.indexOf(item)
+
+                if (currentIndex != 0) {
+                    mainViewModel.getGenresString(item.genres)
+                    val genres = mainViewModel.genresString
+                    MovieCard(
+                        viewModel = mainViewModel,
+                        id = item.id,
+                        title = item.name,
+                        year = item.year,
+                        country = item.country,
+                        image = item.poster,
+                        genres = genres,
+                        reviews = item.reviews
+                    ) { openMovieDescription() }
+                }
+
+                if (index == lastIndex && mainViewModel.page < 6) {
+                    mainViewModel.getMovies()
+                }
             }
         }
     }
@@ -143,22 +149,47 @@ fun FirstMovieCard(
 }
 
 @Composable
-fun FavoriteMovieCard(image: String, openMovieDescription: () -> Unit) {
+fun FavoriteMovieCard(
+    image: String,
+    id: String,
+    deleteFromFavorite: (String) -> Unit
+) {
     Box(
-        modifier = Modifier.fillMaxHeight()
+        modifier = Modifier
+            .size(120.dp, 172.dp)
+            .clip(RoundedCornerShape(8.dp))
     ) {
         Image(
             painter = rememberAsyncImagePainter(image),
-            contentDescription = "Movie's Poster",
-            contentScale = ContentScale.FillHeight,
-            modifier = Modifier
-                .fillMaxHeight()
+            contentDescription = null,
+            modifier = Modifier.fillMaxSize(),
+            contentScale = ContentScale.FillBounds,
+            alignment = Alignment.Center
         )
+
+        CompositionLocalProvider(LocalMinimumTouchTargetEnforcement provides false) {
+            IconButton(
+                onClick = { deleteFromFavorite(id) },
+                Modifier
+                    .padding(4.dp)
+                    .align(TopEnd)
+            ) {
+                Icon(
+                    painter = painterResource(R.drawable.delete_from_favorites_button),
+                    contentDescription = null,
+                    Modifier.size(12.dp),
+                    tint = Unspecified
+                )
+            }
+        }
     }
 }
 
 @Composable
-fun FavoritesList() {
+fun FavoritesList(
+    items: List<MovieElement>,
+    deleteFromFavorite: (String) -> Unit
+) {
     Text(
         text = stringResource(R.string.favourites),
         modifier = Modifier
@@ -167,14 +198,22 @@ fun FavoritesList() {
         color = DarkRed,
         style = MaterialTheme.typography.h5
     )
+
+    val rowState = rememberLazyListState()
     LazyRow(
+        state = rowState,
         modifier = Modifier
             .fillMaxWidth()
-            .wrapContentSize()
-            .height(172.dp)
-            .padding(16.dp, 8.dp, 0.dp, 16.dp)
+            .wrapContentHeight()
+            .padding(16.dp, 8.dp, 0.dp, 16.dp),
+        horizontalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        //add items later
+        items (items) { item ->
+            FavoriteMovieCard(
+                item.poster,
+                item.id
+            ) { deleteFromFavorite(it) }
+        }
     }
 }
 
@@ -205,7 +244,7 @@ fun MovieCard(
         ) {
             Image(
                 painter = rememberAsyncImagePainter(image),
-                contentDescription = "Movie's Poster",
+                contentDescription = null,
                 modifier = Modifier
                     .height(144.dp)
                     .weight(0.3f)

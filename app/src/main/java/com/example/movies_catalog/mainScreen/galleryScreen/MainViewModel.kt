@@ -17,7 +17,10 @@ import kotlinx.coroutines.launch
 
 class MainViewModel : ViewModel() {
     val movies = Network.movies
-    val favorite = Network.favoriteMovies
+
+    private var favorite = Network.favoriteMovies!!.movies
+    private val _favList = mutableStateOf(favorite)
+    var favList: State<List<MovieElement>> = _favList
 
     var genresString: String = ""
 
@@ -30,16 +33,32 @@ class MainViewModel : ViewModel() {
         movies.movies[5]
     )
 
-    private val _moviesListSize = mutableStateOf(0)
-    var moviesListSize: State<Int> = _moviesListSize
+    private val _isReady = mutableStateOf(false)
+    var isReady: State<Boolean> = _isReady
 
+    /*
     fun resizeMoviesList() {
         _moviesListSize.value = movies!!.movies.size
         //movieList.addAll(movies.movies)
     }
+     */
 
-    private val _favListSize = mutableStateOf(0)
+    private val _favListSize = mutableStateOf(favorite.size)
     var favListSize: State<Int> = _favListSize
+
+    fun updateFavorites() {
+        val favoritesRepository = FavoriteMoviesRepository()
+
+        viewModelScope.launch {
+            favoritesRepository.getFavorites().catch {  }.collect {
+                favorite = it.movies
+                _favList.value = it.movies
+                _favListSize.value = it.movies.size
+            }
+
+            _isReady.value = true
+        }
+    }
 
     var page = 2
     fun getMovies() {
@@ -86,6 +105,22 @@ class MainViewModel : ViewModel() {
 
             }.collect {}
             openMovieDetails()
+        }
+    }
+
+    fun deleteFavorite(movieId: String) {
+        val favoritesRepository = FavoriteMoviesRepository()
+
+        viewModelScope.launch {
+            favoritesRepository.deleteFavorites(
+                movieId
+            )
+
+            favoritesRepository.getFavorites().catch {  }.collect {
+                favorite = it.movies
+                _favList.value = it.movies
+                _favListSize.value = it.movies.size
+            }
         }
     }
 }
