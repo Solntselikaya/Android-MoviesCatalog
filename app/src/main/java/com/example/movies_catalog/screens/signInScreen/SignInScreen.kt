@@ -1,4 +1,4 @@
-package com.example.movies_catalog.signInScreen
+package com.example.movies_catalog.screens.signInScreen
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
@@ -7,7 +7,9 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -62,7 +64,8 @@ fun SignInScreen(navController: NavController) {
             Button(
                 onClick = {
 
-                    navController.navigate("sign_up_screen") { launchSingleTop = true } },
+                    navController.navigate("sign_up_screen") { launchSingleTop = true }
+                },
                 colors = ButtonDefaults.buttonColors(
                     backgroundColor = Black,
                     contentColor = DarkRed
@@ -110,8 +113,7 @@ fun SignInScreen(navController: NavController) {
 
             },
             shape = RoundedCornerShape(16.dp),
-            backgroundColor = MostlyBlack,
-            //contentColor = MostlyBlack
+            backgroundColor = MostlyBlack
         )
     }
 }

@@ -19,12 +19,15 @@ class AuthRepository {
         emit(tokenData)
     }.flowOn(Dispatchers.IO)
 
+    //где один раз надо вернуть - тоже не нужен флоу
+    //а вот где надо подписываться на изменения в бд - надо флоу!!
     fun login(body: LoginCredentials): Flow<TokenResponse> = flow {
         val tokenData = api.login(body)
         Network.token = tokenData
         emit(tokenData)
     }.flowOn(Dispatchers.IO)
 
+    //suspend функция! ничего же не возвращается
     fun logout(): Flow<TokenResponse> = flow {
         val tokenData = api.logout()
         Network.token = tokenData

@@ -1,6 +1,5 @@
 package com.example.movies_catalog.network.favoriteMovies
 
-import com.example.movies_catalog.network.models.TokenResponse
 import com.example.movies_catalog.network.models.MoviesList
 import retrofit2.http.DELETE
 import retrofit2.http.GET

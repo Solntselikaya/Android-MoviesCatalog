@@ -1,4 +1,4 @@
-package com.example.movies_catalog.signUpScreen
+package com.example.movies_catalog.screens.signUpScreen
 
 import android.annotation.SuppressLint
 import android.app.DatePickerDialog
@@ -14,7 +14,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
 import com.example.movies_catalog.R
-import com.example.movies_catalog.nav.Screens
+import com.example.movies_catalog.navigation.Screens
 import com.example.movies_catalog.network.auth.AuthRepository
 import com.example.movies_catalog.network.favoriteMovies.FavoriteMoviesRepository
 import com.example.movies_catalog.network.models.UserRegister

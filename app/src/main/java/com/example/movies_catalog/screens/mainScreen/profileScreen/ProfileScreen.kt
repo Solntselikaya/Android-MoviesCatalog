@@ -1,4 +1,4 @@
-package com.example.movies_catalog.mainScreen.profileScreen
+package com.example.movies_catalog.screens.mainScreen.profileScreen
 
 import android.content.Context
 import androidx.compose.foundation.*
@@ -9,7 +9,10 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -54,7 +57,11 @@ fun ProfileScreen(logout: () -> Unit) {
             .background(Black)
     ) {
         Avatar(image = url, nick = profileViewModel.profile!!.nickName)
-        ProfileEmailField(email, isEmailValid, isEmailLengthValid) { profileViewModel.onEmailChange(it) }
+        ProfileEmailField(email, isEmailValid, isEmailLengthValid) {
+            profileViewModel.onEmailChange(
+                it
+            )
+        }
         ProfileLinkToAvatar(url) { profileViewModel.onUrlChange(it) }
         ProfileName(name) { profileViewModel.onNameChange(it) }
         ProfileBirthdateField(birthdate) { profileViewModel.onBirthdateChange(it) }

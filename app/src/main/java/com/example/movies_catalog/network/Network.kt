@@ -55,6 +55,7 @@ object Network {
 
     private val retrofit: Retrofit = getRetrofit()
 
+    //в нетворке этого быть не должно..
     var token: TokenResponse? = null
     var favoriteMovies: MoviesList? = null
     var movies: MoviesPagedList? = null

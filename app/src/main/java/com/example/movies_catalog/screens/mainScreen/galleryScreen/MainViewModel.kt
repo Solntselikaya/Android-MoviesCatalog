@@ -1,4 +1,4 @@
-package com.example.movies_catalog.mainScreen.galleryScreen
+package com.example.movies_catalog.screens.mainScreen.galleryScreen
 
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateListOf
@@ -8,7 +8,6 @@ import androidx.lifecycle.viewModelScope
 import com.example.movies_catalog.network.Network
 import com.example.movies_catalog.network.favoriteMovies.FavoriteMoviesRepository
 import com.example.movies_catalog.network.models.Genre
-import com.example.movies_catalog.network.models.MovieDetails
 import com.example.movies_catalog.network.models.MovieElement
 import com.example.movies_catalog.network.models.ReviewShort
 import com.example.movies_catalog.network.movies.MoviesRepository
@@ -36,28 +35,14 @@ class MainViewModel : ViewModel() {
     private val _isReady = mutableStateOf(false)
     var isReady: State<Boolean> = _isReady
 
-    /*
-    fun resizeMoviesList() {
-        _moviesListSize.value = movies!!.movies.size
-        //movieList.addAll(movies.movies)
-    }
-     */
-
     private val _favListSize = mutableStateOf(favorite.size)
     var favListSize: State<Int> = _favListSize
-
-    private val _isNeedAnimation = mutableStateOf(false)
-    var isNeedAnimation: State<Boolean> = _isNeedAnimation
-
-    fun updateAnimation(newState: Boolean) {
-        _isNeedAnimation.value = newState
-    }
 
     fun updateFavorites() {
         val favoritesRepository = FavoriteMoviesRepository()
 
         viewModelScope.launch {
-            favoritesRepository.getFavorites().catch {  }.collect {
+            favoritesRepository.getFavorites().catch { }.collect {
                 favorite = it.movies
                 _favList.value = it.movies
                 _favListSize.value = it.movies.size
@@ -87,7 +72,7 @@ class MainViewModel : ViewModel() {
         while (curGenre != genresListSize) {
             val txt = genres[curGenre].name
             genresString += if (curGenre == genresListSize - 1) {
-                "$txt"
+                txt
             } else {
                 "$txt, "
             }
@@ -123,7 +108,7 @@ class MainViewModel : ViewModel() {
                 movieId
             )
 
-            favoritesRepository.getFavorites().catch {  }.collect {
+            favoritesRepository.getFavorites().catch { }.collect {
                 favorite = it.movies
                 _favList.value = it.movies
                 _favListSize.value = it.movies.size

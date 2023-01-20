@@ -1,6 +1,6 @@
 @file:OptIn(ExperimentalMaterialApi::class)
 
-package com.example.movies_catalog.mainScreen.galleryScreen
+package com.example.movies_catalog.screens.mainScreen.galleryScreen
 
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.tween
@@ -40,10 +40,8 @@ fun MainScreen(openMovieDescription: () -> Unit) {
 
     mainViewModel.updateFavorites()
 
-    //val moviesListSize : Int by remember { mainViewModel.moviesListSize }
     val favList: List<MovieElement> by remember { mainViewModel.favList }
     val isPageReady: Boolean by remember { mainViewModel.isReady }
-    //val favListSize: Int by remember { mainViewModel.favListSize }
 
     if (isPageReady) {
         LazyColumn(
@@ -60,7 +58,7 @@ fun MainScreen(openMovieDescription: () -> Unit) {
                 if (mainViewModel.favListSize.value != 0) {
                     FavoritesList(
                         favList,
-                    ) { mainViewModel.deleteFavorite(it)}
+                    ) { mainViewModel.deleteFavorite(it) }
                 }
             }
             item {
@@ -111,7 +109,7 @@ fun FirstMovieCard(
     Box(modifier = Modifier.wrapContentSize()) {
         Image(
             painter = rememberAsyncImagePainter(viewModel.movies!!.movies[0].poster),
-            contentDescription = "Movie's Poster",
+            contentDescription = null,
             contentScale = ContentScale.FillWidth,
             modifier = Modifier
                 .fillMaxWidth()
@@ -230,8 +228,7 @@ fun FavoritesList(
 
             if (visibleItemsInfo.isEmpty()) {
                 emptyList()
-            }
-            else {
+            } else {
                 val firstItemIfLeft = fullyVisibleItemsInfo.firstOrNull()
                 if (firstItemIfLeft != null && firstItemIfLeft.offset < layoutInfo.viewportStartOffset) {
                     fullyVisibleItemsInfo.removeFirst()
@@ -249,25 +246,16 @@ fun FavoritesList(
             .padding(16.dp, 8.dp, 0.dp, 16.dp)
             .height(172.dp),
         horizontalArrangement = Arrangement.spacedBy(16.dp),
-        verticalAlignment = Alignment.CenterVertically,
-        //flingBehavior = rememberSnapperFlingBehavior(
-        //    lazyListState = rowState,
-        //    snapOffsetForItem = SnapOffsets.Start
-        //),
-        //flingBehavior = rememberSnapFlingBehavior(lazyListState = rowState)
+        verticalAlignment = Alignment.CenterVertically
     ) {
-        itemsIndexed (items) { index, item ->
-
+        itemsIndexed(items) { index, item ->
             if (fullyVisibleIndices.isNotEmpty() && index == fullyVisibleIndices.first()) {
-                //updateAnimation(true)
                 FavoriteMovieCard(
                     item.poster,
                     item.id,
                     true,
                 ) { deleteFromFavorite(it) }
-            }
-            else {
-                //updateAnimation(false)
+            } else {
                 FavoriteMovieCard(
                     item.poster,
                     item.id,
@@ -338,7 +326,7 @@ fun MovieCard(
                 Spacer(modifier = Modifier.height(4.dp))
                 Box(Modifier.fillMaxSize()) {
                     viewModel.getMovieRating(reviews)
-                    //выносить
+                    //выносить, но не во ViewModel.. так что пока что тут
                     val color =
                         ColorUtils.blendARGB(Red.toArgb(), Green.toArgb(), viewModel.rating * 0.1f)
                     Button(

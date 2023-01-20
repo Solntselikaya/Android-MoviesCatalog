@@ -1,11 +1,11 @@
-package com.example.movies_catalog.signInScreen
+package com.example.movies_catalog.screens.signInScreen
 
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
-import com.example.movies_catalog.nav.Screens
+import com.example.movies_catalog.navigation.Screens
 import com.example.movies_catalog.network.auth.AuthRepository
 import com.example.movies_catalog.network.favoriteMovies.FavoriteMoviesRepository
 import com.example.movies_catalog.network.models.LoginCredentials
@@ -37,7 +37,7 @@ class SignInViewModel : ViewModel() {
     private fun isEmpty() {
         val login = _login.value
         val password = _password.value
-        _isFieldsFilled.value = !login.isNullOrEmpty() && !password.isNullOrEmpty()
+        _isFieldsFilled.value = login.isNotEmpty() && password.isNotEmpty()
     }
 
     private val _hasErrors = mutableStateOf(false)

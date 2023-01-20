@@ -1,4 +1,4 @@
-package com.example.movies_catalog.nav
+package com.example.movies_catalog.navigation
 
 import com.example.movies_catalog.R
 

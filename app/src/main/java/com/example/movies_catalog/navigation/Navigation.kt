@@ -1,16 +1,16 @@
-package com.example.movies_catalog.nav
+package com.example.movies_catalog.navigation
 
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.movies_catalog.signInScreen.SignInScreen
-import com.example.movies_catalog.signUpScreen.SignUpScreen
-import com.example.movies_catalog.mainScreen.NavBarScreen
-import com.example.movies_catalog.mainScreen.galleryScreen.MainScreen
-import com.example.movies_catalog.mainScreen.profileScreen.ProfileScreen
-import com.example.movies_catalog.movieScreen.MovieScreen
+import com.example.movies_catalog.screens.mainScreen.NavBarScreen
+import com.example.movies_catalog.screens.mainScreen.galleryScreen.MainScreen
+import com.example.movies_catalog.screens.mainScreen.profileScreen.ProfileScreen
+import com.example.movies_catalog.screens.movieScreen.MovieScreen
+import com.example.movies_catalog.screens.signInScreen.SignInScreen
+import com.example.movies_catalog.screens.signUpScreen.SignUpScreen
 
 @Composable
 fun Navigation() {
@@ -33,14 +33,16 @@ fun Navigation() {
 
         composable(route = Screens.NavBarScreen.route) {
             NavBarScreen(
-                { navController.navigate(Screens.SignInScreen.route){
-                    popUpTo(Screens.SignInScreen.route){
-                        saveState = false
-                        inclusive = true
+                {
+                    navController.navigate(Screens.SignInScreen.route) {
+                        popUpTo(Screens.SignInScreen.route) {
+                            saveState = false
+                            inclusive = true
+                        }
+                        restoreState = false
+                        launchSingleTop = true
                     }
-                    restoreState = false
-                    launchSingleTop = true
-                } },
+                },
                 { navController.navigate(Screens.MovieScreen.route) }
             )
         }
@@ -59,11 +61,11 @@ fun BottomNavBarNavigation(
     ) {
 
         composable(BottomNavItem.Main.route) {
-            MainScreen() { movieDescription() }
+            MainScreen { movieDescription() }
         }
 
         composable(BottomNavItem.Profile.route) {
-            ProfileScreen() { logout() }
+            ProfileScreen { logout() }
         }
     }
 }

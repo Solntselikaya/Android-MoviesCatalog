@@ -1,4 +1,4 @@
-package com.example.movies_catalog.movieScreen
+package com.example.movies_catalog.screens.movieScreen
 
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
@@ -95,8 +95,7 @@ class MovieViewModel : ViewModel() {
 
         if (isAddedToFavorites) {
             addFavorite()
-        }
-        else {
+        } else {
             deleteFavorite()
         }
     }
@@ -108,6 +107,10 @@ class MovieViewModel : ViewModel() {
 
     fun checkReviews() {
         for (i in 0 until movieDetails!!.reviews.size) {
+            if (movieDetails!!.reviews[i].author == null) {
+                continue
+            }
+
             if (userId == movieDetails!!.reviews[i].author!!.userId) {
                 hasPostedReview(true)
                 _postedReviewNum.value = i
@@ -144,7 +147,7 @@ class MovieViewModel : ViewModel() {
                 movieDetails!!.id
             )
 
-            favoritesRepository.getFavorites().catch {  }.collect {
+            favoritesRepository.getFavorites().catch { }.collect {
                 favorites = it
             }
 
@@ -160,7 +163,7 @@ class MovieViewModel : ViewModel() {
                 movieDetails!!.id
             )
 
-            favoritesRepository.getFavorites().catch {  }.collect {
+            favoritesRepository.getFavorites().catch { }.collect {
                 favorites = it
             }
 
@@ -171,8 +174,7 @@ class MovieViewModel : ViewModel() {
     fun saveOrEditReview() {
         if (!_postedReview.value) {
             saveReview()
-        }
-        else {
+        } else {
             editReview()
         }
     }

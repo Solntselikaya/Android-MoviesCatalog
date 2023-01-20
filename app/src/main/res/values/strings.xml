@@ -39,7 +39,7 @@
     <string name="watch">Смотреть</string>
     <string name="favourites">Избранное</string>
 
-    //error messages
+    <!-- error messages -->
     <string name="error">Ошибка</string>
     <string name="login_or_email_already_used">Логин или почта уже заняты</string>
     <string name="wrong_email">Неверный e-mail</string>
@@ -50,7 +50,7 @@
     <string name="about_movie">О фильме</string>
     <string name="genres">Жанры</string>
 
-    //element descriptions
+    <!-- element descriptions -->
     <string name="logo_picture_description">Logo picture</string>
     <string name="plus_icon_description">Plus icon</string>
     <string name="movies_poster_description">Movie\'s Poster</string>

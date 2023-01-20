@@ -2,7 +2,6 @@ package com.example.movies_catalog.network.review
 
 import com.example.movies_catalog.network.Network
 import com.example.movies_catalog.network.models.ReviewModify
-import com.example.movies_catalog.network.models.UserProfile
 
 class ReviewRepository {
 

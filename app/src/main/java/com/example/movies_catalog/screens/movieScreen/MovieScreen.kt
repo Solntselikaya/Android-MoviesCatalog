@@ -1,6 +1,6 @@
 @file:OptIn(ExperimentalMaterialApi::class)
 
-package com.example.movies_catalog.movieScreen
+package com.example.movies_catalog.screens.movieScreen
 
 import androidx.activity.compose.LocalOnBackPressedDispatcherOwner
 import androidx.compose.foundation.*
@@ -46,12 +46,11 @@ import me.onebone.toolbar.rememberCollapsingToolbarScaffoldState
 fun MovieScreen() {
     val movieViewModel: MovieViewModel = viewModel()
 
-    val userHasPostedReview: Boolean by remember {movieViewModel.postedReview}
-    val postedReviewNum: Int by remember {movieViewModel.postedReviewNum}
-    //val isReviewEdited: Boolean by remember {movieViewModel.editedReview}
-    val userReview: Review by remember {movieViewModel.userReviewDetails}
+    val userHasPostedReview: Boolean by remember { movieViewModel.postedReview }
+    val postedReviewNum: Int by remember { movieViewModel.postedReviewNum }
+    val userReview: Review by remember { movieViewModel.userReviewDetails }
 
-    val isInFavorites: Boolean by remember {movieViewModel.isInFavorites}
+    val isInFavorites: Boolean by remember { movieViewModel.isInFavorites }
 
     ReviewDialog(movieViewModel)
 
@@ -93,7 +92,8 @@ fun MovieScreen() {
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 CompositionLocalProvider(LocalMinimumTouchTargetEnforcement provides false) {
-                    val onBackPressedDispatcher = LocalOnBackPressedDispatcherOwner.current?.onBackPressedDispatcher
+                    val onBackPressedDispatcher =
+                        LocalOnBackPressedDispatcherOwner.current?.onBackPressedDispatcher
                     IconButton(
                         onClick = { onBackPressedDispatcher?.onBackPressed() },
                         Modifier
@@ -239,8 +239,8 @@ fun MovieScreen() {
                     userReview,
                     movieViewModel.reviewDate,
                     movieViewModel.userId,
-                    {movieViewModel.openDialog()},
-                    {movieViewModel.deleteReview()}
+                    { movieViewModel.openDialog() },
+                    { movieViewModel.deleteReview() }
                 )
             }
 
@@ -251,8 +251,8 @@ fun MovieScreen() {
                         movieViewModel.movieDetails!!.reviews[i],
                         movieViewModel.reviewDate,
                         movieViewModel.userId,
-                        {movieViewModel.openDialog()},
-                        {movieViewModel.deleteReview()}
+                        { movieViewModel.openDialog() },
+                        { movieViewModel.deleteReview() }
                     )
                 }
             }
@@ -296,7 +296,8 @@ fun Description(viewModel: MovieViewModel) {
         Spacer(
             Modifier
                 .fillMaxWidth()
-                .height(4.dp))
+                .height(4.dp)
+        )
         Row(
             Modifier
                 .fillMaxWidth()
@@ -325,7 +326,8 @@ fun Description(viewModel: MovieViewModel) {
         Spacer(
             Modifier
                 .fillMaxWidth()
-                .height(4.dp))
+                .height(4.dp)
+        )
         Row(
             Modifier
                 .fillMaxWidth()
@@ -355,7 +357,8 @@ fun Description(viewModel: MovieViewModel) {
         Spacer(
             Modifier
                 .fillMaxWidth()
-                .height(4.dp))
+                .height(4.dp)
+        )
         Row(
             Modifier
                 .fillMaxWidth()
@@ -384,7 +387,8 @@ fun Description(viewModel: MovieViewModel) {
         Spacer(
             Modifier
                 .fillMaxWidth()
-                .height(4.dp))
+                .height(4.dp)
+        )
         Row(
             Modifier
                 .fillMaxWidth()
@@ -413,7 +417,8 @@ fun Description(viewModel: MovieViewModel) {
         Spacer(
             Modifier
                 .fillMaxWidth()
-                .height(4.dp))
+                .height(4.dp)
+        )
         Row(
             Modifier
                 .fillMaxWidth()
@@ -442,7 +447,8 @@ fun Description(viewModel: MovieViewModel) {
         Spacer(
             Modifier
                 .fillMaxWidth()
-                .height(4.dp))
+                .height(4.dp)
+        )
         Row(
             Modifier
                 .fillMaxWidth()
@@ -471,7 +477,8 @@ fun Description(viewModel: MovieViewModel) {
         Spacer(
             Modifier
                 .fillMaxWidth()
-                .height(4.dp))
+                .height(4.dp)
+        )
         Row(
             Modifier
                 .fillMaxWidth()
@@ -685,7 +692,7 @@ fun ReviewDialog(viewModel: MovieViewModel) {
     val reviewText: String by remember { viewModel.text }
     val checkboxState: Boolean by remember { viewModel.isAnonymousChecker }
 
-    if(openDialog) {
+    if (openDialog) {
         AlertDialog(
             onDismissRequest = { viewModel.closeDialog() },
             modifier = Modifier.wrapContentSize(),
@@ -746,11 +753,11 @@ fun ReviewDialog(viewModel: MovieViewModel) {
                             val tickColor = if (checkboxState) DarkRed else ReviewDialogGray
 
                             IconButton(
-                                onClick = {viewModel.onAnonymousCheckerChange(!checkboxState)},
+                                onClick = { viewModel.onAnonymousCheckerChange(!checkboxState) },
                                 modifier = Modifier
                                     .align(CenterVertically)
                             ) {
-                                Box(Modifier.wrapContentSize()){
+                                Box(Modifier.wrapContentSize()) {
                                     Icon(
                                         imageVector = ImageVector.vectorResource(R.drawable.checkbox),
                                         tint = Color.Unspecified,

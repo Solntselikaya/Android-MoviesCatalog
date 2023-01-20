@@ -1,6 +1,8 @@
-package com.example.movies_catalog.mainScreen
+package com.example.movies_catalog.screens.mainScreen
 
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -11,8 +13,8 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.example.movies_catalog.nav.BottomNavBarNavigation
-import com.example.movies_catalog.nav.BottomNavItem
+import com.example.movies_catalog.navigation.BottomNavBarNavigation
+import com.example.movies_catalog.navigation.BottomNavItem
 import com.example.movies_catalog.ui.theme.DarkRed
 import com.example.movies_catalog.ui.theme.Gray
 import com.example.movies_catalog.ui.theme.MostlyBlack

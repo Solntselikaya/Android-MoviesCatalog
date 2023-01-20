@@ -1,10 +1,9 @@
-package com.example.movies_catalog.mainScreen.profileScreen
+package com.example.movies_catalog.screens.mainScreen.profileScreen
 
 import android.annotation.SuppressLint
 import android.app.DatePickerDialog
 import android.content.Context
 import android.icu.text.DecimalFormat
-import android.icu.text.SimpleDateFormat
 import android.icu.util.Calendar
 import android.util.Patterns
 import android.widget.DatePicker
@@ -12,7 +11,6 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.navigation.NavController
 import com.example.movies_catalog.R
 import com.example.movies_catalog.network.Network
 import com.example.movies_catalog.network.auth.AuthRepository

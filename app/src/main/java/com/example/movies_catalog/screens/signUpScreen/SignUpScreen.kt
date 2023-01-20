@@ -1,4 +1,4 @@
-package com.example.movies_catalog.signUpScreen
+package com.example.movies_catalog.screens.signUpScreen
 
 import android.content.Context
 import androidx.compose.animation.core.animateDpAsState
@@ -95,7 +95,7 @@ fun SignUpScreen(navController: NavController) {
                 onClick = {
                     navController.popBackStack()
                     navController.navigate("sign_in_screen") { launchSingleTop = true }
-                          },
+                },
                 colors = ButtonDefaults.buttonColors(
                     backgroundColor = Black,
                     contentColor = DarkRed
@@ -417,7 +417,7 @@ fun SignUpBirthdateField(
                     modifier = Modifier.padding(13.dp, 13.dp, 13.dp, 13.dp),
                     tint = GrayFaded,
                     painter = painterResource(R.drawable.calendar_icon),
-                    contentDescription = "Calendar picture"
+                    contentDescription = null
                 )
             }
         )
