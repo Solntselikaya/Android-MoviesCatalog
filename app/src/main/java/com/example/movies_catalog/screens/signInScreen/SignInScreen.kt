@@ -1,4 +1,4 @@
-package com.example.movies_catalog
+package com.example.movies_catalog.screens.signInScreen
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
@@ -7,13 +7,13 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
@@ -22,20 +22,18 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import com.example.movies_catalog.signInScreen.SignInViewModel
-import com.example.movies_catalog.ui.theme.MostlyBlack
-import com.example.movies_catalog.ui.theme.Transparent
-import com.example.movies_catalog.ui.theme.White
+import com.example.movies_catalog.R
+import com.example.movies_catalog.ui.theme.*
 
 @Composable
 fun SignInScreen(navController: NavController) {
     val signInViewModel: SignInViewModel = viewModel()
 
-    val signInLogin : String by remember { signInViewModel.login }
-    val signInPassword : String by remember { signInViewModel.password }
-    val isFieldsFilled : Boolean by remember { signInViewModel.isFieldsFilled }
+    val signInLogin: String by remember { signInViewModel.login }
+    val signInPassword: String by remember { signInViewModel.password }
+    val isFieldsFilled: Boolean by remember { signInViewModel.isFieldsFilled }
 
-    Box(modifier = Modifier.fillMaxSize()){
+    Box(modifier = Modifier.fillMaxSize()) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
@@ -49,11 +47,11 @@ fun SignInScreen(navController: NavController) {
                     .height(170.dp)
                     .width(250.dp),
                 painter = painterResource(R.drawable.logo),
-                contentDescription = "Logo picture"
+                contentDescription = stringResource(R.string.logo_picture_description)
             )
             SignInLoginField(login = signInLogin) { signInViewModel.onLoginChange(it) }
             Spacer(modifier = Modifier.height(14.41.dp))
-            SignInPasswordField(password = signInPassword,) { signInViewModel.onPasswordChange(it) }
+            SignInPasswordField(password = signInPassword) { signInViewModel.onPasswordChange(it) }
         }
         Spacer(modifier = Modifier.fillMaxHeight())
         Column(
@@ -61,37 +59,41 @@ fun SignInScreen(navController: NavController) {
                 .fillMaxWidth()
                 .align(Alignment.BottomCenter),
             horizontalAlignment = Alignment.CenterHorizontally
-        ){
+        ) {
             EntryButton(isFieldsFilled) { signInViewModel.login(navController) }
             Button(
-                onClick = { navController.navigate("sign_up_screen") },
+                onClick = {
+
+                    navController.navigate("sign_up_screen") { launchSingleTop = true }
+                },
                 colors = ButtonDefaults.buttonColors(
-                    backgroundColor = colorResource(R.color.black),
-                    contentColor = colorResource(R.color.dark_red)
+                    backgroundColor = Black,
+                    contentColor = DarkRed
                 ),
                 modifier = Modifier
-                    .padding(16.dp, 8.dp, 16.dp, 16.dp)
-                    .height(44.dp)
-                    .fillMaxWidth())
+                    .padding(16.dp, 4.dp, 16.dp, 16.dp)
+                    .fillMaxWidth()
+            )
             {
-                Text("Регистрация", fontSize = 16.sp)
+                Text(
+                    stringResource(R.string.registration),
+                    style = MaterialTheme.typography.body1,
+                )
             }
         }
     }
 
-    val hasErrors : Boolean by remember { signInViewModel.hasErrors }
+    val hasErrors: Boolean by remember { signInViewModel.hasErrors }
 
     if (hasErrors) {
-
         AlertDialog(
             modifier = Modifier
-                .wrapContentSize().background(Transparent),
-            onDismissRequest = {
-                signInViewModel.hasErrors()
-            },
+                .wrapContentSize()
+                .background(Transparent),
+            onDismissRequest = { signInViewModel.hasErrors() },
             title = {
                 Text(
-                    text = "Ошибка",
+                    text = stringResource(R.string.error),
                     color = White,
                     textAlign = TextAlign.Center,
                     fontSize = 16.sp,
@@ -100,7 +102,7 @@ fun SignInScreen(navController: NavController) {
             },
             text = {
                 Text(
-                    "Логин или почта уже заняты",
+                    stringResource(R.string.login_or_email_already_used),
                     color = White,
                     textAlign = TextAlign.Center,
                     fontSize = 16.sp,
@@ -111,8 +113,7 @@ fun SignInScreen(navController: NavController) {
 
             },
             shape = RoundedCornerShape(16.dp),
-            backgroundColor = MostlyBlack,
-            //contentColor = MostlyBlack
+            backgroundColor = MostlyBlack
         )
     }
 }
@@ -126,16 +127,19 @@ fun SignInLoginField(login: String, onLoginChange: (String) -> Unit) {
             .padding(16.dp, 0.dp)
             .fillMaxWidth(),
         colors = TextFieldDefaults.outlinedTextFieldColors(
-            cursorColor = colorResource(R.color.dark_red),
-            focusedBorderColor = colorResource(R.color.dark_red),
-            unfocusedBorderColor = colorResource(R.color.gray),
-            textColor = colorResource(R.color.dark_red)
+            cursorColor = DarkRed,
+            focusedBorderColor = DarkRed,
+            unfocusedBorderColor = GrayFaded,
+            textColor = DarkRed
         ),
+        textStyle = MaterialTheme.typography.body2,
         placeholder = {
             Text(
-                "Логин",
-                color = colorResource(R.color.gray),
-                fontSize = 14.sp) },
+                stringResource(R.string.login),
+                color = GrayFaded,
+                style = MaterialTheme.typography.body2
+            )
+        },
         shape = RoundedCornerShape(8.dp)
     )
 }
@@ -149,16 +153,19 @@ fun SignInPasswordField(password: String, onPasswordChange: (String) -> Unit) {
             .padding(16.dp, 0.dp)
             .fillMaxWidth(),
         colors = TextFieldDefaults.outlinedTextFieldColors(
-            cursorColor = colorResource(R.color.dark_red),
-            focusedBorderColor = colorResource(R.color.dark_red),
-            unfocusedBorderColor = colorResource(R.color.gray),
-            textColor = colorResource(R.color.dark_red)
+            cursorColor = DarkRed,
+            focusedBorderColor = DarkRed,
+            unfocusedBorderColor = GrayFaded,
+            textColor = DarkRed
         ),
+        textStyle = MaterialTheme.typography.body2,
         placeholder = {
             Text(
-                "Пароль",
-                color = colorResource(R.color.gray),
-                fontSize = 14.sp) },
+                stringResource(R.string.password),
+                color = GrayFaded,
+                style = MaterialTheme.typography.body2
+            )
+        },
         shape = RoundedCornerShape(8.dp),
         visualTransformation = PasswordVisualTransformation(),
         keyboardOptions = KeyboardOptions(
@@ -169,24 +176,27 @@ fun SignInPasswordField(password: String, onPasswordChange: (String) -> Unit) {
 
 @Composable
 fun EntryButton(isFieldsFilled: Boolean, login: () -> Unit) {
-    val borderColor = if (isFieldsFilled) colorResource(R.color.dark_red) else colorResource(R.color.gray)
+    val borderColor = if (isFieldsFilled) DarkRed else GrayFaded
     Button(
         onClick = { login() },
         enabled = isFieldsFilled,
         colors = ButtonDefaults.buttonColors(
-            backgroundColor = colorResource(R.color.dark_red),
-            contentColor = colorResource(R.color.white),
-            disabledBackgroundColor = colorResource(R.color.black),
-            disabledContentColor = colorResource(R.color.dark_red)
+            backgroundColor = DarkRed,
+            contentColor = White,
+            disabledBackgroundColor = Black,
+            disabledContentColor = DarkRed
         ),
         border = BorderStroke(1.dp, borderColor),
         modifier = Modifier
+            .padding(16.dp, 8.dp, 16.dp, 4.dp)
             .height(44.dp)
-            .padding(16.dp, 0.dp, 16.dp, 4.dp)
             .fillMaxWidth(),
-        shape = RoundedCornerShape(8.dp)
+        shape = RoundedCornerShape(4.dp)
     )
     {
-        Text("Войти", fontSize = 16.sp)
+        Text(
+            stringResource(R.string.log_in),
+            style = MaterialTheme.typography.body1
+        )
     }
 }

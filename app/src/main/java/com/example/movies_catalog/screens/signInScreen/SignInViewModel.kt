@@ -1,11 +1,11 @@
-package com.example.movies_catalog.signInScreen
+package com.example.movies_catalog.screens.signInScreen
 
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
-import com.example.movies_catalog.nav.Screens
+import com.example.movies_catalog.navigation.Screens
 import com.example.movies_catalog.network.auth.AuthRepository
 import com.example.movies_catalog.network.favoriteMovies.FavoriteMoviesRepository
 import com.example.movies_catalog.network.models.LoginCredentials
@@ -14,34 +14,34 @@ import com.example.movies_catalog.network.user.UserRepository
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.launch
 
-class SignInViewModel: ViewModel() {
+class SignInViewModel : ViewModel() {
     private val _login = mutableStateOf("")
-    var login : State<String> = _login
+    var login: State<String> = _login
 
-    fun onLoginChange(updatedLogin : String) {
+    fun onLoginChange(updatedLogin: String) {
         _login.value = updatedLogin
         isEmpty()
     }
 
     private val _password = mutableStateOf("")
-    var password : State<String> = _password
+    var password: State<String> = _password
 
-    fun onPasswordChange(updatedPassword : String) {
+    fun onPasswordChange(updatedPassword: String) {
         _password.value = updatedPassword
         isEmpty()
     }
 
     private val _isFieldsFilled = mutableStateOf(false)
-    var isFieldsFilled : State<Boolean> = _isFieldsFilled
+    var isFieldsFilled: State<Boolean> = _isFieldsFilled
 
     private fun isEmpty() {
         val login = _login.value
         val password = _password.value
-        _isFieldsFilled.value = !login.isNullOrEmpty() && !password.isNullOrEmpty()
+        _isFieldsFilled.value = login.isNotEmpty() && password.isNotEmpty()
     }
 
     private val _hasErrors = mutableStateOf(false)
-    var hasErrors : State<Boolean> = _hasErrors
+    var hasErrors: State<Boolean> = _hasErrors
 
     fun hasErrors() {
         _hasErrors.value = false
@@ -66,7 +66,14 @@ class SignInViewModel: ViewModel() {
                 moviesRepository.getMovies(1).collect {}
                 userRepository.getUserData().collect {}
 
-                navController.navigate(Screens.NavBarScreen.route)
+                navController.navigate(Screens.NavBarScreen.route) {
+                    popUpTo(Screens.SignInScreen.route) {
+                        saveState = false
+                        inclusive = true
+                    }
+                    restoreState = false
+                    launchSingleTop = true
+                }
                 _hasErrors.value = false
             }
         }

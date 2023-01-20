@@ -1,4 +1,4 @@
-package com.example.movies_catalog.nav
+package com.example.movies_catalog.navigation
 
 sealed class Screens(val route: String) {
     object SignInScreen : Screens("sign_in_screen")

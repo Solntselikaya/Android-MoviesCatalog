@@ -1,4 +1,4 @@
-package com.example.movies_catalog.mainScreen.profileScreen
+package com.example.movies_catalog.screens.mainScreen.profileScreen
 
 import android.content.Context
 import androidx.compose.foundation.*
@@ -9,21 +9,20 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.rememberAsyncImagePainter
 import com.example.movies_catalog.R
@@ -43,7 +42,7 @@ fun ProfileScreen(logout: () -> Unit) {
     val name: String by remember { profileViewModel.name }
 
     val birthdate: String by remember { profileViewModel.birthdate }
-    val isDateValid: Boolean by remember { profileViewModel.isDateValid }
+    //val isDateValid: Boolean by remember { profileViewModel.isDateValid }
 
     val url: String by remember { profileViewModel.url }
 
@@ -65,7 +64,7 @@ fun ProfileScreen(logout: () -> Unit) {
         }
         ProfileLinkToAvatar(url) { profileViewModel.onUrlChange(it) }
         ProfileName(name) { profileViewModel.onNameChange(it) }
-        ProfileBirthdateField(birthdate, isDateValid) { profileViewModel.onBirthdateChange(it) }
+        ProfileBirthdateField(birthdate) { profileViewModel.onBirthdateChange(it) }
         ProfileGenderSelect(gender) { profileViewModel.onGenderChange(it) }
         ProfileSaveButton(isFieldsFilled) { profileViewModel.save() }
         Button(
@@ -83,7 +82,10 @@ fun ProfileScreen(logout: () -> Unit) {
                 .fillMaxWidth()
         )
         {
-            Text("Выйти из аккаунта", fontSize = 16.sp)
+            Text(
+                stringResource(R.string.log_out),
+                style = MaterialTheme.typography.body1
+            )
         }
     }
 }
@@ -113,7 +115,7 @@ fun Avatar(image: String, nick: String) {
         ) {
             Image(
                 painter = rememberAsyncImagePainter(avatar),
-                contentDescription = "avatar",
+                contentDescription = stringResource(R.string.avatar_content_description),
                 modifier = Modifier
                     .fillMaxSize(),
                 contentScale = ContentScale.Crop,
@@ -124,10 +126,8 @@ fun Avatar(image: String, nick: String) {
             text = nick,
             color = White,
             modifier = Modifier.padding(16.dp, 0.dp, 0.dp, 0.dp),
-            fontSize = 24.sp,
             textAlign = TextAlign.Left,
-            fontWeight = FontWeight.W700,
-            lineHeight = 29.sp
+            style = MaterialTheme.typography.h5
         )
     }
 }
@@ -140,13 +140,11 @@ fun ProfileEmailField(
     onEmailChange: (String) -> Unit
 ) {
     Text(
-        "E-mail",
+        stringResource(R.string.email),
         color = Gray,
-        fontSize = 16.sp,
         modifier = Modifier.padding(16.dp, 0.dp),
-        fontWeight = FontWeight.W500,
-        lineHeight = 20.sp,
-        textAlign = TextAlign.Left
+        textAlign = TextAlign.Left,
+        style = MaterialTheme.typography.body1
     )
     Column(Modifier.padding(16.dp, 8.dp)) {
         OutlinedTextField(
@@ -155,18 +153,17 @@ fun ProfileEmailField(
             modifier = Modifier
                 .fillMaxWidth(),
             colors = TextFieldDefaults.outlinedTextFieldColors(
-                cursorColor = colorResource(R.color.dark_red),
-                focusedBorderColor = colorResource(R.color.dark_red),
-                unfocusedBorderColor = colorResource(R.color.gray),
-                textColor = colorResource(R.color.dark_red)
+                cursorColor = DarkRed,
+                focusedBorderColor = DarkRed,
+                unfocusedBorderColor = Gray,
+                textColor = DarkRed
             ),
+            textStyle = MaterialTheme.typography.body2,
             placeholder = {
                 Text(
-                    "E-mail",
-                    color = colorResource(R.color.gray),
-                    fontSize = 14.sp,
-                    fontWeight = FontWeight.W400,
-                    lineHeight = 18.sp
+                    stringResource(R.string.email),
+                    color = Gray,
+                    style = MaterialTheme.typography.body2
                 )
             },
             isError = !isValid,
@@ -175,7 +172,7 @@ fun ProfileEmailField(
         )
         if (!isValid) {
             Text(
-                text = "Неверный e-mail",
+                text = stringResource(R.string.wrong_email),
                 color = MaterialTheme.colors.error,
                 style = MaterialTheme.typography.caption,
                 modifier = Modifier.padding(start = 16.dp)
@@ -183,7 +180,7 @@ fun ProfileEmailField(
         }
         if (!isLengthValid) {
             Text(
-                text = "Длина имени почты не менее 3 символов",
+                stringResource(R.string.email_is_short),
                 color = MaterialTheme.colors.error,
                 style = MaterialTheme.typography.caption,
                 modifier = Modifier.padding(start = 16.dp)
@@ -195,12 +192,10 @@ fun ProfileEmailField(
 @Composable
 fun ProfileLinkToAvatar(url: String, onUrlChange: (String) -> Unit) {
     Text(
-        "Ссылка на аватар",
+        stringResource(R.string.link_to_the_avatar),
         color = Gray,
-        fontSize = 16.sp,
         modifier = Modifier.padding(16.dp, 0.dp),
-        fontWeight = FontWeight.W500,
-        lineHeight = 20.sp,
+        style = MaterialTheme.typography.body1,
         textAlign = TextAlign.Left
     )
     OutlinedTextField(
@@ -209,7 +204,14 @@ fun ProfileLinkToAvatar(url: String, onUrlChange: (String) -> Unit) {
         modifier = Modifier
             .padding(16.dp, 8.dp, 16.dp, 12.dp)
             .fillMaxWidth(),
-        placeholder = { Text("Url") },
+        textStyle = MaterialTheme.typography.body2,
+        placeholder = {
+            Text(
+                stringResource(R.string.url),
+                color = Gray,
+                style = MaterialTheme.typography.body2
+            )
+        },
         enabled = true,
         shape = RoundedCornerShape(8.dp),
         colors = TextFieldDefaults.outlinedTextFieldColors(
@@ -225,12 +227,10 @@ fun ProfileLinkToAvatar(url: String, onUrlChange: (String) -> Unit) {
 @Composable
 fun ProfileName(name: String, onNameChange: (String) -> Unit) {
     Text(
-        "Имя",
+        stringResource(R.string.name),
         color = Gray,
-        fontSize = 16.sp,
         modifier = Modifier.padding(16.dp, 0.dp),
-        fontWeight = FontWeight.W500,
-        lineHeight = 20.sp,
+        style = MaterialTheme.typography.body1,
         textAlign = TextAlign.Left
     )
     OutlinedTextField(
@@ -239,7 +239,14 @@ fun ProfileName(name: String, onNameChange: (String) -> Unit) {
         modifier = Modifier
             .padding(16.dp, 8.dp, 16.dp, 12.dp)
             .fillMaxWidth(),
-        placeholder = { Text("Url") },
+        textStyle = MaterialTheme.typography.body2,
+        placeholder = {
+            Text(
+                stringResource(R.string.name),
+                color = Gray,
+                style = MaterialTheme.typography.body2
+            )
+        },
         enabled = true,
         shape = RoundedCornerShape(8.dp),
         colors = TextFieldDefaults.outlinedTextFieldColors(
@@ -255,18 +262,16 @@ fun ProfileName(name: String, onNameChange: (String) -> Unit) {
 @Composable
 fun ProfileBirthdateField(
     birthdate: String,
-    isValid: Boolean,
+    isValid: Boolean = true,
     onBirthdateChange: (Context) -> Unit
 ) {
     val mContext = LocalContext.current
 
     Text(
-        "Дата рождения",
+        stringResource(R.string.birthdate),
         color = Gray,
-        fontSize = 16.sp,
         modifier = Modifier.padding(16.dp, 0.dp),
-        fontWeight = FontWeight.W500,
-        lineHeight = 20.sp,
+        style = MaterialTheme.typography.body1,
         textAlign = TextAlign.Left
     )
     Column(Modifier.padding(16.dp, 8.dp, 16.dp, 12.dp)) {
@@ -289,18 +294,17 @@ fun ProfileBirthdateField(
                 },
             readOnly = true,
             colors = TextFieldDefaults.outlinedTextFieldColors(
-                cursorColor = colorResource(R.color.dark_red),
-                focusedBorderColor = colorResource(R.color.dark_red),
-                unfocusedBorderColor = colorResource(R.color.gray),
-                textColor = colorResource(R.color.dark_red)
+                cursorColor = DarkRed,
+                focusedBorderColor = DarkRed,
+                unfocusedBorderColor = Gray,
+                textColor = DarkRed
             ),
+            textStyle = MaterialTheme.typography.body2,
             placeholder = {
                 Text(
-                    "Дата рождения",
-                    color = colorResource(R.color.gray),
-                    fontSize = 14.sp,
-                    fontWeight = FontWeight.W400,
-                    lineHeight = 18.sp
+                    stringResource(R.string.birthdate),
+                    color = Gray,
+                    style = MaterialTheme.typography.body2
                 )
             },
             isError = !isValid,
@@ -308,15 +312,15 @@ fun ProfileBirthdateField(
             trailingIcon = {
                 Icon(
                     modifier = Modifier.padding(13.dp, 13.dp, 13.dp, 13.dp),
-                    tint = colorResource(R.color.gray),
+                    tint = Gray,
                     painter = painterResource(R.drawable.calendar_icon),
-                    contentDescription = "Calendar picture"
+                    contentDescription = stringResource(R.string.calendar_icon_description)
                 )
             }
         )
         if (!isValid) {
             Text(
-                text = "Неверная дата рождения",
+                stringResource(R.string.invalid_birthdate),
                 color = MaterialTheme.colors.error,
                 style = MaterialTheme.typography.caption,
                 modifier = Modifier.padding(start = 16.dp)
@@ -332,12 +336,10 @@ fun ProfileGenderSelect(gender: Int, onGenderChange: (Int) -> Unit) {
     val femaleColor = if (gender == 1) DarkRed else Black
 
     Text(
-        "Пол",
+        stringResource(R.string.gender),
         color = Gray,
-        fontSize = 16.sp,
         modifier = Modifier.padding(16.dp, 0.dp),
-        fontWeight = FontWeight.W500,
-        lineHeight = 20.sp,
+        style = MaterialTheme.typography.body1,
         textAlign = TextAlign.Left
     )
 
@@ -345,7 +347,7 @@ fun ProfileGenderSelect(gender: Int, onGenderChange: (Int) -> Unit) {
         modifier = Modifier
             .fillMaxWidth()
             .height(IntrinsicSize.Min)
-            .padding(16.dp, 0.dp)
+            .padding(16.dp, 8.dp)
             .border(
                 BorderStroke(1.dp, Gray),
                 shape = RoundedCornerShape(8.dp)
@@ -364,10 +366,8 @@ fun ProfileGenderSelect(gender: Int, onGenderChange: (Int) -> Unit) {
             shape = RoundedCornerShape(8.dp, 0.dp, 0.dp, 8.dp)
         ) {
             Text(
-                "Мужчина",
-                fontSize = 14.sp,
-                fontWeight = FontWeight.W400,
-                lineHeight = 18.sp
+                stringResource(R.string.man),
+                style = MaterialTheme.typography.body2
             )
         }
         Divider(
@@ -388,10 +388,8 @@ fun ProfileGenderSelect(gender: Int, onGenderChange: (Int) -> Unit) {
             shape = RoundedCornerShape(0.dp, 8.dp, 8.dp, 0.dp)
         ) {
             Text(
-                "Женщина",
-                fontSize = 14.sp,
-                fontWeight = FontWeight.W400,
-                lineHeight = 18.sp
+                stringResource(R.string.woman),
+                style = MaterialTheme.typography.body2
             )
         }
     }
@@ -413,11 +411,15 @@ fun ProfileSaveButton(isFieldsFilled: Boolean, save: () -> Unit) {
         ),
         border = BorderStroke(1.dp, borderColor),
         modifier = Modifier
+            .padding(16.dp, 32.dp, 16.dp, 4.dp)
             .fillMaxWidth()
-            .padding(16.dp, 32.dp, 16.dp, 4.dp),
-        shape = RoundedCornerShape(8.dp)
+            .height(44.dp),
+        shape = RoundedCornerShape(4.dp)
     )
     {
-        Text("Сохранить", fontSize = 16.sp)
+        Text(
+            stringResource(R.string.save),
+            style = MaterialTheme.typography.body1
+        )
     }
 }

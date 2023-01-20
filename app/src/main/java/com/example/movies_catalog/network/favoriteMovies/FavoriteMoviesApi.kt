@@ -1,6 +1,5 @@
 package com.example.movies_catalog.network.favoriteMovies
 
-import com.example.movies_catalog.network.models.TokenResponse
 import com.example.movies_catalog.network.models.MoviesList
 import retrofit2.http.DELETE
 import retrofit2.http.GET
@@ -13,8 +12,8 @@ interface FavoriteMoviesApi {
     suspend fun getFavorites(): MoviesList
 
     @POST("api/favorites/{id}/add")
-    suspend fun addFavorites(@Path("id") id: String): TokenResponse
+    suspend fun addFavorites(@Path("id") id: String)
 
     @DELETE("api/favorites/{id}/delete")
-    suspend fun deleteFavorites(@Path("id") id: String): TokenResponse
+    suspend fun deleteFavorites(@Path("id") id: String)
 }

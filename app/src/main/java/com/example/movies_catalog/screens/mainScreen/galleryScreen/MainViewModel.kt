@@ -1,4 +1,4 @@
-package com.example.movies_catalog.mainScreen.galleryScreen
+package com.example.movies_catalog.screens.mainScreen.galleryScreen
 
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateListOf
@@ -8,18 +8,20 @@ import androidx.lifecycle.viewModelScope
 import com.example.movies_catalog.network.Network
 import com.example.movies_catalog.network.favoriteMovies.FavoriteMoviesRepository
 import com.example.movies_catalog.network.models.Genre
-import com.example.movies_catalog.network.models.MovieDetails
 import com.example.movies_catalog.network.models.MovieElement
 import com.example.movies_catalog.network.models.ReviewShort
 import com.example.movies_catalog.network.movies.MoviesRepository
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.launch
 
-class MainViewModel: ViewModel() {
+class MainViewModel : ViewModel() {
     val movies = Network.movies
-    val favorite = Network.favoriteMovies
 
-    var genresString : String = ""
+    private var favorite = Network.favoriteMovies!!.movies
+    private val _favList = mutableStateOf(favorite)
+    var favList: State<List<MovieElement>> = _favList
+
+    var genresString: String = ""
 
     var movieList = mutableStateListOf(
         movies!!.movies[0],
@@ -30,16 +32,25 @@ class MainViewModel: ViewModel() {
         movies.movies[5]
     )
 
-    private val _moviesListSize = mutableStateOf(0)
-    var moviesListSize : State<Int> = _moviesListSize
+    private val _isReady = mutableStateOf(false)
+    var isReady: State<Boolean> = _isReady
 
-    fun resizeMoviesList() {
-        _moviesListSize.value = movies!!.movies.size
-        //movieList.addAll(movies.movies)
+    private val _favListSize = mutableStateOf(favorite.size)
+    var favListSize: State<Int> = _favListSize
+
+    fun updateFavorites() {
+        val favoritesRepository = FavoriteMoviesRepository()
+
+        viewModelScope.launch {
+            favoritesRepository.getFavorites().catch { }.collect {
+                favorite = it.movies
+                _favList.value = it.movies
+                _favListSize.value = it.movies.size
+            }
+
+            _isReady.value = true
+        }
     }
-
-    private val _favListSize = mutableStateOf(0)
-    var favListSize : State<Int> = _favListSize
 
     var page = 2
     fun getMovies() {
@@ -53,25 +64,26 @@ class MainViewModel: ViewModel() {
         }
     }
 
-    fun getGenresString(genres: List<Genre>){
+    fun getGenresString(genres: List<Genre>) {
         val genresListSize = genres.size
         var curGenre = 0
         genresString = ""
 
-        while (curGenre != genresListSize){
+        while (curGenre != genresListSize) {
             val txt = genres[curGenre].name
-            genresString += if (curGenre == genresListSize - 1){ "$txt" }
-            else {
+            genresString += if (curGenre == genresListSize - 1) {
+                txt
+            } else {
                 "$txt, "
             }
-            curGenre ++
+            curGenre++
         }
     }
 
     var rating = 0.0F
     fun getMovieRating(reviews: List<ReviewShort>) {
         rating = 0.0F
-        for (r in reviews){
+        for (r in reviews) {
             rating += r.rating
         }
         rating = rating.div(reviews.size)
@@ -85,6 +97,22 @@ class MainViewModel: ViewModel() {
 
             }.collect {}
             openMovieDetails()
+        }
+    }
+
+    fun deleteFavorite(movieId: String) {
+        val favoritesRepository = FavoriteMoviesRepository()
+
+        viewModelScope.launch {
+            favoritesRepository.deleteFavorites(
+                movieId
+            )
+
+            favoritesRepository.getFavorites().catch { }.collect {
+                favorite = it.movies
+                _favList.value = it.movies
+                _favListSize.value = it.movies.size
+            }
         }
     }
 }

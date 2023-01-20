@@ -12,7 +12,7 @@ class MoviesRepository {
 
     private val api: MoviesApi = Network.getMoviesApi()
 
-    fun getMovies(body: Int): Flow<MoviesPagedList> = flow{
+    fun getMovies(body: Int): Flow<MoviesPagedList> = flow {
         val moviesData = api.getMovies(body)
         Network.movies = moviesData
         emit(moviesData)

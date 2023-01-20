@@ -13,19 +13,22 @@ class AuthRepository {
 
     private val api: AuthApi = Network.getAuthApi()
 
-    fun register(body: UserRegister): Flow<TokenResponse> = flow{
+    fun register(body: UserRegister): Flow<TokenResponse> = flow {
         val tokenData = api.register(body)
         Network.token = tokenData
         emit(tokenData)
     }.flowOn(Dispatchers.IO)
 
-    fun login(body: LoginCredentials): Flow<TokenResponse> = flow{
+    //где один раз надо вернуть - тоже не нужен флоу
+    //а вот где надо подписываться на изменения в бд - надо флоу!!
+    fun login(body: LoginCredentials): Flow<TokenResponse> = flow {
         val tokenData = api.login(body)
         Network.token = tokenData
         emit(tokenData)
     }.flowOn(Dispatchers.IO)
 
-    fun logout(): Flow<TokenResponse> = flow{
+    //suspend функция! ничего же не возвращается
+    fun logout(): Flow<TokenResponse> = flow {
         val tokenData = api.logout()
         Network.token = tokenData
         emit(tokenData)

@@ -55,6 +55,7 @@ object Network {
 
     private val retrofit: Retrofit = getRetrofit()
 
+    //в нетворке этого быть не должно..
     var token: TokenResponse? = null
     var favoriteMovies: MoviesList? = null
     var movies: MoviesPagedList? = null
@@ -66,4 +67,12 @@ object Network {
     fun getMoviesApi(): MoviesApi = retrofit.create(MoviesApi::class.java)
     fun getUserApi(): UserApi = retrofit.create(UserApi::class.java)
     fun getReviewApi(): ReviewApi = retrofit.create(ReviewApi::class.java)
+
+    fun clearData() {
+        token = null
+        favoriteMovies = null
+        movies = null
+        profile = null
+        movieDetails = null
+    }
 }

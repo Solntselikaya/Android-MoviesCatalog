@@ -21,14 +21,17 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
-import com.example.movies_catalog.nav.Navigation
+import com.example.movies_catalog.navigation.Navigation
+import com.example.movies_catalog.ui.theme.MoviesCatalogTheme
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         installSplashScreen()
         super.onCreate(savedInstanceState)
-        setContent{
-            Navigation()
+        setContent {
+            MoviesCatalogTheme {
+                Navigation()
+            }
         }
     }
 }

@@ -1,4 +1,61 @@
 <resources>
     <string name="app_name">Movies-Catalog</string>
-    <string name="default_avatar">https://www.figma.com/file/DYtQJNn8p0oK3iPV3lHSTp/Mobile-Lab-2022?node-id=53%3A92</string>
+    <string name="default_avatar">https://s3-alpha-sig.figma.com/img/a92b/ba97/a13937d71ea4ab29b068a92fd325aa74?Expires=1674432000&amp;Signature=Uwdu5ByHy~x-yO3Qlzi161SkT6TBTwEmlecnqJkqrXQn1RGR3AjGi4NHjuv87TgiY6-Lvae3INjTYlwXEFh9U5W~7Y8ZQFVt3md0C9aoDzzBYpCgE9o6wy3lihxxK0eitNLtDm1W66arHYwrgLsJlSnzvh898sjoNX8y0tiT4dWB-Z3Rcc2h27Yn2zVeOgArTE4bJ9PMjGA9KND5wCrhNYlFtYQ06CjP3j2TwD0RCtAyH7ikU4Nx1VPjDwWpbv7spS0KA6aLkfF941no7BaV8G9BDrAgNgVvZftw51HPqfgvK79-WJh1yDfxneuhGKCNVIxEXUUfnne8ENbYy5Lwnw__&amp;Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4</string>
+
+    <string name="registration">Регистрация</string>
+    <string name="login">Логин</string>
+    <string name="password">Пароль</string>
+    <string name="log_in">Войти</string>
+    <string name="already_have_account">У меня уже есть аккаунт</string>
+    <string name="email">E-mail</string>
+    <string name="name">Имя</string>
+    <string name="confirm_password">Подтвердите пароль</string>
+    <string name="birthdate">Дата рождения</string>
+    <string name="man">Мужчина</string>
+    <string name="woman">Женщина</string>
+    <string name="register">Зарегистрироваться</string>
+    <string name="reviews">Отзывы</string>
+    <string name="year">Год</string>
+    <string name="country">Страна</string>
+    <string name="time">Время</string>
+    <string name="minutes">мин.</string>
+    <string name="slogan">Слоган</string>
+    <string name="director">Режиссер</string>
+    <string name="budget">Бюджет</string>
+    <string name="fees">Сборы в мире</string>
+    <string name="age_limit">Возраст</string>
+    <string name="anonymous_user">Анонимный пользователь</string>
+    <string name="my_review">мой отзыв</string>
+    <string name="leave_a_review">Оставить отзыв</string>
+    <string name="review">Отзыв</string>
+    <string name="anonymous_review">Анонимный отзыв</string>
+    <string name="cancel">Отмена</string>
+    <string name="log_out">Выйти из аккаунта</string>
+    <string name="link_to_the_avatar">Ссылка на аватарку</string>
+    <string name="url">Url</string>
+    <string name="gender">Пол</string>
+    <string name="save">Сохранить</string>
+    <string name="gallery">Галерея</string>
+    <string name="watch">Смотреть</string>
+    <string name="favourites">Избранное</string>
+
+    <!-- error messages -->
+    <string name="error">Ошибка</string>
+    <string name="login_or_email_already_used">Логин или почта уже заняты</string>
+    <string name="wrong_email">Неверный e-mail</string>
+    <string name="email_is_short">Длина имени почты не менее 3 символов</string>
+    <string name="password_length_invalid">Длина пароля не менее 8 символов</string>
+    <string name="passwords_is_not_equal">Пароли не совпадают</string>
+    <string name="invalid_birthdate">Неверная дата рождения</string>
+    <string name="about_movie">О фильме</string>
+    <string name="genres">Жанры</string>
+
+    <!-- element descriptions -->
+    <string name="logo_picture_description">Logo picture</string>
+    <string name="plus_icon_description">Plus icon</string>
+    <string name="movies_poster_description">Movie\'s Poster</string>
+    <string name="edit_icon_description">Edit icon</string>
+    <string name="delete_icon_description">Delete icon</string>
+    <string name="avatar_content_description">avatar</string>
+    <string name="calendar_icon_description">Calendar picture</string>
 </resources>
